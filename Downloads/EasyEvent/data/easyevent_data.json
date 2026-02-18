@@ -1,0 +1,19 @@
+{
+  "configuratori": [
+    {"username": "duce", "password": "duce123", "primoAccesso": false}
+  ],
+  "campiBase": [
+    {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Numero di partecipanti", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Luogo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Ora", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Quota individuale", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
+  ],
+  "campiComuni": [
+  ],
+  "categorie": [
+  ]
+}
