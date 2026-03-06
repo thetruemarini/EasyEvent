@@ -1,0 +1,10 @@
+src/main/java/it/easyevent/MainV2.java
+src/main/java/it/easyevent/controller/ConfiguratoreController.java
+src/main/java/it/easyevent/model/AppData.java
+src/main/java/it/easyevent/model/Campo.java
+src/main/java/it/easyevent/model/Categoria.java
+src/main/java/it/easyevent/model/Configuratore.java
+src/main/java/it/easyevent/model/Proposta.java
+src/main/java/it/easyevent/model/StatoProposta.java
+src/main/java/it/easyevent/persistence/PersistenceManager.java
+src/main/java/it/easyevent/view/ConfiguratoreView.java

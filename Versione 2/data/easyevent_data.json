@@ -1,0 +1,117 @@
+{
+  "prossimoIdProposta": 6,
+  "configuratori": [
+    {"username": "mario", "password": "mario123", "primoAccesso": false},
+    {"username": "laura", "password": "laura456", "primoAccesso": false}
+  ],
+  "campiBase": [
+    {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Numero di partecipanti", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Luogo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Ora", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Quota individuale", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
+  ],
+  "campiComuni": [
+    {"nome": "Durata", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Compreso nella quota", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Ora conclusiva", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Note", "obbligatorio": false, "tipo": "COMUNE"}
+  ],
+  "categorie": [
+    {
+      "nome": "sport",
+      "campiSpecifici": [
+        {"nome": "Certificato medico", "obbligatorio": true, "tipo": "SPECIFICO"},
+        {"nome": "Equipaggiamento richiesto", "obbligatorio": false, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "gite",
+      "campiSpecifici": [
+        {"nome": "Mezzo di trasporto", "obbligatorio": true, "tipo": "SPECIFICO"},
+        {"nome": "Punto di ritrovo", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "arte",
+      "campiSpecifici": [
+        {"nome": "Nome mostra/evento", "obbligatorio": true, "tipo": "SPECIFICO"},
+        {"nome": "Guida inclusa", "obbligatorio": false, "tipo": "SPECIFICO"}
+      ]
+    }
+  ],
+  "bacheca": [
+    {
+      "id": 1,
+      "nomeCategoria": "sport",
+      "usernameCreatore": "mario",
+      "stato": "APERTA",
+      "dataPubblicazione": "01/03/2026",
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Gara ciclistica sui colli bergamaschi"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "20"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "20/04/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Parcheggio di Via Roma 10, Bergamo"},
+        {"nome": "Data", "obbligatorio": true, "valore": "25/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "08:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "0"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "25/04/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "5 ore"},
+        {"nome": "Compreso nella quota", "obbligatorio": false, "valore": ""},
+        {"nome": "Ora conclusiva", "obbligatorio": false, "valore": "13:00"},
+        {"nome": "Note", "obbligatorio": false, "valore": "Portare bici propria e casco obbligatorio"},
+        {"nome": "Certificato medico", "obbligatorio": true, "valore": "Richiesto"},
+        {"nome": "Equipaggiamento richiesto", "obbligatorio": false, "valore": "Bici da strada o MTB, caschetto, guanti"}
+      ]
+    },
+    {
+      "id": 2,
+      "nomeCategoria": "gite",
+      "usernameCreatore": "laura",
+      "stato": "APERTA",
+      "dataPubblicazione": "02/03/2026",
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Gita a Montisola"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "30"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "15/04/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Stazione di Brescia"},
+        {"nome": "Data", "obbligatorio": true, "valore": "20/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "09:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "15"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "20/04/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "8 ore"},
+        {"nome": "Compreso nella quota", "obbligatorio": false, "valore": "Traghetto andata e ritorno"},
+        {"nome": "Ora conclusiva", "obbligatorio": false, "valore": "18:00"},
+        {"nome": "Note", "obbligatorio": false, "valore": "Portare pranzo al sacco"},
+        {"nome": "Mezzo di trasporto", "obbligatorio": true, "valore": "Treno + traghetto"},
+        {"nome": "Punto di ritrovo", "obbligatorio": true, "valore": "Binario 3 – Stazione di Brescia"}
+      ]
+    },
+    {
+      "id": 3,
+      "nomeCategoria": "arte",
+      "usernameCreatore": "mario",
+      "stato": "APERTA",
+      "dataPubblicazione": "03/03/2026",
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Visita mostra Guido Crepax"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "15"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "10/04/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Museo di Santa Giulia, Via dei Musei 81, Brescia"},
+        {"nome": "Data", "obbligatorio": true, "valore": "15/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "15:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "12"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "15/04/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "2 ore"},
+        {"nome": "Compreso nella quota", "obbligatorio": false, "valore": "Biglietto d'ingresso"},
+        {"nome": "Ora conclusiva", "obbligatorio": false, "valore": "17:00"},
+        {"nome": "Note", "obbligatorio": false, "valore": ""},
+        {"nome": "Nome mostra/evento", "obbligatorio": true, "valore": "Guido Crepax – Valentina e il suo tempo"},
+        {"nome": "Guida inclusa", "obbligatorio": false, "valore": "Sì, guida museale inclusa"}
+      ]
+    }
+  ]
+}
