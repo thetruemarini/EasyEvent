@@ -98,21 +98,6 @@ public class AppData {
     }
 
     /**
-     * Aggiorna lo username di un configuratore (usato durante il primo accesso).
-     * Verifica che il nuovo username non sia già in uso.
-     *
-     * @param vecchioUsername username attuale
-     * @param nuovoUsername   nuovo username desiderato
-     * @throws IllegalArgumentException se il nuovo username è già in uso
-     */
-    public void aggiornaUsernameConfiguratore(String vecchioUsername, String nuovoUsername) {
-        if (esisteUsername(nuovoUsername) && !vecchioUsername.equalsIgnoreCase(nuovoUsername)) {
-            throw new IllegalArgumentException("Username già in uso: " + nuovoUsername);
-        }
-        // Il Configuratore aggiorna se stesso tramite impostaCredenzialiPersonali
-    }
-
-    /**
      * Cerca un configuratore per username (case-insensitive).
      *
      * @param username username da cercare
