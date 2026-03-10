@@ -54,7 +54,7 @@ public class ConfiguratoreController {
 
         // Caso: nessun configuratore ancora registrato → usa credenziali default
         if (appData.getConfiguratori().isEmpty()) {
-            if (username.equals(AppData.DEFAULT_USERNAME) && password.equals(AppData.DEFAULT_PASSWORD)) {
+            if (username.equalsIgnoreCase(AppData.DEFAULT_USERNAME) && password.equals(AppData.DEFAULT_PASSWORD)) {
                 // Crea il primo configuratore con credenziali di default
                 Configuratore nuovo = new Configuratore(username, password, true);
                 appData.aggiungiConfiguratore(nuovo);
@@ -110,15 +110,9 @@ public class ConfiguratoreController {
 
         // Verifica unicità username (escludendo se stesso)
         String vecchioUsername = configuratoreCorrente.getUsername();
+        String vecchiaPassword = configuratoreCorrente.getPassword();
         if (!nuovoUsername.equalsIgnoreCase(vecchioUsername) && appData.esisteUsername(nuovoUsername)) {
             return "Username già in uso: " + nuovoUsername;
-        }
-
-        // Aggiorna username nel map di AppData se cambiato
-        if (!nuovoUsername.equalsIgnoreCase(vecchioUsername)) {
-            // Rimuovi il vecchio e aggiungi il nuovo
-            List<Configuratore> lista = (List<Configuratore>) appData.getConfiguratori();
-            // AppData gestisce internamente: aggiorniamo l'oggetto direttamente
         }
 
         configuratoreCorrente.impostaCredenzialiPersonali(nuovoUsername, nuovaPassword);
@@ -126,7 +120,10 @@ public class ConfiguratoreController {
         try {
             salva();
         } catch (IOException e) {
-            return "Attenzione: credenziali impostate ma errore nel salvataggio: " + e.getMessage();
+            // Rollback: ripristina username, password e primoAccesso precedenti per
+            // mantenere la coerenza tra stato in memoria e stato su disco.
+            configuratoreCorrente.revertCredenziali(vecchioUsername, vecchiaPassword);
+            return "Errore nel salvataggio; le credenziali non sono state aggiornate: " + e.getMessage();
         }
 
         // Postcondizione
