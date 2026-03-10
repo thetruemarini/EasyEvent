@@ -109,7 +109,9 @@ public class ConfiguratoreView {
                 System.out.println("  Login effettuato. Benvenuto, " + username + "!");
                 return true;
             } else {
-                stampaErrore("Credenziali non valide. Riprovare (" + (2 - tentativi) + " tentativo/i rimasto/i).");
+                int rimasti = 2 - tentativi;
+                stampaErrore("Credenziali non valide."
+                        + (rimasti > 0 ? " Riprovare (" + rimasti + " tentativo/i rimasto/i)." : ""));
             }
         }
         System.out.println("  Numero massimo di tentativi raggiunto.");
@@ -125,30 +127,37 @@ public class ConfiguratoreView {
         System.out.println("\n" + SEPARATORE);
         System.out.println("  IMPOSTAZIONE CREDENZIALI PERSONALI");
         System.out.println(SEPARATORE);
-        System.out.println("  (digita 'annulla' per tornare indietro)");
+        System.out.println("  (digita 'annulla' per tornare indietro e uscire)");
 
-        System.out.print("  Scegli il tuo username: ");
-        String nuovoUsername = scanner.nextLine().trim();
-        if (nuovoUsername.equalsIgnoreCase("annulla")) return false;
+        while (true) {
+            System.out.print("  Scegli il tuo username: ");
+            String nuovoUsername = scanner.nextLine().trim();
+            if (nuovoUsername.equalsIgnoreCase("annulla")) {
+                return false;
+            }
 
-        System.out.print("  Scegli la tua password: ");
-        String nuovaPassword = scanner.nextLine().trim();
-        if (nuovaPassword.equalsIgnoreCase("annulla")) return false;
+            System.out.print("  Scegli la tua password: ");
+            String nuovaPassword = scanner.nextLine().trim();
+            if (nuovaPassword.equalsIgnoreCase("annulla")) {
+                return false;
+            }
 
-        System.out.print("  Conferma la tua password: ");
-        String confermaPassword = scanner.nextLine().trim();
-        if (!nuovaPassword.equals(confermaPassword)) {
-            stampaErrore("Le password non coincidono.");
-            return false;
+            System.out.print("  Conferma la tua password: ");
+            String confermaPassword = scanner.nextLine().trim();
+            if (!nuovaPassword.equals(confermaPassword)) {
+                stampaErrore("Le password non coincidono. Riprovare.");
+                continue;
+            }
+
+            String errore = controller.impostaCredenzialiPersonali(nuovoUsername, nuovaPassword);
+            if (!errore.isEmpty()) {
+                stampaErrore(errore + " Riprovare.");
+                continue;
+            }
+
+            System.out.println("  Credenziali impostate correttamente.");
+            return true;
         }
-
-        String errore = controller.impostaCredenzialiPersonali(nuovoUsername, nuovaPassword);
-        if (!errore.isEmpty()) {
-            stampaErrore(errore);
-            return false;
-        }
-        System.out.println("  Credenziali impostate correttamente.");
-        return true;
     }
 
     // ================================================================
