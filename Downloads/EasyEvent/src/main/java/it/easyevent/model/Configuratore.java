@@ -83,6 +83,29 @@ public class Configuratore {
     }
 
     /**
+     * Riporta le credenziali ai valori precedenti annullando un cambio fallito.
+     * Da usare ESCLUSIVAMENTE come rollback quando
+     * impostaCredenzialiPersonali() ha avuto successo ma il salvataggio su
+     * disco ha fallito.
+     *
+     * @param vecchioUsername username precedente, non null e non blank
+     * @param vecchiaPassword password precedente, non null e non blank
+     */
+    public void revertCredenziali(String vecchioUsername, String vecchiaPassword) {
+        if (vecchioUsername == null || vecchioUsername.isBlank()) {
+            throw new IllegalArgumentException("vecchioUsername non puo' essere null o vuoto.");
+        }
+        if (vecchiaPassword == null || vecchiaPassword.isBlank()) {
+            throw new IllegalArgumentException("vecchiaPassword non puo' essere null o vuota.");
+        }
+        this.username = vecchioUsername;
+        this.password = vecchiaPassword;
+        this.primoAccesso = true;
+
+        assert repOk() : "Invariante violato dopo revertCredenziali";
+    }
+
+    /**
      * Verifica le credenziali fornite.
      *
      * @param username username da verificare
@@ -91,7 +114,7 @@ public class Configuratore {
      */
     public boolean verificaCredenziali(String username, String password) {
         if (username == null || password == null) return false;
-        return this.username.equals(username.trim()) && this.password.equals(password);
+        return this.username.equalsIgnoreCase(username.trim()) && this.password.equals(password);
     }
 
     // ---- Getters ----
