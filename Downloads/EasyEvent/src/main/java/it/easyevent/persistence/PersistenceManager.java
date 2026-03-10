@@ -173,8 +173,11 @@ public class PersistenceManager {
     }
 
     private String jsonStr(String s) {
-        if (s == null) return "null";
-        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+        if (s == null) {
+            return "null";
+        }
+        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\"";
     }
 
     // ================================================================
@@ -318,7 +321,9 @@ public class PersistenceManager {
             if (obj.charAt(quoteEnd) == '"' && obj.charAt(quoteEnd - 1) != '\\') break;
             quoteEnd++;
         }
-        return obj.substring(quoteStart + 1, quoteEnd).replace("\\\"", "\"").replace("\\\\", "\\");
+        return obj.substring(quoteStart + 1, quoteEnd)
+                .replace("\\\"", "\"").replace("\\\\", "\\")
+                .replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t");
     }
 
     /**
