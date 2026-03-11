@@ -309,6 +309,7 @@ public class PersistenceManager {
 
         for (String obj : splitJsonObjects(section)) {
             int    id               = extractIntValue(obj, "id");
+            if (id < 0) continue;
             String nomeCategoria    = extractStringValue(obj, "nomeCategoria");
             String usernameCreatore = extractStringValue(obj, "usernameCreatore");
             String statoStr         = extractStringValue(obj, "stato");
