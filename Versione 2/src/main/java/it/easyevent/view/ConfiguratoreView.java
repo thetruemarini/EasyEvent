@@ -107,11 +107,12 @@ public class ConfiguratoreView {
     }
 
     private boolean gestionePrimoAccesso() {
-        System.out.println("\n" + SEP);
-        System.out.println("  IMPOSTAZIONE CREDENZIALI PERSONALI");
-        System.out.println(SEP);
-        System.out.println("  (digita 'annulla' per interrompere e tornare al login)");
-        System.out.println();
+    System.out.println("\n" + SEP);
+    System.out.println("  IMPOSTAZIONE CREDENZIALI PERSONALI");
+    System.out.println(SEP);
+    System.out.println("  (digita 'annulla' per interrompere e tornare al login)");
+    System.out.println();
+    while (true) {
         System.out.print("  Nuovo username: ");
         String nu = scanner.nextLine().trim();
         if (nu.equalsIgnoreCase("annulla")) return false;
@@ -120,12 +121,21 @@ public class ConfiguratoreView {
         if (np.equalsIgnoreCase("annulla")) return false;
         System.out.print("  Conferma password: ");
         String conf = scanner.nextLine().trim();
-        if (!np.equals(conf)) { stampaErrore("Le password non coincidono."); return false; }
+        if (!np.equals(conf)) {
+            stampaErrore("Le password non coincidono. Riprovare.");
+            System.out.println();
+            continue;
+        }
         String err = controller.impostaCredenzialiPersonali(nu, np);
-        if (!err.isEmpty()) { stampaErrore(err); return false; }
+        if (!err.isEmpty()) {
+            stampaErrore(err + " Riprovare.");
+            System.out.println();
+            continue;
+        }
         System.out.println("\n  Credenziali impostate correttamente.");
         return true;
     }
+}
 
     // ================================================================
     // MENU PRINCIPALE
