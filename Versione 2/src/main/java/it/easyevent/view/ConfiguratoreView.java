@@ -64,9 +64,11 @@ public class ConfiguratoreView {
             }
             boolean continua = menuPrincipale();
             if (!continua) {
+                int nProposteScartate = controller.getProposteSessione().size();
                 controller.logout();
                 System.out.println("\n  Logout effettuato.");
-                System.out.println("  NOTA: le proposte non pubblicate sono state scartate.");
+                if (nProposteScartate > 0)
+                System.out.println("  NOTA: " + nProposteScartate + " proposta/e non pubblicata/e sono state scartate.");
                 System.out.print("\n  Continuare con un altro account? (s/n): ");
                 if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
                     System.out.println("\n  Arrivederci.");
