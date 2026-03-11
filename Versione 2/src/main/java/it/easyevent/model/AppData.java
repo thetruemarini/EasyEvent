@@ -283,12 +283,8 @@ public class AppData {
         this.configuratori = new ArrayList<>(configuratori);
     }
 
-    /** Carica la bacheca dal file e aggiorna il contatore degli ID. */
     public void setBacheca(List<Proposta> bacheca) {
         this.bacheca = new ArrayList<>(bacheca);
-        // Ricalcola il contatore: parte dall'id massimo presente + 1
-        int maxId = bacheca.stream().mapToInt(Proposta::getId).max().orElse(0);
-        this.prossimoIdProposta = maxId + 1;
     }
 
     public void setProssimoIdProposta(int id) {
