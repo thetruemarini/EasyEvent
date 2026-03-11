@@ -61,7 +61,7 @@ public class ConfiguratoreController {
         if (username == null || password == null) return false;
 
         if (appData.getConfiguratori().isEmpty()) {
-            if (username.equals(AppData.DEFAULT_USERNAME)
+            if (username.equalsIgnoreCase(AppData.DEFAULT_USERNAME)
                     && password.equals(AppData.DEFAULT_PASSWORD)) {
                 Configuratore nuovo = new Configuratore(username, password, true);
                 appData.aggiungiConfiguratore(nuovo);
@@ -101,9 +101,14 @@ public class ConfiguratoreController {
             return "Username già in uso: " + nuovoUsername;
         }
 
+        String vecchiaPassword = configuratoreCorrente.getPassword();
         configuratoreCorrente.impostaCredenzialiPersonali(nuovoUsername, nuovaPassword);
-        try { salva(); } catch (IOException e) {
-            return "Attenzione: credenziali impostate ma errore nel salvataggio: " + e.getMessage();
+        try {
+            salva();
+        } catch (IOException e) {
+            // Rollback: ripristina le credenziali precedenti in memoria
+            configuratoreCorrente.revertCredenziali(vecchioUsername, vecchiaPassword);
+            return "Attenzione: errore nel salvataggio delle credenziali: " + e.getMessage();
         }
         assert !configuratoreCorrente.isPrimoAccesso() : "Postcondizione violata";
         return "";
