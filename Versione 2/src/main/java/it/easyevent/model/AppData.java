@@ -97,12 +97,6 @@ public class AppData {
                 .anyMatch(c -> c.getUsername().equalsIgnoreCase(username));
     }
 
-    public void aggiornaUsernameConfiguratore(String vecchioUsername, String nuovoUsername) {
-        if (esisteUsername(nuovoUsername) && !vecchioUsername.equalsIgnoreCase(nuovoUsername)) {
-            throw new IllegalArgumentException("Username già in uso: " + nuovoUsername);
-        }
-    }
-
     public Configuratore getConfiguratore(String username) {
         if (username == null) return null;
         return configuratori.stream()
