@@ -233,9 +233,10 @@ public class PersistenceManager {
     }
 
     private String jsonStr(String s) {
-        if (s == null) return "null";
-        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
-    }
+    if (s == null) return "null";
+    return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"")
+                   .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\"";
+}
 
     // ================================================================
     // PARSING HELPERS
@@ -395,7 +396,8 @@ public class PersistenceManager {
             quoteEnd++;
         }
         return obj.substring(quoteStart + 1, quoteEnd)
-                  .replace("\\\"", "\"").replace("\\\\", "\\");
+          .replace("\\\"", "\"").replace("\\\\", "\\")
+          .replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t");
     }
 
     private boolean extractBoolValue(String obj, String key) {
