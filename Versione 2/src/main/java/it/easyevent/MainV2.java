@@ -5,7 +5,7 @@ import it.easyevent.model.AppData;
 import it.easyevent.persistence.PersistenceManager;
 import it.easyevent.view.ConfiguratoreView;
 
-import java.io.IOException; //viva il duce
+import java.io.IOException;
 
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent – Versione 2.
