@@ -42,6 +42,7 @@ public class Proposta {
     public static final String CAMPO_TERMINE_ISCRIZIONE = "Termine ultimo di iscrizione";
     public static final String CAMPO_DATA               = "Data";
     public static final String CAMPO_DATA_CONCLUSIVA    = "Data conclusiva";
+    public static final String CAMPO_ORA                = "Ora";
 
     // ---- Dati identificativi ----
     private final int    id;
@@ -237,6 +238,14 @@ public class Proposta {
         if (data != null && dataConc != null && dataConc.isBefore(data)) {
             errori.add("'" + CAMPO_DATA_CONCLUSIVA + "' non può essere precedente a '"
                     + CAMPO_DATA + "'.");
+        }
+        
+        // --- 3. Vincolo di formato sul campo "Ora" ---
+        // Formato atteso: HH:MM  (ore 0-23, minuti 0-59, con o senza zero iniziale)
+        String strOra = getValore(CAMPO_ORA);
+        if (!strOra.isBlank() && !isFormatoOraValido(strOra)) {
+            errori.add("'" + CAMPO_ORA
+                    + "': formato non valido (usare HH:MM, es. 09:30 oppure 14:00).");
         }
 
         return errori;
