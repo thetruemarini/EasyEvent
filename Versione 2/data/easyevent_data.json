@@ -1,8 +1,17 @@
 {
   "prossimoIdProposta": 1,
-  "configuratori": [],
-  "campiBase": [],
-  "campiComuni": [],
-  "categorie": [],
-  "bacheca": []
+  "prossimoIdNotifica": 1,
+  "configuratori": [
+    {"username": "ciao", "password": "ciao", "primoAccesso": false}
+  ],
+  "fruitori": [
+  ],
+  "campiBase": [
+  ],
+  "campiComuni": [
+  ],
+  "categorie": [
+  ],
+  "archivio": [
+  ]
 }

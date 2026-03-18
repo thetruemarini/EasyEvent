@@ -1,10 +1,97 @@
 {
-  "prossimoIdProposta": 1,
+  "prossimoIdProposta": 3,
   "prossimoIdNotifica": 1,
-  "configuratori": [],
-  "fruitori": [],
-  "campiBase": [],
-  "campiComuni": [],
-  "categorie": [],
-  "archivio": []
+  "configuratori": [
+    {"username": "prins", "password": "prins123", "primoAccesso": false}
+  ],
+  "fruitori": [
+    {
+      "username": "marini",
+      "password": "marinigay",
+      "notifiche": [
+      ]
+    },
+    {
+      "username": "traina",
+      "password": "trainagay",
+      "notifiche": [
+      ]
+    },
+    {
+      "username": "vittoria",
+      "password": "gozzi",
+      "notifiche": [
+      ]
+    }
+  ],
+  "campiBase": [
+    {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Numero di partecipanti", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Luogo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data inizio", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Ora", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Quota individuale", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
+  ],
+  "campiComuni": [
+  ],
+  "categorie": [
+    {
+      "nome": "Sport",
+      "campiSpecifici": [
+      ]
+    },
+    {
+      "nome": "Cibo",
+      "campiSpecifici": [
+        {"nome": "intolleranza", "obbligatorio": false, "tipo": "SPECIFICO"}
+      ]
+    }
+  ],
+  "archivio": [
+    {
+      "id": 1,
+      "nomeCategoria": "Sport",
+      "usernameCreatore": "prins",
+      "stato": "APERTA",
+      "dataPubblicazione": "18/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "18/03/2026"}
+      ],
+      "aderenti": ["marini", "traina"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Calcio"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "2"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/06/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "05/07/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "15"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "10"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "05/07/2026"}
+      ]
+    },
+    {
+      "id": 2,
+      "nomeCategoria": "Cibo",
+      "usernameCreatore": "prins",
+      "stato": "APERTA",
+      "dataPubblicazione": "18/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "18/03/2026"}
+      ],
+      "aderenti": ["marini"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Aperitivo"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "1"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "19/03/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "21/03/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "15"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "15"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "21/03/2026"},
+        {"nome": "intolleranza", "obbligatorio": false, "valore": ""}
+      ]
+    }
+  ]
 }

@@ -4,7 +4,6 @@ import it.easyevent.controller.ConfiguratoreController;
 import it.easyevent.model.AppData;
 import it.easyevent.persistence.PersistenceManager;
 import it.easyevent.view.ConfiguratoreView;
-
 import java.io.IOException;
 
 /**
@@ -16,7 +15,7 @@ import java.io.IOException;
 public class MainV1 {
 
     // Percorso del file di persistenza
-    private static final String DATA_FILE = "data/easyevent_data.json";
+    private static final String DATA_FILE = "Versione 1/data/easyevent_data.json";
 
     public static void main(String[] args) {
 

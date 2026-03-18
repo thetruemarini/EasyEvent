@@ -33,7 +33,7 @@ public class AppData {
         "Numero di partecipanti",
         "Termine ultimo di iscrizione",
         "Luogo",
-        "Data",
+        "Data inizio",
         "Ora",
         "Quota individuale",
         "Data conclusiva"

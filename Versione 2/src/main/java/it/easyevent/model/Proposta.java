@@ -40,7 +40,7 @@ public class Proposta {
 
     // Nomi dei campi base coinvolti nei vincoli di data
     public static final String CAMPO_TERMINE_ISCRIZIONE = "Termine ultimo di iscrizione";
-    public static final String CAMPO_DATA               = "Data";
+    public static final String CAMPO_DATA               = "Data inizio";
     public static final String CAMPO_DATA_CONCLUSIVA    = "Data conclusiva";
     public static final String CAMPO_ORA                = "Ora";
 
@@ -249,6 +249,44 @@ public class Proposta {
         }
 
         return errori;
+    }
+
+    /**
+     * Verifica che la stringa rispetti il formato ora:minuti (HH:MM).
+     * <p>
+     * Regole:
+     * <ul>
+     *   <li>Deve contenere esattamente un separatore ':'.</li>
+     *   <li>La parte ore deve essere un intero compreso tra 0 e 23 (con o senza zero iniziale).</li>
+     *   <li>La parte minuti deve essere un intero compreso tra 0 e 59 (con o senza zero iniziale).</li>
+     * </ul>
+     *
+     * @param ora stringa da verificare, non null
+     * @return true se il formato è valido
+     */
+    private static boolean isFormatoOraValido(String ora) {
+        // Deve contenere esattamente un ':'
+        int sep = ora.indexOf(':');
+        if (sep < 0 || sep != ora.lastIndexOf(':')) return false;
+ 
+        String parteOre     = ora.substring(0, sep).trim();
+        String parteMinuti  = ora.substring(sep + 1).trim();
+ 
+        // Entrambe le parti devono essere non vuote e composte solo da cifre
+        if (parteOre.isEmpty() || parteMinuti.isEmpty()) return false;
+        for (char c : parteOre.toCharArray())    if (!Character.isDigit(c)) return false;
+        for (char c : parteMinuti.toCharArray()) if (!Character.isDigit(c)) return false;
+ 
+        // Lunghezza massima 2 cifre per parte (evita overflow e formati tipo "009")
+        if (parteOre.length() > 2 || parteMinuti.length() > 2) return false;
+ 
+        try {
+            int h = Integer.parseInt(parteOre);
+            int m = Integer.parseInt(parteMinuti);
+            return h >= 0 && h <= 23 && m >= 0 && m <= 59;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     /**

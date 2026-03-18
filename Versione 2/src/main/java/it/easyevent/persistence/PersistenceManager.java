@@ -6,7 +6,6 @@ import it.easyevent.model.Categoria;
 import it.easyevent.model.Configuratore;
 import it.easyevent.model.Proposta;
 import it.easyevent.model.StatoProposta;
-
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
