@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 public class MainV2 {
 
-    private static final String DATA_FILE = "Versione 2/data/easyevent_data.json";
+    private static final String DATA_FILE = "Versione2/data/easyevent_data.json";
 
     public static void main(String[] args) {
 

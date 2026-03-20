@@ -15,7 +15,7 @@ import java.io.IOException;
 public class MainV1 {
 
     // Percorso del file di persistenza
-    private static final String DATA_FILE = "Versione 1/data/easyevent_data.json";
+    private static final String DATA_FILE = "Versione1/data/easyevent_data.json";
 
     public static void main(String[] args) {
 
