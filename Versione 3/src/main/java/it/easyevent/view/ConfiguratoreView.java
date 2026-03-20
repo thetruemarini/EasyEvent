@@ -5,7 +5,6 @@ import it.easyevent.model.Campo;
 import it.easyevent.model.Categoria;
 import it.easyevent.model.Proposta;
 import it.easyevent.model.StatoProposta;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -15,18 +14,16 @@ import java.util.stream.Collectors;
 /**
  * Interfaccia testuale (CLI) per il configuratore - Versione 3.
  *
- * Novita' rispetto alla V2:
- *   - Menu "Visualizza archivio proposte": mostra tutte le proposte pubblicate
- *     con i loro stati (APERTA, CONFERMATA, ANNULLATA, CONCLUSA) e storico.
- *   - Informazione sui passaggi di stato applicati all'avvio.
+ * Novita' rispetto alla V2: - Menu "Visualizza archivio proposte": mostra tutte
+ * le proposte pubblicate con i loro stati (APERTA, CONFERMATA, ANNULLATA,
+ * CONCLUSA) e storico. - Informazione sui passaggi di stato applicati
+ * all'avvio.
  *
- * Invariante di classe:
- *   - controller != null
- *   - scanner != null
+ * Invariante di classe: - controller != null - scanner != null
  */
 public class ConfiguratoreView {
 
-    private static final String SEP  = "------------------------------------------------------------";
+    private static final String SEP = "------------------------------------------------------------";
     private static final String SEP2 = "  ----------------------------------------------------------";
 
     private final ConfiguratoreController controller;
@@ -37,22 +34,23 @@ public class ConfiguratoreView {
     }
 
     /**
-     * Costruttore che accetta uno Scanner condiviso (usato da MainV3
-     * per evitare conflitti con FruitoreView sullo stesso System.in).
+     * Costruttore che accetta uno Scanner condiviso (usato da MainV3 per
+     * evitare conflitti con FruitoreView sullo stesso System.in).
      */
     public ConfiguratoreView(ConfiguratoreController controller, Scanner scanner) {
-        if (controller == null)
+        if (controller == null) {
             throw new IllegalArgumentException("Controller non puo' essere null.");
-        if (scanner == null)
+        }
+        if (scanner == null) {
             throw new IllegalArgumentException("Scanner non puo' essere null.");
+        }
         this.controller = controller;
-        this.scanner    = scanner;
+        this.scanner = scanner;
     }
 
     // ================================================================
     // ENTRY POINT
     // ================================================================
-
     public void avvia() {
         stampaBanner();
         // inizializzaCampiBase() e' gia' invocata da MainV3 prima di creare questa view;
@@ -60,7 +58,10 @@ public class ConfiguratoreView {
 
         while (true) {
             if (!controller.isLoggato()) {
-                if (!gestioneLogin()) { System.out.println("\n  Arrivederci."); break; }
+                if (!gestioneLogin()) {
+                    System.out.println("\n  Arrivederci.");
+                    break;
+                }
                 if (controller.richiedeCambioCredenziali()) {
                     System.out.println("\n*** Primo accesso: necessario impostare le credenziali personali. ***");
                     if (!gestionePrimoAccesso()) {
@@ -75,8 +76,9 @@ public class ConfiguratoreView {
                 int nScartate = controller.getProposteSessione().size();
                 controller.logout();
                 System.out.println("\n  Logout effettuato.");
-                if (nScartate > 0)
+                if (nScartate > 0) {
                     System.out.println("  NOTA: " + nScartate + " proposta/e non pubblicata/e sono state scartate.");
+                }
                 System.out.print("\n  Continuare con un altro account? (s/n): ");
                 if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
                     System.out.println("\n  Arrivederci.");
@@ -91,7 +93,6 @@ public class ConfiguratoreView {
     // ================================================================
     // LOGIN
     // ================================================================
-
     private boolean gestioneLogin() {
         System.out.println("\n" + SEP);
         System.out.println("  LOGIN CONFIGURATORE");
@@ -101,7 +102,9 @@ public class ConfiguratoreView {
         for (int t = 0; t < 3; t++) {
             System.out.print("  Username: ");
             String username = scanner.nextLine().trim();
-            if (username.equalsIgnoreCase("esci")) return false;
+            if (username.equalsIgnoreCase("esci")) {
+                return false;
+            }
             System.out.print("  Password: ");
             String password = scanner.nextLine().trim();
             if (controller.login(username, password)) {
@@ -111,7 +114,9 @@ public class ConfiguratoreView {
             int rimasti = 2 - t;
             stampaErrore("Credenziali non valide."
                     + (rimasti > 0 ? " Tentativi rimasti: " + rimasti : ""));
-            if (rimasti > 0) System.out.println();
+            if (rimasti > 0) {
+                System.out.println();
+            }
         }
         System.out.println("\n  Accesso bloccato: numero massimo di tentativi raggiunto.");
         return false;
@@ -125,7 +130,9 @@ public class ConfiguratoreView {
         System.out.println();
         System.out.print("  Nuovo username: ");
         String nu = scanner.nextLine().trim();
-        if (nu.equalsIgnoreCase("annulla")) return false;
+        if (nu.equalsIgnoreCase("annulla")) {
+            return false;
+        }
         // "esci" e' la parola riservata per uscire dalla schermata di login:
         // se fosse accettata come username, il configuratore non potrebbe mai
         // più accedere perché il login interpreterebbe "esci" come comando di uscita.
@@ -135,12 +142,20 @@ public class ConfiguratoreView {
         }
         System.out.print("  Nuova password: ");
         String np = scanner.nextLine().trim();
-        if (np.equalsIgnoreCase("annulla")) return false;
+        if (np.equalsIgnoreCase("annulla")) {
+            return false;
+        }
         System.out.print("  Conferma password: ");
         String conf = scanner.nextLine().trim();
-        if (!np.equals(conf)) { stampaErrore("Le password non coincidono."); return false; }
+        if (!np.equals(conf)) {
+            stampaErrore("Le password non coincidono.");
+            return false;
+        }
         String err = controller.impostaCredenzialiPersonali(nu, np);
-        if (!err.isEmpty()) { stampaErrore(err); return false; }
+        if (!err.isEmpty()) {
+            stampaErrore(err);
+            return false;
+        }
         System.out.println("\n  Credenziali impostate correttamente.");
         return true;
     }
@@ -148,11 +163,10 @@ public class ConfiguratoreView {
     // ================================================================
     // MENU PRINCIPALE
     // ================================================================
-
     private boolean menuPrincipale() {
         while (true) {
             int nSessione = controller.getProposteSessione().size();
-            int nBacheca  = controller.getBacheca().size();
+            int nBacheca = controller.getBacheca().size();
             System.out.println("\n" + SEP);
             System.out.println("  MENU PRINCIPALE  [" + controller.getConfiguratoreCorrente().getUsername() + "]");
             System.out.println(SEP);
@@ -167,15 +181,25 @@ public class ConfiguratoreView {
             System.out.println();
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
-                case "1" -> menuCampiBase();
-                case "2" -> menuCampiComuni();
-                case "3" -> menuCategorie();
-                case "4" -> visualizzaRiepilogo();
-                case "5" -> menuProposte();
-                case "6" -> visualizzaBacheca();
-                case "7" -> visualizzaArchivio();
-                case "0" -> { return false; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "1" ->
+                    menuCampiBase();
+                case "2" ->
+                    menuCampiComuni();
+                case "3" ->
+                    menuCategorie();
+                case "4" ->
+                    visualizzaRiepilogo();
+                case "5" ->
+                    menuProposte();
+                case "6" ->
+                    visualizzaBacheca();
+                case "7" ->
+                    visualizzaArchivio();
+                case "0" -> {
+                    return false;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -183,7 +207,6 @@ public class ConfiguratoreView {
     // ================================================================
     // CAMPI BASE  (invariata da V2)
     // ================================================================
-
     private void menuCampiBase() {
         System.out.println("\n" + SEP);
         System.out.println("  CAMPI BASE  (immutabili)");
@@ -192,8 +215,9 @@ public class ConfiguratoreView {
         if (cb.isEmpty()) {
             System.out.println("  (nessun campo base definito)");
         } else {
-            for (int i = 0; i < cb.size(); i++)
+            for (int i = 0; i < cb.size(); i++) {
                 System.out.printf("  %d. %s%n", i + 1, cb.get(i));
+            }
         }
         System.out.println();
         System.out.println("  I campi base sono fissati al primo avvio e non modificabili.");
@@ -203,7 +227,6 @@ public class ConfiguratoreView {
     // ================================================================
     // CAMPI COMUNI  (invariata da V2)
     // ================================================================
-
     private void menuCampiComuni() {
         while (true) {
             System.out.println("\n" + SEP);
@@ -213,8 +236,9 @@ public class ConfiguratoreView {
             if (cc.isEmpty()) {
                 System.out.println("  (nessun campo comune definito)");
             } else {
-                for (int i = 0; i < cc.size(); i++)
+                for (int i = 0; i < cc.size(); i++) {
                     System.out.printf("  %d. %s%n", i + 1, cc.get(i));
+                }
             }
             System.out.println();
             System.out.println("  a. Aggiungi campo comune");
@@ -224,11 +248,17 @@ public class ConfiguratoreView {
             System.out.println();
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
-                case "a" -> aggiungiCampoComune();
-                case "r" -> rimuoviCampoComune();
-                case "m" -> modificaObbligCampoComune();
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "a" ->
+                    aggiungiCampoComune();
+                case "r" ->
+                    rimuoviCampoComune();
+                case "m" ->
+                    modificaObbligCampoComune();
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -236,32 +266,43 @@ public class ConfiguratoreView {
     private void aggiungiCampoComune() {
         System.out.print("  Nome del nuovo campo comune: ");
         String nome = scanner.nextLine().trim();
-        if (nome.isEmpty()) { stampaErrore("Il nome non puo' essere vuoto."); return; }
+        if (nome.isEmpty()) {
+            stampaErrore("Il nome non puo' essere vuoto.");
+            return;
+        }
         String err = controller.aggiungiCampoComune(nome, chiediObbligatorio());
-        if (err.isEmpty()) System.out.println("  Campo comune '" + nome + "' aggiunto.");
-        else stampaErrore(err);
+        if (err.isEmpty()) {
+            System.out.println("  Campo comune '" + nome + "' aggiunto."); 
+        }else {
+            stampaErrore(err);
+        }
     }
 
     private void rimuoviCampoComune() {
         System.out.print("  Nome del campo comune da rimuovere: ");
         String nome = scanner.nextLine().trim();
         String err = controller.rimuoviCampoComune(nome);
-        if (err.isEmpty()) System.out.println("  Campo comune '" + nome + "' rimosso.");
-        else stampaErrore(err);
+        if (err.isEmpty()) {
+            System.out.println("  Campo comune '" + nome + "' rimosso."); 
+        }else {
+            stampaErrore(err);
+        }
     }
 
     private void modificaObbligCampoComune() {
         System.out.print("  Nome del campo comune da modificare: ");
         String nome = scanner.nextLine().trim();
-        String err  = controller.modificaObbligatorietaCampoComune(nome, chiediObbligatorio());
-        if (err.isEmpty()) System.out.println("  Obbligatorieta' di '" + nome + "' aggiornata.");
-        else stampaErrore(err);
+        String err = controller.modificaObbligatorietaCampoComune(nome, chiediObbligatorio());
+        if (err.isEmpty()) {
+            System.out.println("  Obbligatorieta' di '" + nome + "' aggiornata."); 
+        }else {
+            stampaErrore(err);
+        }
     }
 
     // ================================================================
     // CATEGORIE  (invariata da V2)
     // ================================================================
-
     private void menuCategorie() {
         while (true) {
             System.out.println("\n" + SEP);
@@ -271,8 +312,9 @@ public class ConfiguratoreView {
             if (cats.isEmpty()) {
                 System.out.println("  (nessuna categoria definita)");
             } else {
-                for (int i = 0; i < cats.size(); i++)
+                for (int i = 0; i < cats.size(); i++) {
                     System.out.printf("  %d. %s%n", i + 1, cats.get(i).getNome());
+                }
             }
             System.out.println();
             System.out.println("  a. Aggiungi categoria");
@@ -283,12 +325,19 @@ public class ConfiguratoreView {
             System.out.println();
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
-                case "a" -> aggiungiCategoria();
-                case "r" -> rimuoviCategoria();
-                case "c" -> menuCampiSpecifici();
-                case "v" -> visualizzaDettaglioCategoria();
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "a" ->
+                    aggiungiCategoria();
+                case "r" ->
+                    rimuoviCategoria();
+                case "c" ->
+                    menuCampiSpecifici();
+                case "v" ->
+                    visualizzaDettaglioCategoria();
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -296,13 +345,17 @@ public class ConfiguratoreView {
     private void aggiungiCategoria() {
         System.out.print("  Nome della nuova categoria: ");
         String nome = scanner.nextLine().trim();
-        if (nome.isEmpty()) { stampaErrore("Il nome non puo' essere vuoto."); return; }
+        if (nome.isEmpty()) {
+            stampaErrore("Il nome non puo' essere vuoto.");
+            return;
+        }
         String err = controller.aggiungiCategoria(nome);
         if (err.isEmpty()) {
             System.out.println("  Categoria '" + nome + "' aggiunta.");
             System.out.print("  Aggiungere subito campi specifici? (s/n): ");
-            if (scanner.nextLine().trim().equalsIgnoreCase("s"))
+            if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 aggiungiCampiSpecificiInterattivo(nome);
+            }
         } else {
             stampaErrore(err);
         }
@@ -313,17 +366,31 @@ public class ConfiguratoreView {
         while (true) {
             System.out.print("  Nome campo specifico: ");
             String nome = scanner.nextLine().trim();
-            if (nome.isEmpty()) break;
+            if (nome.isEmpty()) {
+                stampaErrore("Il nome non può essere vuoto.");
+                continue;
+            }
             String err = controller.aggiungiCampoSpecifico(nomeCategoria, nome, chiediObbligatorio());
-            if (err.isEmpty()) System.out.println("  Campo '" + nome + "' aggiunto.");
-            else stampaErrore(err);
+            if (err.isEmpty()) {
+                System.out.println("  Campo '" + nome + "' aggiunto."); 
+            }else {
+                stampaErrore(err);
+            }
+
+            System.out.print("  Aggiungere un altro campo specifico? (s/n): ");
+            if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
+                break;
+            }
         }
     }
 
     private void rimuoviCategoria() {
         System.out.print("  Nome della categoria da rimuovere: ");
         String nome = scanner.nextLine().trim();
-        if (nome.isEmpty()) { stampaErrore("Il nome non puo' essere vuoto."); return; }
+        if (nome.isEmpty()) {
+            stampaErrore("Il nome non puo' essere vuoto.");
+            return;
+        }
         System.out.print("  Confermi la rimozione di '" + nome
                 + "'? L'operazione e' irreversibile. (s/n): ");
         if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
@@ -331,10 +398,11 @@ public class ConfiguratoreView {
             return;
         }
         String err = controller.rimuoviCategoria(nome);
-        if (err.isEmpty())
-            System.out.println("  Categoria '" + nome + "' rimossa (compresi tutti i campi specifici).");
-        else
+        if (err.isEmpty()) {
+            System.out.println("  Categoria '" + nome + "' rimossa (compresi tutti i campi specifici)."); 
+        }else {
             stampaErrore(err);
+        }
     }
 
     private void menuCampiSpecifici() {
@@ -345,7 +413,10 @@ public class ConfiguratoreView {
         System.out.print("  Nome della categoria: ");
         String nomeCategoria = scanner.nextLine().trim();
         Categoria cat = controller.getCategoria(nomeCategoria);
-        if (cat == null) { stampaErrore("Categoria non trovata: " + nomeCategoria); return; }
+        if (cat == null) {
+            stampaErrore("Categoria non trovata: " + nomeCategoria);
+            return;
+        }
 
         while (true) {
             System.out.println("\n" + SEP);
@@ -354,8 +425,9 @@ public class ConfiguratoreView {
             if (cat.getCampiSpecifici().isEmpty()) {
                 System.out.println("  (nessun campo specifico)");
             } else {
-                for (int i = 0; i < cat.getCampiSpecifici().size(); i++)
+                for (int i = 0; i < cat.getCampiSpecifici().size(); i++) {
                     System.out.printf("  %d. %s%n", i + 1, cat.getCampiSpecifici().get(i));
+                }
             }
             System.out.println();
             System.out.println("  a. Aggiungi campo specifico");
@@ -368,28 +440,43 @@ public class ConfiguratoreView {
                 case "a" -> {
                     System.out.print("  Nome del nuovo campo specifico: ");
                     String n = scanner.nextLine().trim();
-                    if (n.isEmpty()) { stampaErrore("Nome vuoto."); break; }
+                    if (n.isEmpty()) {
+                        stampaErrore("Nome vuoto.");
+                        break;
+                    }
                     String err = controller.aggiungiCampoSpecifico(nomeCategoria, n, chiediObbligatorio());
-                    if (err.isEmpty()) System.out.println("  Campo '" + n + "' aggiunto.");
-                    else stampaErrore(err);
+                    if (err.isEmpty()) {
+                        System.out.println("  Campo '" + n + "' aggiunto."); 
+                    }else {
+                        stampaErrore(err);
+                    }
                 }
                 case "r" -> {
                     System.out.print("  Nome del campo da rimuovere: ");
                     String n = scanner.nextLine().trim();
                     String err = controller.rimuoviCampoSpecifico(nomeCategoria, n);
-                    if (err.isEmpty()) System.out.println("  Campo '" + n + "' rimosso.");
-                    else stampaErrore(err);
+                    if (err.isEmpty()) {
+                        System.out.println("  Campo '" + n + "' rimosso."); 
+                    }else {
+                        stampaErrore(err);
+                    }
                 }
                 case "m" -> {
                     System.out.print("  Nome del campo da modificare: ");
                     String n = scanner.nextLine().trim();
                     String err = controller.modificaObbligatorietaCampoSpecifico(
                             nomeCategoria, n, chiediObbligatorio());
-                    if (err.isEmpty()) System.out.println("  Obbligatorieta' aggiornata.");
-                    else stampaErrore(err);
+                    if (err.isEmpty()) {
+                        System.out.println("  Obbligatorieta' aggiornata."); 
+                    }else {
+                        stampaErrore(err);
+                    }
                 }
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -398,21 +485,24 @@ public class ConfiguratoreView {
         System.out.print("  Nome della categoria: ");
         String nome = scanner.nextLine().trim();
         Categoria cat = controller.getCategoria(nome);
-        if (cat == null) { stampaErrore("Categoria non trovata: " + nome); return; }
+        if (cat == null) {
+            stampaErrore("Categoria non trovata: " + nome);
+            return;
+        }
 
         System.out.println("\n" + SEP);
         System.out.println("  DETTAGLIO CATEGORIA: " + cat.getNome().toUpperCase());
         System.out.println(SEP);
         System.out.println("\n  Campi BASE  (obbligatori, condivisi da tutte le categorie):");
-        controller.getCampiBase().forEach(c ->
-                System.out.println("    - " + c.getNome() + "  [obbligatorio]"));
+        controller.getCampiBase().forEach(c
+                -> System.out.println("    - " + c.getNome() + "  [obbligatorio]"));
 
         System.out.println("\n  Campi COMUNI  (condivisi da tutte le categorie):");
         if (controller.getCampiComuni().isEmpty()) {
             System.out.println("    (nessuno definito)");
         } else {
-            controller.getCampiComuni().forEach(c ->
-                    System.out.println("    - " + c.getNome()
+            controller.getCampiComuni().forEach(c
+                    -> System.out.println("    - " + c.getNome()
                             + "  [" + (c.isObbligatorio() ? "obbligatorio" : "facoltativo") + "]"));
         }
 
@@ -420,8 +510,8 @@ public class ConfiguratoreView {
         if (cat.getCampiSpecifici().isEmpty()) {
             System.out.println("    (nessuno)");
         } else {
-            cat.getCampiSpecifici().forEach(c ->
-                    System.out.println("    - " + c.getNome()
+            cat.getCampiSpecifici().forEach(c
+                    -> System.out.println("    - " + c.getNome()
                             + "  [" + (c.isObbligatorio() ? "obbligatorio" : "facoltativo") + "]"));
         }
         premInvio();
@@ -430,7 +520,6 @@ public class ConfiguratoreView {
     // ================================================================
     // RIEPILOGO GENERALE  (invariata da V2)
     // ================================================================
-
     private void visualizzaRiepilogo() {
         System.out.println("\n" + SEP);
         System.out.println("  RIEPILOGO CATEGORIE E CAMPI");
@@ -438,14 +527,20 @@ public class ConfiguratoreView {
 
         System.out.println("\n  CAMPI BASE  (obbligatori - condivisi da tutte le categorie)");
         List<Campo> cb = controller.getCampiBase();
-        if (cb.isEmpty()) System.out.println("    (non ancora inizializzati)");
-        else cb.forEach(c -> System.out.println("    - " + c.getNome()));
+        if (cb.isEmpty()) {
+            System.out.println("    (non ancora inizializzati)"); 
+        }else {
+            cb.forEach(c -> System.out.println("    - " + c.getNome()));
+        }
 
         System.out.println("\n  CAMPI COMUNI  (condivisi da tutte le categorie)");
         List<Campo> cc = controller.getCampiComuni();
-        if (cc.isEmpty()) System.out.println("    (nessuno definito)");
-        else cc.forEach(c -> System.out.println("    - " + c.getNome()
-                + "  [" + (c.isObbligatorio() ? "obbligatorio" : "facoltativo") + "]"));
+        if (cc.isEmpty()) {
+            System.out.println("    (nessuno definito)"); 
+        }else {
+            cc.forEach(c -> System.out.println("    - " + c.getNome()
+                    + "  [" + (c.isObbligatorio() ? "obbligatorio" : "facoltativo") + "]"));
+        }
 
         System.out.println("\n  CATEGORIE");
         List<Categoria> cats = controller.getCategorie();
@@ -457,8 +552,8 @@ public class ConfiguratoreView {
                 if (cat.getCampiSpecifici().isEmpty()) {
                     System.out.println("      (nessun campo specifico)");
                 } else {
-                    cat.getCampiSpecifici().forEach(c ->
-                            System.out.println("      - " + c.getNome()
+                    cat.getCampiSpecifici().forEach(c
+                            -> System.out.println("      - " + c.getNome()
                                     + "  [" + (c.isObbligatorio() ? "obbligatorio" : "facoltativo") + "]"));
                 }
             }
@@ -469,7 +564,6 @@ public class ConfiguratoreView {
     // ================================================================
     // GESTIONE PROPOSTE  (invariata da V2)
     // ================================================================
-
     private void menuProposte() {
         while (true) {
             List<Proposta> sessione = controller.getProposteSessione();
@@ -481,7 +575,7 @@ public class ConfiguratoreView {
             } else {
                 System.out.println("  Proposte in sessione:");
                 for (Proposta p : sessione) {
-                    String titolo  = p.getValore("Titolo");
+                    String titolo = p.getValore("Titolo");
                     String display = titolo.isBlank() ? "(senza titolo)" : titolo;
                     System.out.println("    [ID " + p.getId() + "]"
                             + "  Categoria: " + p.getNomeCategoria()
@@ -498,12 +592,19 @@ public class ConfiguratoreView {
             System.out.println();
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
-                case "n" -> nuovaProposta();
-                case "c" -> continuaCompilazione();
-                case "p" -> pubblicaPropostaInterattivo();
-                case "e" -> eliminaPropostaSessione();
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "n" ->
+                    nuovaProposta();
+                case "c" ->
+                    continuaCompilazione();
+                case "p" ->
+                    pubblicaPropostaInterattivo();
+                case "e" ->
+                    eliminaPropostaSessione();
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -541,7 +642,9 @@ public class ConfiguratoreView {
             return;
         }
         Proposta p = selezionaPropostaSessione("da continuare a compilare", false);
-        if (p == null) return;
+        if (p == null) {
+            return;
+        }
         System.out.println("\n  Compilazione proposta [ID " + p.getId() + "]");
         System.out.println("  (premi INVIO senza testo per mantenere il valore attuale)\n");
         compilaCampiProposta(p);
@@ -552,22 +655,28 @@ public class ConfiguratoreView {
     private void compilaCampiProposta(Proposta p) {
         Map<String, Boolean> snapshot = p.getCampiSnapshot();
         for (Map.Entry<String, Boolean> entry : snapshot.entrySet()) {
-            String  nome      = entry.getKey();
-            boolean obblig    = entry.getValue();
-            String  valoreAtt = p.getValore(nome);
-            String  etichetta = obblig ? "[OBB]" : "[FAC]";
-            boolean isData    = nome.contains("Data")
+            String nome = entry.getKey();
+            boolean obblig = entry.getValue();
+            String valoreAtt = p.getValore(nome);
+            String etichetta = obblig ? "[OBB]" : "[FAC]";
+            boolean isData = nome.contains("Data")
                     || nome.equals(Proposta.CAMPO_TERMINE_ISCRIZIONE);
 
             System.out.print("  " + etichetta + " " + nome);
-            if (isData)        System.out.print("  (gg/mm/aaaa)");
-            if (!valoreAtt.isBlank()) System.out.print("  [attuale: " + valoreAtt + "]");
+            if (isData) {
+                System.out.print("  (gg/mm/aaaa)");
+            }
+            if (!valoreAtt.isBlank()) {
+                System.out.print("  [attuale: " + valoreAtt + "]");
+            }
             System.out.print(": ");
 
             String input = scanner.nextLine().trim();
             if (!input.isEmpty()) {
                 String err = controller.setValoreCampo(p, nome, input);
-                if (!err.isEmpty()) stampaErrore(err);
+                if (!err.isEmpty()) {
+                    stampaErrore(err);
+                }
             }
         }
     }
@@ -581,30 +690,33 @@ public class ConfiguratoreView {
         System.out.println("  Stato     : " + p.getStato());
         System.out.println();
         for (Map.Entry<String, Boolean> entry : p.getCampiSnapshot().entrySet()) {
-            String  nome = entry.getKey();
-            boolean ob   = entry.getValue();
-            String  val  = p.getValore(nome);
-            String  disp = val.isBlank() ? "(non compilato)" : val;
+            String nome = entry.getKey();
+            boolean ob = entry.getValue();
+            String val = p.getValore(nome);
+            String disp = val.isBlank() ? "(non compilato)" : val;
             System.out.println("  " + (ob ? "[OBB]" : "[FAC]") + " " + nome + ": " + disp);
         }
         if (p.getStato() == StatoProposta.BOZZA) {
             System.out.println("\n  Problemi che impediscono la pubblicazione:");
             p.validazioneErrori(LocalDate.now())
-             .forEach(e -> System.out.println("    * " + e));
+                    .forEach(e -> System.out.println("    * " + e));
         }
         System.out.println(SEP2);
     }
 
     private void offriPubblicazione(Proposta p) {
-        if (p.getStato() == StatoProposta.APERTA) return;
+        if (p.getStato() == StatoProposta.APERTA) {
+            return;
+        }
         if (p.getStato() == StatoProposta.VALIDA) {
             System.out.print("\n  La proposta e' VALIDA. Pubblicarla in bacheca ora? (s/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 String err = controller.pubblicaProposta(p);
-                if (err.isEmpty())
-                    System.out.println("  Proposta [ID " + p.getId() + "] pubblicata in bacheca.");
-                else
+                if (err.isEmpty()) {
+                    System.out.println("  Proposta [ID " + p.getId() + "] pubblicata in bacheca."); 
+                }else {
                     stampaErrore(err);
+                }
             } else {
                 System.out.println("  Proposta conservata in sessione. Pubblicabile in seguito.");
             }
@@ -639,12 +751,16 @@ public class ConfiguratoreView {
             stampaErrore("ID non valido: " + input);
             return;
         }
-        if (scelta == null) { stampaErrore("Nessuna proposta VALIDA con ID " + input + "."); return; }
+        if (scelta == null) {
+            stampaErrore("Nessuna proposta VALIDA con ID " + input + ".");
+            return;
+        }
         String err = controller.pubblicaProposta(scelta);
-        if (err.isEmpty())
-            System.out.println("  Proposta [ID " + scelta.getId() + "] pubblicata in bacheca.");
-        else
+        if (err.isEmpty()) {
+            System.out.println("  Proposta [ID " + scelta.getId() + "] pubblicata in bacheca."); 
+        }else {
             stampaErrore(err);
+        }
     }
 
     private void eliminaPropostaSessione() {
@@ -653,7 +769,9 @@ public class ConfiguratoreView {
             return;
         }
         Proposta p = selezionaPropostaSessione("da eliminare", false);
-        if (p == null) return;
+        if (p == null) {
+            return;
+        }
         System.out.print("  Confermi l'eliminazione della proposta [ID " + p.getId() + "]? (s/n): ");
         if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
             System.out.println("  Operazione annullata.");
@@ -678,7 +796,9 @@ public class ConfiguratoreView {
         try {
             int id = Integer.parseInt(input);
             Proposta trovata = pool.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
-            if (trovata == null) stampaErrore("Nessuna proposta con ID " + id + ".");
+            if (trovata == null) {
+                stampaErrore("Nessuna proposta con ID " + id + ".");
+            }
             return trovata;
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido: " + input);
@@ -689,7 +809,6 @@ public class ConfiguratoreView {
     // ================================================================
     // BACHECA  (invariata da V2)
     // ================================================================
-
     private void visualizzaBacheca() {
         System.out.println("\n" + SEP);
         System.out.println("  BACHECA  -  PROPOSTE APERTE");
@@ -701,7 +820,9 @@ public class ConfiguratoreView {
         } else {
             for (Categoria cat : controller.getCategorie()) {
                 List<Proposta> perCat = controller.getBachecaPerCategoria(cat.getNome());
-                if (perCat.isEmpty()) continue;
+                if (perCat.isEmpty()) {
+                    continue;
+                }
                 System.out.println("\n  CATEGORIA: " + cat.getNome().toUpperCase()
                         + "  (" + perCat.size() + " proposta/e)");
                 System.out.println(SEP2);
@@ -710,7 +831,7 @@ public class ConfiguratoreView {
 
             List<Proposta> orfane = tutte.stream()
                     .filter(p -> controller.getCategorie().stream()
-                            .noneMatch(c -> c.getNome().equalsIgnoreCase(p.getNomeCategoria())))
+                    .noneMatch(c -> c.getNome().equalsIgnoreCase(p.getNomeCategoria())))
                     .collect(Collectors.toList());
             if (!orfane.isEmpty()) {
                 System.out.println("\n  CATEGORIA: (categoria rimossa)  (" + orfane.size() + " proposta/e)");
@@ -734,14 +855,15 @@ public class ConfiguratoreView {
                 + "  Iscritti: " + p.getAderenti().size()
                 + "/" + maxStr);
         p.getValori().forEach((nome, val) -> {
-            if (!val.isBlank()) System.out.println("    " + nome + ": " + val);
+            if (!val.isBlank()) {
+                System.out.println("    " + nome + ": " + val);
+            }
         });
     }
 
     // ================================================================
     // ARCHIVIO PROPOSTE  (nuovo in V3)
     // ================================================================
-
     /**
      * Mostra tutte le proposte pubblicate (tutti gli stati) con storico.
      * Organizzate per stato, poi per categoria.
@@ -762,11 +884,15 @@ public class ConfiguratoreView {
         // viene mostrato automaticamente senza modifiche alla view.
         for (StatoProposta stato : StatoProposta.values()) {
             // Ignora gli stati interni (mai persistiti in archivio)
-            if (stato == StatoProposta.BOZZA || stato == StatoProposta.VALIDA) continue;
+            if (stato == StatoProposta.BOZZA || stato == StatoProposta.VALIDA) {
+                continue;
+            }
             List<Proposta> perStato = archivio.stream()
                     .filter(p -> p.getStato() == stato)
                     .collect(Collectors.toList());
-            if (perStato.isEmpty()) continue;
+            if (perStato.isEmpty()) {
+                continue;
+            }
 
             System.out.println("\n  ---- " + stato + "  (" + perStato.size() + ") ----");
             for (Proposta p : perStato) {
@@ -805,7 +931,6 @@ public class ConfiguratoreView {
     // ================================================================
     // UTILITY  (invariata da V2)
     // ================================================================
-
     private boolean chiediObbligatorio() {
         System.out.print("  Il campo e' obbligatorio? (s/n): ");
         return scanner.nextLine().trim().equalsIgnoreCase("s");

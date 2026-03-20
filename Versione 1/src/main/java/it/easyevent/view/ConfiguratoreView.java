@@ -3,25 +3,22 @@ package it.easyevent.view;
 import it.easyevent.controller.ConfiguratoreController;
 import it.easyevent.model.Campo;
 import it.easyevent.model.Categoria;
-
 import java.util.List;
 import java.util.Scanner;
 
 /**
  * Interfaccia testuale (CLI) per il configuratore – Versione 1.
  *
- * Questa classe gestisce esclusivamente l'I/O con l'utente.
- * Tutta la logica di business è delegata al ConfiguratoreController.
- * La separazione garantisce facilità di sostituzione con una GUI in futuro.
+ * Questa classe gestisce esclusivamente l'I/O con l'utente. Tutta la logica di
+ * business è delegata al ConfiguratoreController. La separazione garantisce
+ * facilità di sostituzione con una GUI in futuro.
  *
- * Invariante di classe:
- * - controller != null
- * - scanner != null
+ * Invariante di classe: - controller != null - scanner != null
  */
 public class ConfiguratoreView {
 
     private static final String SEPARATORE = "--------------------------------------------";
-    private static final String TITOLO_APP  = " EasyEvent - Back-end Configuratore (V1) ";
+    private static final String TITOLO_APP = " EasyEvent - Back-end Configuratore (V1) ";
 
     private final ConfiguratoreController controller;
     private final Scanner scanner;
@@ -30,7 +27,9 @@ public class ConfiguratoreView {
      * @param controller controller del configuratore, non null
      */
     public ConfiguratoreView(ConfiguratoreController controller) {
-        if (controller == null) throw new IllegalArgumentException("Controller non può essere null.");
+        if (controller == null) {
+            throw new IllegalArgumentException("Controller non può essere null.");
+        }
         this.controller = controller;
         this.scanner = new Scanner(System.in);
     }
@@ -38,7 +37,6 @@ public class ConfiguratoreView {
     // ================================================================
     // ENTRY POINT
     // ================================================================
-
     /**
      * Avvia l'applicazione: effettua il login e poi mostra il menu principale.
      */
@@ -85,7 +83,6 @@ public class ConfiguratoreView {
     // ================================================================
     // LOGIN
     // ================================================================
-
     /**
      * Gestisce il login.
      *
@@ -100,7 +97,9 @@ public class ConfiguratoreView {
         for (int tentativi = 0; tentativi < 3; tentativi++) {
             System.out.print("  Username: ");
             String username = scanner.nextLine().trim();
-            if (username.equalsIgnoreCase("esci")) return false;
+            if (username.equalsIgnoreCase("esci")) {
+                return false;
+            }
 
             System.out.print("  Password: ");
             String password = scanner.nextLine().trim();
@@ -163,7 +162,6 @@ public class ConfiguratoreView {
     // ================================================================
     // MENU PRINCIPALE
     // ================================================================
-
     /**
      * Mostra e gestisce il menu principale.
      *
@@ -183,12 +181,19 @@ public class ConfiguratoreView {
 
             String scelta = scanner.nextLine().trim();
             switch (scelta) {
-                case "1" -> menuCampiBase();
-                case "2" -> menuCampiComuni();
-                case "3" -> menuCategorie();
-                case "4" -> visualizzaRiepilogo();
-                case "0" -> { return false; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "1" ->
+                    menuCampiBase();
+                case "2" ->
+                    menuCampiComuni();
+                case "3" ->
+                    menuCategorie();
+                case "4" ->
+                    visualizzaRiepilogo();
+                case "0" -> {
+                    return false;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -196,7 +201,6 @@ public class ConfiguratoreView {
     // ================================================================
     // MENU CAMPI BASE
     // ================================================================
-
     private void menuCampiBase() {
         System.out.println("\n" + SEPARATORE);
         System.out.println("  CAMPI BASE (immutabili)");
@@ -217,7 +221,6 @@ public class ConfiguratoreView {
     // ================================================================
     // MENU CAMPI COMUNI
     // ================================================================
-
     private void menuCampiComuni() {
         while (true) {
             System.out.println("\n" + SEPARATORE);
@@ -239,11 +242,17 @@ public class ConfiguratoreView {
 
             String scelta = scanner.nextLine().trim();
             switch (scelta) {
-                case "a" -> aggiungiCampoComune();
-                case "r" -> rimuoviCampoComune();
-                case "m" -> modificaObbligatorietaCampoComune();
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "a" ->
+                    aggiungiCampoComune();
+                case "r" ->
+                    rimuoviCampoComune();
+                case "m" ->
+                    modificaObbligatorietaCampoComune();
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -251,7 +260,10 @@ public class ConfiguratoreView {
     private void aggiungiCampoComune() {
         System.out.print("  Nome del nuovo campo comune: ");
         String nome = scanner.nextLine().trim();
-        if (nome.isEmpty()) { stampaErrore("Nome non può essere vuoto."); return; }
+        if (nome.isEmpty()) {
+            stampaErrore("Nome non può essere vuoto.");
+            return;
+        }
 
         boolean obbligatorio = chiediObbligatorio();
         String errore = controller.aggiungiCampoComune(nome, obbligatorio);
@@ -288,7 +300,6 @@ public class ConfiguratoreView {
     // ================================================================
     // MENU CATEGORIE
     // ================================================================
-
     private void menuCategorie() {
         while (true) {
             System.out.println("\n" + SEPARATORE);
@@ -311,12 +322,19 @@ public class ConfiguratoreView {
 
             String scelta = scanner.nextLine().trim();
             switch (scelta) {
-                case "a" -> aggiungiCategoria();
-                case "r" -> rimuoviCategoria();
-                case "c" -> menuCampiSpecifici();
-                case "v" -> visualizzaDettaglioCategoria();
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "a" ->
+                    aggiungiCategoria();
+                case "r" ->
+                    rimuoviCategoria();
+                case "c" ->
+                    menuCampiSpecifici();
+                case "v" ->
+                    visualizzaDettaglioCategoria();
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -324,7 +342,10 @@ public class ConfiguratoreView {
     private void aggiungiCategoria() {
         System.out.print("  Nome della nuova categoria: ");
         String nome = scanner.nextLine().trim();
-        if (nome.isEmpty()) { stampaErrore("Nome non può essere vuoto."); return; }
+        if (nome.isEmpty()) {
+            stampaErrore("Nome non può essere vuoto.");
+            return;
+        }
         String errore = controller.aggiungiCategoria(nome);
         if (errore.isEmpty()) {
             System.out.println("  Categoria '" + nome + "' aggiunta.");
@@ -342,13 +363,20 @@ public class ConfiguratoreView {
         while (true) {
             System.out.print("  Nome del campo specifico (INVIO per finire): ");
             String nome = scanner.nextLine().trim();
-            if (nome.isEmpty()) break;
+            if (nome.isEmpty()) {
+                stampaErrore("Nome non può essere vuoto.");
+                continue;
+            }
             boolean obbligatorio = chiediObbligatorio();
-            String errore = controller.aggiungiCampoSpecifico(nomeCategoria, nome, obbligatorio);
-            if (errore.isEmpty()) {
+            String err = controller.aggiungiCampoSpecifico(nomeCategoria, nome, obbligatorio);
+            if (err.isEmpty()) {
                 System.out.println("  Campo '" + nome + "' aggiunto.");
             } else {
-                stampaErrore(errore);
+                stampaErrore(err);
+            }
+            System.out.print("  Vuoi aggiungere un altro campo specifico? (s/n): ");
+            if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
+                break;
             }
         }
     }
@@ -400,29 +428,44 @@ public class ConfiguratoreView {
                 case "a" -> {
                     System.out.print("  Nome del nuovo campo specifico: ");
                     String nome = scanner.nextLine().trim();
-                    if (nome.isEmpty()) { stampaErrore("Nome vuoto."); break; }
+                    if (nome.isEmpty()) {
+                        stampaErrore("Nome vuoto.");
+                        break;
+                    }
                     boolean ob = chiediObbligatorio();
                     String err = controller.aggiungiCampoSpecifico(nomeCategoria, nome, ob);
-                    if (err.isEmpty()) System.out.println("  Campo '" + nome + "' aggiunto.");
-                    else stampaErrore(err);
+                    if (err.isEmpty()) {
+                        System.out.println("  Campo '" + nome + "' aggiunto."); 
+                    }else {
+                        stampaErrore(err);
+                    }
                 }
                 case "r" -> {
                     System.out.print("  Nome del campo da rimuovere: ");
                     String nome = scanner.nextLine().trim();
                     String err = controller.rimuoviCampoSpecifico(nomeCategoria, nome);
-                    if (err.isEmpty()) System.out.println("  Campo '" + nome + "' rimosso.");
-                    else stampaErrore(err);
+                    if (err.isEmpty()) {
+                        System.out.println("  Campo '" + nome + "' rimosso."); 
+                    }else {
+                        stampaErrore(err);
+                    }
                 }
                 case "m" -> {
                     System.out.print("  Nome del campo da modificare: ");
                     String nome = scanner.nextLine().trim();
                     boolean ob = chiediObbligatorio();
                     String err = controller.modificaObbligatorietaCampoSpecifico(nomeCategoria, nome, ob);
-                    if (err.isEmpty()) System.out.println("  Obbligatorietà aggiornata.");
-                    else stampaErrore(err);
+                    if (err.isEmpty()) {
+                        System.out.println("  Obbligatorietà aggiornata."); 
+                    }else {
+                        stampaErrore(err);
+                    }
                 }
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -441,11 +484,17 @@ public class ConfiguratoreView {
         System.out.println("  -- Campi BASE (condivisi da tutte le categorie) --");
         controller.getCampiBase().forEach(c -> System.out.println("    - " + c));
         System.out.println("  -- Campi COMUNI (condivisi da tutte le categorie) --");
-        if (controller.getCampiComuni().isEmpty()) System.out.println("    (nessuno)");
-        else controller.getCampiComuni().forEach(c -> System.out.println("    - " + c));
+        if (controller.getCampiComuni().isEmpty()) {
+            System.out.println("    (nessuno)"); 
+        }else {
+            controller.getCampiComuni().forEach(c -> System.out.println("    - " + c));
+        }
         System.out.println("  -- Campi SPECIFICI di '" + cat.getNome() + "' --");
-        if (cat.getCampiSpecifici().isEmpty()) System.out.println("    (nessuno)");
-        else cat.getCampiSpecifici().forEach(c -> System.out.println("    - " + c));
+        if (cat.getCampiSpecifici().isEmpty()) {
+            System.out.println("    (nessuno)"); 
+        }else {
+            cat.getCampiSpecifici().forEach(c -> System.out.println("    - " + c));
+        }
 
         System.out.println("\n  Premi INVIO per tornare...");
         scanner.nextLine();
@@ -454,7 +503,6 @@ public class ConfiguratoreView {
     // ================================================================
     // RIEPILOGO GENERALE
     // ================================================================
-
     private void visualizzaRiepilogo() {
         System.out.println("\n" + SEPARATORE);
         System.out.println("  RIEPILOGO COMPLETO CATEGORIE E CAMPI");
@@ -462,13 +510,19 @@ public class ConfiguratoreView {
 
         System.out.println("\n  [CAMPI BASE - obbligatori - condivisi da tutte le categorie]");
         List<Campo> campiBase = controller.getCampiBase();
-        if (campiBase.isEmpty()) System.out.println("    (non ancora inizializzati)");
-        else campiBase.forEach(c -> System.out.println("    - " + c.getNome() + " (obbligatorio)"));
+        if (campiBase.isEmpty()) {
+            System.out.println("    (non ancora inizializzati)"); 
+        }else {
+            campiBase.forEach(c -> System.out.println("    - " + c.getNome() + " (obbligatorio)"));
+        }
 
         System.out.println("\n  [CAMPI COMUNI - condivisi da tutte le categorie]");
         List<Campo> campiComuni = controller.getCampiComuni();
-        if (campiComuni.isEmpty()) System.out.println("    (nessuno definito)");
-        else campiComuni.forEach(c -> System.out.println("    - " + c));
+        if (campiComuni.isEmpty()) {
+            System.out.println("    (nessuno definito)"); 
+        }else {
+            campiComuni.forEach(c -> System.out.println("    - " + c));
+        }
 
         System.out.println("\n  [CATEGORIE]");
         List<Categoria> categorie = controller.getCategorie();
@@ -492,7 +546,6 @@ public class ConfiguratoreView {
     // ================================================================
     // UTILITY
     // ================================================================
-
     private boolean chiediObbligatorio() {
         System.out.print("  Il campo è obbligatorio? (s/n): ");
         String risposta = scanner.nextLine().trim();
