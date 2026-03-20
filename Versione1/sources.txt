@@ -1,8 +1,8 @@
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\MainV1.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\controller\ConfiguratoreController.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\model\AppData.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\model\Campo.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\model\Categoria.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\model\Configuratore.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\persistence\PersistenceManager.java
-C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 1\src\main\java\it\easyevent\view\ConfiguratoreView.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\MainV1.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\controller\ConfiguratoreController.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\model\AppData.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\model\Campo.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\model\Categoria.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\model\Configuratore.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\persistence\PersistenceManager.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione1\src\main\java\it\easyevent\view\ConfiguratoreView.java

@@ -23,7 +23,7 @@ import java.util.Scanner;
  */
 public class MainV3 {
 
-    private static final String DATA_FILE = "Versione3/data/easyevent_data.json";
+    private static final String DATA_FILE = "data/easyevent_data.json";
 
     public static void main(String[] args) {
 

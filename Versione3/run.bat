@@ -7,10 +7,12 @@ set SCRIPT_DIR=%~dp0
 set OUT_DIR=%~dp0out
 
 echo === EasyEvent V3 – Compilazione ===
+cd /d "%SCRIPT_DIR%"
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
 dir /s /b "%SCRIPT_DIR%src\main\java\*.java" > "%SCRIPT_DIR%sources.txt"
 javac -encoding UTF-8 -d "%OUT_DIR%" @"%SCRIPT_DIR%sources.txt"
 
 echo === EasyEvent V3 – Avvio ===
+cd /d "%SCRIPT_DIR%"
 java -cp "%OUT_DIR%" it.easyevent.MainV3
 pause
