@@ -1,14 +1,14 @@
-src/main/java/it/easyevent/persistence/PersistenceManager.java
-src/main/java/it/easyevent/MainV3.java
-src/main/java/it/easyevent/controller/ConfiguratoreController.java
-src/main/java/it/easyevent/controller/FruitoreController.java
-src/main/java/it/easyevent/view/ConfiguratoreView.java
-src/main/java/it/easyevent/view/FruitoreView.java
-src/main/java/it/easyevent/model/Proposta.java
-src/main/java/it/easyevent/model/Categoria.java
-src/main/java/it/easyevent/model/Fruitore.java
-src/main/java/it/easyevent/model/Notifica.java
-src/main/java/it/easyevent/model/AppData.java
-src/main/java/it/easyevent/model/Campo.java
-src/main/java/it/easyevent/model/Configuratore.java
-src/main/java/it/easyevent/model/StatoProposta.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\MainV3.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\controller\ConfiguratoreController.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\controller\FruitoreController.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\AppData.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\Campo.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\Categoria.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\Configuratore.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\Fruitore.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\Notifica.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\Proposta.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\model\StatoProposta.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\persistence\PersistenceManager.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\view\ConfiguratoreView.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 3\src\main\java\it\easyevent\view\FruitoreView.java

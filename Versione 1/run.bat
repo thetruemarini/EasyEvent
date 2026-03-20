@@ -11,7 +11,7 @@ echo === EasyEvent V1 – Compilazione ===
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
 if not exist "%DATA_DIR%" mkdir "%DATA_DIR%"
 dir /s /b "%SCRIPT_DIR%src\main\java\*.java" > "%SCRIPT_DIR%sources.txt"
-javac -encoding UTF-8 -ea -d "%OUT_DIR%" @"%SCRIPT_DIR%sources.txt"
+javac -encoding UTF-8 -d "%OUT_DIR%" @"%SCRIPT_DIR%sources.txt"
 
 echo === EasyEvent V1 – Avvio ===
 java -ea -cp "%OUT_DIR%" it.easyevent.MainV1

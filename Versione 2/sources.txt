@@ -1,10 +1,10 @@
-src/main/java/it/easyevent/MainV2.java
-src/main/java/it/easyevent/controller/ConfiguratoreController.java
-src/main/java/it/easyevent/model/AppData.java
-src/main/java/it/easyevent/model/Campo.java
-src/main/java/it/easyevent/model/Categoria.java
-src/main/java/it/easyevent/model/Configuratore.java
-src/main/java/it/easyevent/model/Proposta.java
-src/main/java/it/easyevent/model/StatoProposta.java
-src/main/java/it/easyevent/persistence/PersistenceManager.java
-src/main/java/it/easyevent/view/ConfiguratoreView.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\MainV2.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\controller\ConfiguratoreController.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\model\AppData.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\model\Campo.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\model\Categoria.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\model\Configuratore.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\model\Proposta.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\model\StatoProposta.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\persistence\PersistenceManager.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\Versione 2\src\main\java\it\easyevent\view\ConfiguratoreView.java
