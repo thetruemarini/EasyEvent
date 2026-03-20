@@ -1,29 +1,18 @@
 @echo off
-REM ================================================
-REM EasyEvent - Script di compilazione ed esecuzione
-REM Versione 1 - Windows
-REM Richiede: JDK 11+ nel PATH
-REM ================================================
+REM Script di compilazione e avvio – EasyEvent Versione 1 (Windows)
+REM Attiva UTF-8 nel terminale Windows
+chcp 65001 > nul
 
-echo === EasyEvent V1 - Build e Run ===
+set SCRIPT_DIR=%~dp0
+set OUT_DIR=%~dp0out
+set DATA_DIR=%~dp0data
 
-REM Crea directory
-if not exist out mkdir out
-if not exist data mkdir data
+echo === EasyEvent V1 – Compilazione ===
+if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
+if not exist "%DATA_DIR%" mkdir "%DATA_DIR%"
+dir /s /b "%SCRIPT_DIR%src\main\java\*.java" > "%SCRIPT_DIR%sources.txt"
+javac -encoding UTF-8 -ea -d "%OUT_DIR%" @"%SCRIPT_DIR%sources.txt"
 
-echo [1/3] Ricerca sorgenti Java...
-dir /s /b src\main\java\*.java > sources.txt
-
-echo [2/3] Compilazione...
-javac -d out -encoding UTF-8 @sources.txt
-if errorlevel 1 (
-    echo ERRORE: Compilazione fallita.
-    pause
-    exit /b 1
-)
-echo Compilazione completata.
-
-echo [3/3] Avvio applicazione...
-echo.
-java -ea -cp out it.easyevent.MainV1
+echo === EasyEvent V1 – Avvio ===
+java -ea -cp "%OUT_DIR%" it.easyevent.MainV1
 pause
