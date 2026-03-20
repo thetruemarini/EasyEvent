@@ -1,17 +1,42 @@
 {
   "prossimoIdProposta": 1,
-  "prossimoIdNotifica": 1,
   "configuratori": [
     {"username": "ciao", "password": "ciao", "primoAccesso": false}
   ],
-  "fruitori": [
-  ],
   "campiBase": [
+    {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Numero di partecipanti", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Luogo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data inizio", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Ora", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Quota individuale", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
   ],
   "campiComuni": [
   ],
   "categorie": [
+    {
+      "nome": "Sport",
+      "campiSpecifici": [
+        {"nome": "campetto", "obbligatorio": false, "tipo": "SPECIFICO"},
+        {"nome": "scarpe", "obbligatorio": true, "tipo": "SPECIFICO"},
+        {"nome": "pallone", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "Cibo",
+      "campiSpecifici": [
+        {"nome": "primo", "obbligatorio": false, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "Lettura",
+      "campiSpecifici": [
+        {"nome": "libro", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    }
   ],
-  "archivio": [
+  "bacheca": [
   ]
 }
