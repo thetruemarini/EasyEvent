@@ -98,11 +98,11 @@ public class MainV3 {
             switch (scelta) {
                 case "1" -> {
                     ConfiguratoreView confView = new ConfiguratoreView(confController, scanner);
-                    confView.avvia();
+                    if (!confView.avvia()) return; 
                 }
                 case "2" -> {
                     FruitoreView fruitView = new FruitoreView(fruitController, scanner);
-                    fruitView.avvia();
+                    if (!fruitView.avvia()) return;
                 }
                 case "0" -> {
                     System.out.println("\n  Arrivederci.");
