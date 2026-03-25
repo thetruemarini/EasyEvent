@@ -1,16 +1,15 @@
 package it.easyevent.v3.view;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.stream.Collectors;
-
 import it.easyevent.v3.controller.ConfiguratoreController;
 import it.easyevent.v3.model.Campo;
 import it.easyevent.v3.model.Categoria;
 import it.easyevent.v3.model.Proposta;
 import it.easyevent.v3.model.StatoProposta;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Interfaccia testuale (CLI) per il configuratore - Versione 3.
@@ -52,7 +51,7 @@ public class ConfiguratoreView {
     // ================================================================
     // ENTRY POINT
     // ================================================================
-    public void avvia() {
+    public boolean avvia() {
         stampaBanner();
         // inizializzaCampiBase() e' gia' invocata da MainV3 prima di creare questa view;
         // non va ripetuta qui per evitare un doppio salvataggio al primo avvio.
@@ -61,7 +60,7 @@ public class ConfiguratoreView {
             if (!controller.isLoggato()) {
                 if (!gestioneLogin()) {
                     System.out.println("\n  Arrivederci.");
-                    break;
+                    return false;
                 }
                 if (controller.richiedeCambioCredenziali()) {
                     System.out.println("\n*** Primo accesso: necessario impostare le credenziali personali. ***");
@@ -81,10 +80,11 @@ public class ConfiguratoreView {
                     System.out.println("  NOTA: " + nScartate + " proposta/e non pubblicata/e sono state scartate.");
                 }
                 System.out.print("\n  Continuare con un altro account? (s/n): ");
-                if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
-                    System.out.println("\n  Arrivederci.");
-                    break;
+                if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
+                    return true;
                 }
+                System.out.println("\n Arrivederci.");
+                return false;
             }
         }
         // Non chiudiamo lo scanner qui se e' condiviso con altri componenti

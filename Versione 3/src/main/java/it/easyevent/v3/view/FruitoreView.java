@@ -1,12 +1,11 @@
 package it.easyevent.v3.view;
 
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
-
 import it.easyevent.v3.controller.FruitoreController;
 import it.easyevent.v3.model.Notifica;
 import it.easyevent.v3.model.Proposta;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 
 /**
  * Interfaccia testuale (CLI) per il fruitore - Versione 3.
@@ -46,21 +45,22 @@ public class FruitoreView {
      * Avvia il flusso di interazione per il fruitore.
      * Ritorna quando il fruitore sceglie di uscire.
      */
-    public void avvia() {
+    public boolean avvia() {
         stampaBanner();
         while (true) {
             if (!controller.isLoggato()) {
-                if (!gestioneAccesso()) { System.out.println("\n  Arrivederci."); break; }
+                if (!gestioneAccesso()) { return true; }
             }
             boolean continua = menuPrincipale();
             if (!continua) {
                 controller.logout();
                 System.out.println("\n  Logout effettuato.");
                 System.out.print("  Continuare con un altro account? (s/n): ");
-                if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
-                    System.out.println("\n  Arrivederci.");
-                    break;
+                if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
+                    return true;
                 }
+                System.out.println("\n Arrivederci.");
+                return false;
             }
         }
     }

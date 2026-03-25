@@ -1,14 +1,13 @@
 package it.easyevent.v3;
 
-import java.io.IOException;
-import java.util.Scanner;
-
 import it.easyevent.v3.controller.ConfiguratoreController;
 import it.easyevent.v3.controller.FruitoreController;
 import it.easyevent.v3.model.AppData;
 import it.easyevent.v3.persistence.PersistenceManager;
 import it.easyevent.v3.view.ConfiguratoreView;
 import it.easyevent.v3.view.FruitoreView;
+import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent - Versione 3.
@@ -99,11 +98,11 @@ public class MainV3 {
             switch (scelta) {
                 case "1" -> {
                     ConfiguratoreView confView = new ConfiguratoreView(confController, scanner);
-                    confView.avvia();
+                    if (!confView.avvia()) return;
                 }
                 case "2" -> {
                     FruitoreView fruitView = new FruitoreView(fruitController, scanner);
-                    fruitView.avvia();
+                    if (!fruitView.avvia()) return;
                 }
                 case "0" -> {
                     System.out.println("\n  Arrivederci.");
