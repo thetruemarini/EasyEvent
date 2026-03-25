@@ -76,11 +76,12 @@
       "id": 2,
       "nomeCategoria": "Cibo",
       "usernameCreatore": "prins",
-      "stato": "CONFERMATA",
+      "stato": "CONCLUSA",
       "dataPubblicazione": "18/03/2026",
       "storicoStati": [
         {"stato": "APERTA", "data": "18/03/2026"},
-        {"stato": "CONFERMATA", "data": "20/03/2026"}
+        {"stato": "CONFERMATA", "data": "20/03/2026"},
+        {"stato": "CONCLUSA", "data": "25/03/2026"}
       ],
       "aderenti": ["marini"],
       "campi": [
