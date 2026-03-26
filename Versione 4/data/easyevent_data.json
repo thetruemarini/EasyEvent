@@ -1,0 +1,273 @@
+{
+  "prossimoIdProposta": 9,
+  "prossimoIdNotifica": 6,
+  "configuratori": [
+    {"username": "mario", "password": "mario123", "primoAccesso": false},
+    {"username": "laura", "password": "laura456", "primoAccesso": false}
+  ],
+  "fruitori": [
+    {
+      "username": "alice",
+      "password": "alice123",
+      "notifiche": [
+        {"id": 1, "testo": "La proposta \"Gita a Montisola\" (ID 2) e' stata CONFERMATA! L'evento si terra':  Data: 15/05/2026  Ora: 09:00  Luogo: Piazza Garibaldi, Brescia  Quota individuale: 25", "dataCreazione": "01/04/2026"},
+        {"id": 2, "testo": "La proposta \"Mostra Crepax\" (ID 4) e' stata RITIRATA dal configuratore. L'evento era previsto per il 20/04/2026.", "dataCreazione": "10/04/2026"}
+      ]
+    },
+    {
+      "username": "bob",
+      "password": "bob456",
+      "notifiche": [
+      ]
+    },
+    {
+      "username": "clara",
+      "password": "clara789",
+      "notifiche": [
+      ]
+    },
+    {
+      "username": "marini",
+      "password": "marini123",
+      "notifiche": [
+      ]
+    }
+  ],
+  "campiBase": [
+    {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Numero di partecipanti", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Luogo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data inizio", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Ora", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Quota individuale", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
+  ],
+  "campiComuni": [
+    {"nome": "Durata", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Note", "obbligatorio": false, "tipo": "COMUNE"}
+  ],
+  "categorie": [
+    {
+      "nome": "Gite",
+      "campiSpecifici": [
+        {"nome": "Mezzo di trasporto", "obbligatorio": false, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "Arte",
+      "campiSpecifici": [
+        {"nome": "Prenotazione richiesta", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "Musica",
+      "campiSpecifici": [
+      ]
+    },
+    {
+      "nome": "Sport",
+      "campiSpecifici": [
+        {"nome": "Certificato medico", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    }
+  ],
+  "archivio": [
+    {
+      "id": 1,
+      "nomeCategoria": "Gite",
+      "usernameCreatore": "mario",
+      "stato": "APERTA",
+      "dataPubblicazione": "20/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "20/03/2026"}
+      ],
+      "aderenti": ["alice", "clara"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Gita al Lago d'Iseo"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "10"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/06/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Piazzale Arnaldo, Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "05/07/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "08:30"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "30"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "05/07/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "8 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": "Portare pranzo al sacco"},
+        {"nome": "Mezzo di trasporto", "obbligatorio": false, "valore": "Pullman"}
+      ]
+    },
+    {
+      "id": 2,
+      "nomeCategoria": "Gite",
+      "usernameCreatore": "mario",
+      "stato": "CONFERMATA",
+      "dataPubblicazione": "01/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "01/03/2026"},
+        {"stato": "CONFERMATA", "data": "01/04/2026"}
+      ],
+      "aderenti": ["alice", "bob", "clara"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Gita a Montisola"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "3"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "31/03/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Piazza Garibaldi, Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "15/05/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "09:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "25"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "15/05/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "6 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": ""},
+        {"nome": "Mezzo di trasporto", "obbligatorio": false, "valore": "Traghetto"}
+      ]
+    },
+    {
+      "id": 3,
+      "nomeCategoria": "Musica",
+      "usernameCreatore": "laura",
+      "stato": "ANNULLATA",
+      "dataPubblicazione": "01/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "01/03/2026"},
+        {"stato": "ANNULLATA", "data": "31/03/2026"}
+      ],
+      "aderenti": ["bob"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Serata Jazz"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "5"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/03/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Blue Note, Milano"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "10/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "21:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "40"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "10/04/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "3 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": ""}
+      ]
+    },
+    {
+      "id": 4,
+      "nomeCategoria": "Arte",
+      "usernameCreatore": "laura",
+      "stato": "RITIRATA",
+      "dataPubblicazione": "05/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "05/03/2026"},
+        {"stato": "RITIRATA", "data": "10/04/2026"}
+      ],
+      "aderenti": ["alice"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Mostra Crepax"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "8"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "15/04/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Museo Santa Giulia, Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "20/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "10:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "12"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "20/04/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "2 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": "Ingresso incluso nella quota"},
+        {"nome": "Prenotazione richiesta", "obbligatorio": true, "valore": "Si"}
+      ]
+    },
+    {
+      "id": 5,
+      "nomeCategoria": "Arte",
+      "usernameCreatore": "mario",
+      "stato": "CONCLUSA",
+      "dataPubblicazione": "01/01/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "01/01/2026"},
+        {"stato": "CONFERMATA", "data": "01/02/2026"},
+        {"stato": "CONCLUSA", "data": "16/03/2026"}
+      ],
+      "aderenti": ["alice", "bob"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Visita Pinacoteca Tosio Martinengo"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "2"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "31/01/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Pinacoteca Tosio Martinengo, Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "15/03/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "14:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "8"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "15/03/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "2 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": ""},
+        {"nome": "Prenotazione richiesta", "obbligatorio": true, "valore": "No"}
+      ]
+    },
+    {
+      "id": 6,
+      "nomeCategoria": "Sport",
+      "usernameCreatore": "mario",
+      "stato": "APERTA",
+      "dataPubblicazione": "22/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "22/03/2026"}
+      ],
+      "aderenti": [],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Torneo di Padel"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "8"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/06/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Centro Sportivo Palaestra, Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "10/07/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "09:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "15"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "10/07/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": ""},
+        {"nome": "Note", "obbligatorio": false, "valore": "Portare racchetta personale"},
+        {"nome": "Certificato medico", "obbligatorio": true, "valore": "Si"}
+      ]
+    },
+    {
+      "id": 7,
+      "nomeCategoria": "Musica",
+      "usernameCreatore": "laura",
+      "stato": "APERTA",
+      "dataPubblicazione": "24/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "24/03/2026"}
+      ],
+      "aderenti": ["bob", "clara"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Concerto Orchestra Cherubini"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "6"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "15/05/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Teatro Grande, Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "25/05/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "20:30"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "20"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "25/05/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "2 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": "Abbigliamento formale consigliato"}
+      ]
+    },
+    {
+      "id": 8,
+      "nomeCategoria": "Arte",
+      "usernameCreatore": "mario",
+      "stato": "CONFERMATA",
+      "dataPubblicazione": "10/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "10/03/2026"},
+        {"stato": "CONFERMATA", "data": "21/03/2026"}
+      ],
+      "aderenti": ["alice", "clara"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Serata alla Specola Cidnea"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "2"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "20/03/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Castello di Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "05/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "21:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "0"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "05/04/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "2 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": "Ingresso gratuito"},
+        {"nome": "Prenotazione richiesta", "obbligatorio": true, "valore": "Si"}
+      ]
+    }
+  ]
+}
