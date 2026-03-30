@@ -1,0 +1,71 @@
+{
+  "prossimoIdProposta": 2,
+  "prossimoIdNotifica": 1,
+  "configuratori": [
+    {"username": "marini", "password": "marini123", "primoAccesso": false}
+  ],
+  "fruitori": [
+  ],
+  "campiBase": [
+    {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Numero di partecipanti", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Luogo", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data inizio", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Ora", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Quota individuale", "obbligatorio": true, "tipo": "BASE"},
+    {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
+  ],
+  "campiComuni": [
+    {"nome": "Durata", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Note", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Compreso nella quota", "obbligatorio": false, "tipo": "COMUNE"}
+  ],
+  "categorie": [
+    {
+      "nome": "Musica",
+      "campiSpecifici": [
+      ]
+    },
+    {
+      "nome": "Sport",
+      "campiSpecifici": [
+        {"nome": "Certificato medico", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    },
+    {
+      "nome": "Gite",
+      "campiSpecifici": [
+        {"nome": "Mezzo di trasporto", "obbligatorio": false, "tipo": "SPECIFICO"},
+        {"nome": "Guida", "obbligatorio": true, "tipo": "SPECIFICO"}
+      ]
+    }
+  ],
+  "archivio": [
+    {
+      "id": 1,
+      "nomeCategoria": "Sport",
+      "usernameCreatore": "marini",
+      "stato": "APERTA",
+      "dataPubblicazione": "30/03/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "30/03/2026"}
+      ],
+      "aderenti": [],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Torneo di Padel"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "8"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/06/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Palestra Centrale"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "10/07/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "09:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "15"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "10/07/2026"},
+        {"nome": "Durata", "obbligatorio": false, "valore": "6 ore"},
+        {"nome": "Note", "obbligatorio": false, "valore": ""},
+        {"nome": "Compreso nella quota", "obbligatorio": false, "valore": ""},
+        {"nome": "Certificato medico", "obbligatorio": true, "valore": "Si"}
+      ]
+    }
+  ]
+}

@@ -3,10 +3,6 @@ package it.easyevent.v1.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import it.easyevent.v1.model.Campo;
-import it.easyevent.v1.model.Categoria;
-
 /**
  * Rappresenta una categoria di iniziative (es. "sport", "gite", "arte").
  * Ogni categoria possiede un nome univoco e un insieme di campi specifici.

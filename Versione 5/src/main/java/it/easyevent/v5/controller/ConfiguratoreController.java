@@ -1,4 +1,4 @@
-package it.easyevent.v4.controller;
+package it.easyevent.v5.controller;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -7,20 +7,30 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import it.easyevent.v4.model.AppData;
-import it.easyevent.v4.model.Campo;
-import it.easyevent.v4.model.Categoria;
-import it.easyevent.v4.model.Configuratore;
-import it.easyevent.v4.model.Proposta;
-import it.easyevent.v4.model.StatoProposta;
-import it.easyevent.v4.persistence.PersistenceManager;
+import it.easyevent.v5.batch.BatchImporter;
+import it.easyevent.v5.batch.BatchRisultato;
+import it.easyevent.v5.model.AppData;
+import it.easyevent.v5.model.Campo;
+import it.easyevent.v5.model.Categoria;
+import it.easyevent.v5.model.Configuratore;
+import it.easyevent.v5.model.Proposta;
+import it.easyevent.v5.model.StatoProposta;
+import it.easyevent.v5.persistence.PersistenceManager;
 
 /**
- * Controller per tutte le operazioni del configuratore (Versione 4).
+ * Controller per tutte le operazioni del configuratore (Versione 5).
  *
- * Estende la V3 aggiungendo:
- *   - ritirareProposta: il configuratore ritira una proposta APERTA o CONFERMATA
- *     (nuovo caso d'uso V4, UC-CONF-08)
+ * Estende la V4 aggiungendo:
+ *   - importaBatch(percorso): importa categorie, campi e proposte da un file batch
+ *   - importaBatch(lista): importa più file batch in sequenza
+ *
+ * La modalità interattiva resta invariata.
+ *
+ * [NUOVO V5 – UC-CONF-09: Importazione batch]
+ * Il configuratore può fornire uno o più file di testo contenenti comandi
+ * CAMPO_COMUNE, CATEGORIA e PROPOSTA, che vengono eseguiti in sequenza.
+ * Il risultato dell'importazione è restituito come BatchRisultato e
+ * visualizzato dalla view.
  *
  * Invariante di classe:
  *   - appData != null
@@ -29,18 +39,18 @@ import it.easyevent.v4.persistence.PersistenceManager;
  */
 public class ConfiguratoreController {
 
-    private final AppData appData;
+    private final AppData            appData;
     private final PersistenceManager persistenceManager;
-    private Configuratore configuratoreCorrente;
-    private List<Proposta> proposteSessione;
+    private Configuratore            configuratoreCorrente;
+    private List<Proposta>           proposteSessione;
 
     public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager) {
         if (appData == null) throw new IllegalArgumentException("AppData non puo' essere null.");
         if (persistenceManager == null) throw new IllegalArgumentException("PersistenceManager non puo' essere null.");
-        this.appData             = appData;
-        this.persistenceManager  = persistenceManager;
+        this.appData              = appData;
+        this.persistenceManager   = persistenceManager;
         this.configuratoreCorrente = null;
-        this.proposteSessione    = new ArrayList<>();
+        this.proposteSessione     = new ArrayList<>();
     }
 
     // ================================================================
@@ -215,13 +225,11 @@ public class ConfiguratoreController {
     public Proposta creaProposta(String nomeCategoria) {
         if (!isLoggato()) return null;
         if (nomeCategoria == null || !appData.esisteCategoria(nomeCategoria)) return null;
-
         LinkedHashMap<String, Boolean> snapshot = new LinkedHashMap<>();
         for (Campo c : appData.getCampiBase())   snapshot.put(c.getNome(), c.isObbligatorio());
         for (Campo c : appData.getCampiComuni())  snapshot.put(c.getNome(), c.isObbligatorio());
         Categoria cat = appData.getCategoria(nomeCategoria);
         for (Campo c : cat.getCampiSpecifici())   snapshot.put(c.getNome(), c.isObbligatorio());
-
         int id = appData.getNuovoIdProposta();
         Proposta p = new Proposta(id, nomeCategoria, configuratoreCorrente.getUsername(), snapshot);
         proposteSessione.add(p);
@@ -240,7 +248,6 @@ public class ConfiguratoreController {
     public String pubblicaProposta(Proposta proposta) {
         if (proposta == null) return "Proposta non valida.";
         if (!proposteSessione.contains(proposta)) return "La proposta non appartiene alla sessione corrente.";
-
         LocalDate oggi = LocalDate.now();
         proposta.aggiornaStato(oggi);
         if (proposta.getStato() != StatoProposta.VALIDA) {
@@ -248,11 +255,9 @@ public class ConfiguratoreController {
             return "Proposta non valida. Problemi:\n" + String.join("\n",
                     errori.stream().map(e -> "    * " + e).toArray(String[]::new));
         }
-
         proposta.pubblicaInBacheca(oggi);
         appData.aggiungiPropostaAperta(proposta);
         proposteSessione.remove(proposta);
-
         try { salva(); return ""; }
         catch (IOException e) {
             appData.rimuoviPropostaDaArchivio(proposta.getId());
@@ -266,60 +271,98 @@ public class ConfiguratoreController {
     public List<Proposta> getProposteSessione() { return Collections.unmodifiableList(proposteSessione); }
 
     // ================================================================
-    // RITIRO PROPOSTA (NUOVO V4 – UC-CONF-08)
+    // IMPORTAZIONE BATCH (NUOVO V5 – UC-CONF-09)
     // ================================================================
 
     /**
-     * Il configuratore ritira una proposta APERTA o CONFERMATA.
+     * Importa categorie, campi e proposte da un singolo file batch.
      *
-     * Il ritiro e' consentito fino alle 23:59 del giorno precedente alla "Data"
-     * dell'iniziativa. L'applicazione non gestisce l'ora: verifica solo che
-     * oggi < getData().
-     *
-     * Effetti:
-     * - La proposta transita in stato RITIRATA (con storico aggiornato).
-     * - Tutti i fruitori iscritti ricevono una notifica nello spazio personale.
-     * - I dati vengono persistiti su file.
+     * [UC-CONF-09 – Importazione batch]
+     * Il configuratore può fornire un file di testo con comandi strutturati
+     * (CAMPO_COMUNE, CATEGORIA, PROPOSTA) per evitare l'inserimento manuale
+     * ripetitivo. La modalità interattiva resta disponibile in parallelo.
      *
      * Precondizioni:
-     * - Configuratore loggato.
-     * - La proposta deve essere nell'archivio (cioe' gia' pubblicata).
-     * - La proposta deve essere APERTA o CONFERMATA.
-     * - La data corrente deve essere strettamente precedente alla "Data" dell'evento.
+     * - Il configuratore deve essere loggato.
+     * - Il file deve esistere e deve essere leggibile.
      *
-     * @param idProposta ID della proposta da ritirare
-     * @return stringa vuota se il ritiro e' avvenuto, messaggio di errore altrimenti
+     * Postcondizioni:
+     * - Lo stato dell'applicazione è aggiornato con le operazioni andate a buon fine.
+     * - Il file di persistenza è aggiornato.
+     * - Il BatchRisultato contiene il resoconto completo (successi, warning, errori).
+     *
+     * @param percorsoFile path del file batch, non null e non blank
+     * @return resoconto dell'importazione
+     * @throws IllegalStateException    se nessun configuratore è loggato
+     * @throws IllegalArgumentException se percorsoFile è null o blank
+     * @throws IOException              se il file non esiste o non è leggibile
      */
+    public BatchRisultato importaBatch(String percorsoFile)
+            throws IOException {
+        if (!isLoggato())
+            throw new IllegalStateException("Nessun configuratore loggato: impossibile importare in batch.");
+        if (percorsoFile == null || percorsoFile.isBlank())
+            throw new IllegalArgumentException("Il percorso del file non puo' essere null o vuoto.");
+
+        BatchImporter importer = new BatchImporter(
+                appData,
+                configuratoreCorrente.getUsername(),
+                this::salva          // lambda che delega al metodo salva() di questo controller
+        );
+
+        return importer.importa(percorsoFile);
+    }
+
+    /**
+     * Importa categorie, campi e proposte da più file batch in sequenza.
+     *
+     * I file vengono elaborati nell'ordine della lista. I risultati sono
+     * aggregati in un unico BatchRisultato complessivo.
+     *
+     * @param percorsiFile lista dei path dei file batch, non null
+     * @return resoconto aggregato dell'intera importazione
+     * @throws IllegalStateException    se nessun configuratore è loggato
+     * @throws IllegalArgumentException se percorsiFile è null
+     */
+    public BatchRisultato importaBatch(List<String> percorsiFile) {
+        if (!isLoggato())
+            throw new IllegalStateException("Nessun configuratore loggato: impossibile importare in batch.");
+        if (percorsiFile == null)
+            throw new IllegalArgumentException("La lista dei percorsi non puo' essere null.");
+
+        BatchImporter importer = new BatchImporter(
+                appData,
+                configuratoreCorrente.getUsername(),
+                this::salva
+        );
+
+        return importer.importaMultipli(percorsiFile);
+    }
+
+    // ================================================================
+    // RITIRO PROPOSTA (V4 – invariato)
+    // ================================================================
+
     public String ritirareProposta(int idProposta) {
         if (!isLoggato()) return "Accesso negato.";
-
         Proposta p = appData.getPropostaDaArchivio(idProposta);
         if (p == null)
             return "Proposta non trovata nell'archivio (ID: " + idProposta + ").";
-
         LocalDate oggi = LocalDate.now();
-
-        // Verifica condizioni di ritiro
         String erroreRitiro = p.verificaRitiroConsentito(oggi);
         if (!erroreRitiro.isEmpty()) return erroreRitiro;
 
-        // Esegue la transizione e genera le notifiche
         try {
             appData.ritirareProposta(p, oggi);
         } catch (IllegalStateException e) {
             return "Errore nella transizione di stato: " + e.getMessage();
         }
-
-        // Persiste i dati
         try {
-            salva();
-            return "";
+            salva(); return "";
         } catch (IOException e) {
-            // Rollback: ricarica dal file su disco (che non e' stato modificato)
-            // per ripristinare lo stato pre-ritiro sia della proposta che delle notifiche.
             try {
                 persistenceManager.carica(appData);
-                System.err.println("[Sistema] Rollback ritiro completato: stato ripristinato dal disco.");
+                System.err.println("[Sistema] Rollback ritiro completato.");
             } catch (IOException rollbackEx) {
                 System.err.println("[Sistema] Rollback fallito: " + rollbackEx.getMessage());
             }
@@ -331,9 +374,9 @@ public class ConfiguratoreController {
     // BACHECA E ARCHIVIO
     // ================================================================
 
-    public List<Proposta> getBacheca()                               { return appData.getBacheca(); }
-    public List<Proposta> getBachecaPerCategoria(String nome)        { return appData.getBachecaPerCategoria(nome); }
-    public List<Proposta> getArchivio()                              { return appData.getArchivio(); }
+    public List<Proposta> getBacheca()                             { return appData.getBacheca(); }
+    public List<Proposta> getBachecaPerCategoria(String nome)      { return appData.getBachecaPerCategoria(nome); }
+    public List<Proposta> getArchivio()                            { return appData.getArchivio(); }
 
     // ================================================================
     // TRANSIZIONI AUTOMATICHE

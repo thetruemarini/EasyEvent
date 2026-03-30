@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import it.easyevent.v1.model.AppData;
-import it.easyevent.v1.model.Campo;
-import it.easyevent.v1.model.Categoria;
-import it.easyevent.v1.model.Configuratore;
-
 /**
  * Contenitore centrale dello stato dell'applicazione (Versione 1).
  * Gestisce: configuratori, campi base, campi comuni, categorie.
