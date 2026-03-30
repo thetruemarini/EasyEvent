@@ -3,17 +3,14 @@ package it.easyevent.v5.view;
 import it.easyevent.v5.controller.FruitoreController;
 import it.easyevent.v5.model.Notifica;
 import it.easyevent.v5.model.Proposta;
+
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
- * Interfaccia testuale (CLI) per il fruitore - Versione 4.
- *
- * Novita' rispetto alla V3:
- *   - Voce "4. Disdici iscrizione": il fruitore puo' cancellare la propria
- *     iscrizione a una proposta aperta (UC-FUIT-06), con possibilita'
- *     di re-iscriversi in seguito (rispettando sempre il termine).
+ * Interfaccia testuale (CLI) per il fruitore - Versione 5.
+ * Identica alla V4; la V5 non aggiunge funzionalita' lato fruitore.
  *
  * Invariante di classe: controller != null, scanner != null
  */
@@ -55,7 +52,7 @@ public class FruitoreView {
     }
 
     // ================================================================
-    // ACCESSO
+    // ACCESSO (login o registrazione)
     // ================================================================
 
     private boolean gestioneAccesso() {
@@ -78,7 +75,8 @@ public class FruitoreView {
             System.out.print("  Password: "); String p = scanner.nextLine().trim();
             if (controller.login(u, p)) {
                 int nN = controller.getNotifiche().size();
-                System.out.println("\n  Benvenuto, " + u + "!" + (nN > 0 ? "  [" + nN + " notifica/e]" : ""));
+                System.out.println("\n  Benvenuto, " + u + "!"
+                        + (nN > 0 ? "  [" + nN + " notifica/e non letta/e]" : ""));
                 return true;
             }
             int rimasti = 2 - t;
@@ -104,13 +102,12 @@ public class FruitoreView {
     }
 
     // ================================================================
-    // MENU PRINCIPALE
+    // MENU PRINCIPALE FRUITORE
     // ================================================================
 
     private boolean menuPrincipale() {
         while (true) {
             int nNotifiche = controller.getNotifiche().size();
-            // Conta le proposte a cui il fruitore e' iscritto (APERTE)
             long nIscrizioni = controller.getBacheca().stream()
                     .filter(p -> controller.isIscritto(p.getId())).count();
 
@@ -120,7 +117,8 @@ public class FruitoreView {
             System.out.println("  1. Visualizza bacheca");
             System.out.println("  2. Aderisci a una proposta");
             System.out.println("  3. Disdici iscrizione         [" + nIscrizioni + " iscrizione/i attive]");
-            System.out.println("  4. Spazio personale" + (nNotifiche > 0 ? "           [" + nNotifiche + " notifica/e]" : ""));
+            System.out.println("  4. Spazio personale"
+                    + (nNotifiche > 0 ? "           [" + nNotifiche + " notifica/e]" : ""));
             System.out.println("  0. Logout");
             System.out.println();
             System.out.print("  Scelta: ");
@@ -142,36 +140,55 @@ public class FruitoreView {
     private void visualizzaBacheca() {
         System.out.println("\n" + SEP + "\n  BACHECA  -  PROPOSTE APERTE\n" + SEP);
         List<String> categorie = controller.getCategorieConProposte();
-        if (categorie.isEmpty()) { System.out.println("\n  (Nessuna proposta aperta in bacheca)"); premInvio(); return; }
-        for (String nomeCategoria : categorie) {
-            List<Proposta> perCat = controller.getBachecaPerCategoria(nomeCategoria);
-            System.out.println("\n  CATEGORIA: " + nomeCategoria.toUpperCase() + "  (" + perCat.size() + ")");
+        if (categorie.isEmpty()) {
+            System.out.println("\n  (Nessuna proposta aperta in bacheca)");
+            premInvio();
+            return;
+        }
+        for (String nomeCat : categorie) {
+            List<Proposta> perCat = controller.getBachecaPerCategoria(nomeCat);
+            System.out.println("\n  CATEGORIA: " + nomeCat.toUpperCase()
+                    + "  (" + perCat.size() + " proposta/e)");
             System.out.println(SEP2);
             perCat.forEach(this::stampaBloccoPropostaBacheca);
         }
-        System.out.println("\n  Totale: " + controller.getBacheca().size());
+        System.out.println("\n  Totale proposte aperte: " + controller.getBacheca().size());
         premInvio();
     }
 
     private void stampaBloccoPropostaBacheca(Proposta p) {
-        String titolo = p.getValore("Titolo");
+        String titolo    = p.getValore("Titolo");
         boolean iscritto = controller.isIscritto(p.getId());
-        int numMax = p.getNumeroMaxPartecipanti();
+        int numMax       = p.getNumeroMaxPartecipanti();
+
         System.out.println();
-        System.out.println("    [ID " + p.getId() + "]  \"" + (titolo.isBlank() ? "(senza titolo)" : titolo) + "\""
+        System.out.println("    [ID " + p.getId() + "]  \""
+                + (titolo.isBlank() ? "(senza titolo)" : titolo) + "\""
                 + (iscritto ? "  [ISCRITTO]" : ""));
-        System.out.println("    Iscrizioni: " + p.getAderenti().size() + "/" + (numMax < 0 ? "N/D" : numMax)
+        System.out.println("    Iscrizioni: " + p.getAderenti().size()
+                + "/" + (numMax < 0 ? "N/D" : numMax)
                 + "   Termine: " + p.getValore(Proposta.CAMPO_TERMINE_ISCRIZIONE));
-        String[] campiInfo = {"Data inizio", "Ora", "Luogo", "Quota individuale", "Data conclusiva", "Durata", "Note"};
-        for (String campo : campiInfo) { String v = p.getValore(campo); if (!v.isBlank()) System.out.println("    " + campo + ": " + v); }
-        // campi specifici non standard
+
+        // Campi informativi standard
+        String[] campiDaStampare = {
+            "Data inizio", "Ora", "Luogo", "Quota individuale",
+            "Data conclusiva", "Durata", "Note", "Compreso nella quota"
+        };
+        for (String campo : campiDaStampare) {
+            String v = p.getValore(campo);
+            if (!v.isBlank()) System.out.println("    " + campo + ": " + v);
+        }
+        // Campi specifici non standard
         for (String nome : p.getValori().keySet()) {
             boolean giaMostrato = false;
-            for (String s : campiInfo) if (s.equalsIgnoreCase(nome)) { giaMostrato = true; break; }
-            if (!giaMostrato && !nome.equalsIgnoreCase("Titolo")
+            for (String s : campiDaStampare)
+                if (s.equalsIgnoreCase(nome)) { giaMostrato = true; break; }
+            if (!giaMostrato
+                    && !nome.equalsIgnoreCase("Titolo")
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_TERMINE_ISCRIZIONE)
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_NUM_PARTECIPANTI)) {
-                String v = p.getValore(nome); if (!v.isBlank()) System.out.println("    " + nome + ": " + v);
+                String v = p.getValore(nome);
+                if (!v.isBlank()) System.out.println("    " + nome + ": " + v);
             }
         }
     }
@@ -182,41 +199,47 @@ public class FruitoreView {
 
     private void aderisciAProposta() {
         List<Proposta> disponibili = controller.getBacheca().stream()
-                .filter(p -> !controller.isIscritto(p.getId())).collect(Collectors.toList());
-        if (disponibili.isEmpty()) { System.out.println("\n  Sei gia' iscritto a tutte le proposte disponibili."); premInvio(); return; }
+                .filter(p -> !controller.isIscritto(p.getId()))
+                .collect(Collectors.toList());
+
+        if (disponibili.isEmpty()) {
+            System.out.println("\n  Sei gia' iscritto a tutte le proposte disponibili.");
+            premInvio();
+            return;
+        }
 
         System.out.println("\n" + SEP + "\n  ADERISCI A UNA PROPOSTA\n" + SEP);
         System.out.println("  Proposte disponibili:");
         for (Proposta p : disponibili) {
-            int numMax = p.getNumeroMaxPartecipanti();
+            int numMax  = p.getNumeroMaxPartecipanti();
             String posti = numMax < 0 ? "N/D" : String.valueOf(numMax - p.getAderenti().size());
-            System.out.println("    [ID " + p.getId() + "]  " + p.getNomeCategoria()
-                    + "  \"" + p.getValore("Titolo") + "\"  Posti rimasti: " + posti
+            System.out.println("    [ID " + p.getId() + "]  "
+                    + p.getNomeCategoria() + "  \""
+                    + p.getValore("Titolo") + "\""
+                    + "  Posti rimasti: " + posti
                     + "  Termine: " + p.getValore(Proposta.CAMPO_TERMINE_ISCRIZIONE));
         }
         System.out.print("\n  ID proposta (0 per annullare): ");
         String input = scanner.nextLine().trim();
         if (input.equals("0")) return;
+
         try {
-            int id = Integer.parseInt(input);
+            int id  = Integer.parseInt(input);
             String err = controller.aderisci(id);
             if (err.isEmpty()) {
                 Proposta p = controller.getPropostaAperta(id);
-                System.out.println("\n  Iscrizione a \"" + (p != null ? p.getValore("Titolo") : "ID " + id) + "\" completata.");
+                System.out.println("\n  Iscrizione a \""
+                        + (p != null ? p.getValore("Titolo") : "ID " + id)
+                        + "\" completata.");
             } else stampaErrore(err);
         } catch (NumberFormatException e) { stampaErrore("ID non valido."); }
     }
 
     // ================================================================
-    // DISDICI ISCRIZIONE (NUOVO V4 – UC-FUIT-06)
+    // DISDICI ISCRIZIONE (V4)
     // ================================================================
 
-    /**
-     * Consente al fruitore di disdire la propria iscrizione a una proposta aperta.
-     * Dopo la disdetta, il fruitore puo' re-iscriversi (sempre nel rispetto del termine).
-     */
     private void disdiciIscrizione() {
-        // Filtra solo le proposte a cui il fruitore e' iscritto
         List<Proposta> iscrittoA = controller.getBacheca().stream()
                 .filter(p -> controller.isIscritto(p.getId()))
                 .collect(Collectors.toList());
@@ -227,15 +250,12 @@ public class FruitoreView {
             return;
         }
 
-        System.out.println("\n" + SEP);
-        System.out.println("  DISDICI ISCRIZIONE");
-        System.out.println(SEP);
+        System.out.println("\n" + SEP + "\n  DISDICI ISCRIZIONE\n" + SEP);
         System.out.println("\n  Proposte a cui sei iscritto:");
-        for (Proposta p : iscrittoA) {
-            System.out.println("    [ID " + p.getId() + "]  \"" + p.getValore("Titolo") + "\""
-                    + "  Categoria: " + p.getNomeCategoria()
-                    + "  Termine: " + p.getValore(Proposta.CAMPO_TERMINE_ISCRIZIONE));
-        }
+        iscrittoA.forEach(p ->
+            System.out.println("    [ID " + p.getId() + "]  \""
+                    + p.getValore("Titolo") + "\""
+                    + "  Termine: " + p.getValore(Proposta.CAMPO_TERMINE_ISCRIZIONE)));
 
         System.out.println("\n  NOTA: dopo la disdetta potrai re-iscriverti (rispettando il termine).");
         System.out.print("  ID proposta da cui disdire (0 per annullare): ");
@@ -247,31 +267,46 @@ public class FruitoreView {
         catch (NumberFormatException e) { stampaErrore("ID non valido."); return; }
 
         Proposta scelta = iscrittoA.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
-        if (scelta == null) { stampaErrore("Non sei iscritto a nessuna proposta con ID " + id + "."); return; }
+        if (scelta == null) {
+            stampaErrore("Non sei iscritto a nessuna proposta con ID " + id + ".");
+            return;
+        }
 
-        System.out.print("  Confermi la disdetta dall'evento \"" + scelta.getValore("Titolo") + "\"? (s/n): ");
-        if (!scanner.nextLine().trim().equalsIgnoreCase("s")) { System.out.println("  Operazione annullata."); return; }
+        System.out.print("  Confermi la disdetta da \""
+                + scelta.getValore("Titolo") + "\"? (s/n): ");
+        if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
+            System.out.println("  Operazione annullata.");
+            return;
+        }
 
         String err = controller.disdiciIscrizione(id);
         if (err.isEmpty()) {
             System.out.println("\n  Iscrizione disdetta correttamente.");
             System.out.println("  Puoi re-iscriverti entro il termine di iscrizione.");
-        } else {
-            stampaErrore(err);
-        }
+        } else stampaErrore(err);
         premInvio();
     }
 
     // ================================================================
-    // SPAZIO PERSONALE
+    // SPAZIO PERSONALE (notifiche)
     // ================================================================
 
     private void spazioPersonale() {
         while (true) {
             List<Notifica> notifiche = controller.getNotifiche();
-            System.out.println("\n" + SEP + "\n  SPAZIO PERSONALE  [" + controller.getFruitoreCorrente().getUsername() + "]\n" + SEP);
-            if (notifiche.isEmpty()) System.out.println("\n  (Nessuna notifica)");
-            else { System.out.println("\n  Notifiche (" + notifiche.size() + "):"); notifiche.forEach(n -> System.out.println("\n  [ID " + n.getId() + "]  " + n)); }
+            System.out.println("\n" + SEP);
+            System.out.println("  SPAZIO PERSONALE  ["
+                    + controller.getFruitoreCorrente().getUsername() + "]");
+            System.out.println(SEP);
+
+            if (notifiche.isEmpty()) {
+                System.out.println("\n  (Nessuna notifica)");
+            } else {
+                System.out.println("\n  Notifiche (" + notifiche.size() + "):");
+                notifiche.forEach(n ->
+                    System.out.println("\n  [ID " + n.getId() + "]  " + n));
+            }
+
             System.out.println("\n  c. Cancella una  t. Cancella tutte  0. Torna");
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
@@ -287,25 +322,35 @@ public class FruitoreView {
         if (notifiche.isEmpty()) { stampaErrore("Nessuna notifica."); return; }
         System.out.print("  ID notifica da cancellare: ");
         try {
-            int id = Integer.parseInt(scanner.nextLine().trim());
+            int id  = Integer.parseInt(scanner.nextLine().trim());
             String err = controller.cancellaNotifica(id);
-            if (err.isEmpty()) System.out.println("  Notifica [ID " + id + "] cancellata."); else stampaErrore(err);
+            if (err.isEmpty()) System.out.println("  Notifica [ID " + id + "] cancellata.");
+            else stampaErrore(err);
         } catch (NumberFormatException e) { stampaErrore("ID non valido."); }
     }
 
     private void cancellaAllNotifiche(List<Notifica> notifiche) {
         if (notifiche.isEmpty()) { stampaErrore("Nessuna notifica."); return; }
         System.out.print("  Cancellare tutte le " + notifiche.size() + " notifiche? (s/n): ");
-        if (!scanner.nextLine().trim().equalsIgnoreCase("s")) { System.out.println("  Annullato."); return; }
+        if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
+            System.out.println("  Annullato.");
+            return;
+        }
         String err = controller.cancellaAllNotifiche();
-        if (err.isEmpty()) System.out.println("  Tutte le notifiche cancellate."); else stampaErrore(err);
+        if (err.isEmpty()) System.out.println("  Tutte le notifiche cancellate.");
+        else stampaErrore(err);
     }
 
     // ================================================================
     // UTILITY
     // ================================================================
 
-    private void premInvio() { System.out.println(); System.out.print("  Premi INVIO..."); scanner.nextLine(); }
+    private void premInvio() {
+        System.out.println();
+        System.out.print("  Premi INVIO per tornare al menu...");
+        scanner.nextLine();
+    }
+
     private void stampaErrore(String msg) { System.out.println("\n  ERRORE: " + msg); }
 
     private void stampaBanner() {
