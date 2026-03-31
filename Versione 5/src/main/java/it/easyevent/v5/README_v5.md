@@ -84,27 +84,6 @@ javac -encoding UTF-8 -d out @sources.txt
 java -ea -cp out it.easyevent.v5.MainV5
 ```
 
----
-
-## Credenziali demo
-
-| Username | Password |
-|----------|----------|
-| mario    | mario123 |
-| laura    | laura456 |
-
----
-
-## File batch di esempio
-
-Nella cartella `batch_examples/` sono presenti tre file pronti per la demo:
-
-- `campi_e_categorie.batch` – definisce campi comuni e categorie
-- `proposte.batch` – crea e pubblica proposte (richiede che categorie esistano)
-- `setup_completo.batch` – file unico con campi, categorie e proposte
-
----
-
 ## Scelte implementative documentate
 
 1. **Formato batch proprietario** (separatore ` | `): più leggibile di CSV

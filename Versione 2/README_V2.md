@@ -53,21 +53,8 @@ javac -encoding UTF-8 -d out @sources.txt
 java -cp out it.easyevent.MainV2
 ```
 
-## Credenziali demo (file dati pre-popolato)
-
-| Username | Password |
-|----------|----------|
-| mario    | mario123 |
-| laura    | laura456 |
 
 ## Formato date
 
 Tutte le date vanno inserite nel formato **gg/mm/aaaa** (es. `25/04/2026`).
 
-## Dati demo pre-caricati
-
-Il file `data/easyevent_data.json` contiene:
-- 2 configuratori: `mario`, `laura`
-- 3 categorie: `sport`, `gite`, `arte` (con campi specifici)
-- 4 campi comuni: `Durata`, `Compreso nella quota`, `Ora conclusiva`, `Note`
-- 3 proposte aperte in bacheca (una per categoria)

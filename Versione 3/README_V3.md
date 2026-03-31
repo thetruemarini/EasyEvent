@@ -33,22 +33,22 @@ la bacheca visibile e interagibile anche da parte degli utenti finali.
 
 ### Nuovo caso d'uso V3 lato configuratore
 
-- **UC-CONF-07 – Visualizza archivio proposte**: il configuratore può consultare
+- **Visualizza archivio proposte**: il configuratore può consultare
   tutte le proposte pubblicate con il loro stato corrente (APERTA, CONFERMATA,
   ANNULLATA, CONCLUSA), raggruppate per stato.
 
 ### Nuovi casi d'uso V3 lato fruitore
 
-- **UC-FUIT-01 – Registrazione**: primo accesso; il fruitore sceglie username e
+- **Registrazione**: primo accesso; il fruitore sceglie username e
   password. Lo username deve essere univoco tra tutti gli utenti (configuratori
   e fruitori).
-- **UC-FUIT-02 – Login**: accesso con credenziali personali (massimo 3 tentativi).
-- **UC-FUIT-03 – Visualizza bacheca**: visualizzazione delle proposte APERTE,
+- **Login**: accesso con credenziali personali (massimo 3 tentativi).
+- **Visualizza bacheca**: visualizzazione delle proposte APERTE,
   categoria per categoria.
-- **UC-FUIT-04 – Aderisci a una proposta**: iscrizione a una proposta aperta,
+- **Aderisci a una proposta**: iscrizione a una proposta aperta,
   possibile solo fino alle ore 23:59 del "Termine ultimo di iscrizione" e solo
   se non è stato raggiunto il numero massimo di partecipanti.
-- **UC-FUIT-05 – Spazio personale**: consultazione e cancellazione delle notifiche.
+- **Spazio personale**: consultazione e cancellazione delle notifiche.
 
 ### Transizioni automatiche di stato
 
