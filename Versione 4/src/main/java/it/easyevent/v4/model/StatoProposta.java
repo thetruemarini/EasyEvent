@@ -1,5 +1,4 @@
 package it.easyevent.v4.model;
-
 /**
  * Rappresenta lo stato di una proposta di iniziativa.
  *

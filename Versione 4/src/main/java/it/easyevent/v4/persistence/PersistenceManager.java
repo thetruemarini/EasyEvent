@@ -1,13 +1,5 @@
 package it.easyevent.v4.persistence;
 
-import java.io.*;
-import java.nio.file.*;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import it.easyevent.v4.model.AppData;
 import it.easyevent.v4.model.Campo;
 import it.easyevent.v4.model.Categoria;
@@ -16,13 +8,19 @@ import it.easyevent.v4.model.Fruitore;
 import it.easyevent.v4.model.Notifica;
 import it.easyevent.v4.model.Proposta;
 import it.easyevent.v4.model.StatoProposta;
-
+import java.io.*;
+import java.nio.file.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 /**
  * Gestore della persistenza su file JSON (Versione 4).
  * Identico alla V3 nel formato; piena compatibilita' con file V3 e V2.
  * La transizione RITIRATA e' gia' gestita dal formato V3 (storicoStati).
  *
- * Struttura file JSON V4 (identica alla V3):
+ * Esempio di struttura file JSON V4 (identica alla V3):
  * {
  *   "prossimoIdProposta": N,
  *   "prossimoIdNotifica": N,
@@ -41,17 +39,19 @@ public class PersistenceManager {
     private final String dataFilePath;
 
     public PersistenceManager(String dataFilePath) {
-        if (dataFilePath == null || dataFilePath.isBlank())
+        if (dataFilePath == null || dataFilePath.isBlank()) {
             throw new IllegalArgumentException("Il percorso del file non puo' essere null o vuoto.");
+        }
         this.dataFilePath = dataFilePath;
     }
 
     // ================================================================
     // SALVATAGGIO
     // ================================================================
-
     public void salva(AppData data) throws IOException {
-        if (data == null) throw new IllegalArgumentException("AppData non puo' essere null.");
+        if (data == null) {
+            throw new IllegalArgumentException("AppData non puo' essere null.");
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
@@ -69,7 +69,9 @@ public class PersistenceManager {
             sb.append("\"password\": ").append(jsonStr(c.getPassword())).append(", ");
             sb.append("\"primoAccesso\": ").append(c.isPrimoAccesso());
             sb.append("}");
-            if (i < confs.size() - 1) sb.append(",");
+            if (i < confs.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -79,7 +81,9 @@ public class PersistenceManager {
         List<Fruitore> fruitori = data.getFruitori();
         for (int i = 0; i < fruitori.size(); i++) {
             sb.append(serializzaFruitore(fruitori.get(i), "    "));
-            if (i < fruitori.size() - 1) sb.append(",");
+            if (i < fruitori.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -89,7 +93,9 @@ public class PersistenceManager {
         List<Campo> cb = data.getCampiBase();
         for (int i = 0; i < cb.size(); i++) {
             sb.append("    ").append(serializzaCampo(cb.get(i)));
-            if (i < cb.size() - 1) sb.append(",");
+            if (i < cb.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -99,7 +105,9 @@ public class PersistenceManager {
         List<Campo> cc = data.getCampiComuni();
         for (int i = 0; i < cc.size(); i++) {
             sb.append("    ").append(serializzaCampo(cc.get(i)));
-            if (i < cc.size() - 1) sb.append(",");
+            if (i < cc.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -115,12 +123,16 @@ public class PersistenceManager {
             List<Campo> cs = cat.getCampiSpecifici();
             for (int j = 0; j < cs.size(); j++) {
                 sb.append("        ").append(serializzaCampo(cs.get(j)));
-                if (j < cs.size() - 1) sb.append(",");
+                if (j < cs.size() - 1) {
+                    sb.append(",");
+                }
                 sb.append("\n");
             }
             sb.append("      ]\n");
             sb.append("    }");
-            if (i < cats.size() - 1) sb.append(",");
+            if (i < cats.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -130,7 +142,9 @@ public class PersistenceManager {
         List<Proposta> proposte = data.getArchivio();
         for (int i = 0; i < proposte.size(); i++) {
             sb.append(serializzaProposta(proposte.get(i), "    "));
-            if (i < proposte.size() - 1) sb.append(",");
+            if (i < proposte.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ]\n");
@@ -138,27 +152,36 @@ public class PersistenceManager {
         sb.append("}\n");
 
         Path path = Paths.get(dataFilePath);
-        if (path.getParent() != null) Files.createDirectories(path.getParent());
+        if (path.getParent() != null) {
+            Files.createDirectories(path.getParent());
+        }
         Files.writeString(path, sb.toString());
     }
 
     // ================================================================
     // CARICAMENTO
     // ================================================================
-
     public boolean carica(AppData data) throws IOException {
-        if (data == null) throw new IllegalArgumentException("AppData non puo' essere null.");
+        if (data == null) {
+            throw new IllegalArgumentException("AppData non puo' essere null.");
+        }
 
         Path path = Paths.get(dataFilePath);
-        if (!Files.exists(path)) return false;
+        if (!Files.exists(path)) {
+            return false;
+        }
 
         String json = Files.readString(path);
 
         int prossimoId = extractIntValue(json, "prossimoIdProposta");
-        if (prossimoId > 0) data.setProssimoIdProposta(prossimoId);
+        if (prossimoId > 0) {
+            data.setProssimoIdProposta(prossimoId);
+        }
 
         int prossimoIdNotifica = extractIntValue(json, "prossimoIdNotifica");
-        if (prossimoIdNotifica > 0) data.setProssimoIdNotifica(prossimoIdNotifica);
+        if (prossimoIdNotifica > 0) {
+            data.setProssimoIdNotifica(prossimoIdNotifica);
+        }
 
         data.setConfiguratori(parseConfiguratori(json));
         data.setFruitori(parseFruitori(json));
@@ -168,16 +191,21 @@ public class PersistenceManager {
                 .flatMap(f -> f.getNotifiche().stream())
                 .mapToInt(Notifica::getId)
                 .max().orElse(0);
-        if (maxIdNotifica >= data.getProssimoIdNotifica())
+        if (maxIdNotifica >= data.getProssimoIdNotifica()) {
             data.setProssimoIdNotifica(maxIdNotifica + 1);
+        }
 
         data.setCampiBase(parseCampi(json, "campiBase"));
         data.setCampiComuni(parseCampi(json, "campiComuni"));
         data.setCategorie(parseCategorie(json));
 
         List<Proposta> archivio = parseArchivio(json, "archivio");
-        if (archivio.isEmpty()) archivio = parseArchivio(json, "bacheca");
-        if (!archivio.isEmpty()) data.setArchivio(archivio);
+        if (archivio.isEmpty()) {
+            archivio = parseArchivio(json, "bacheca");
+        }
+        if (!archivio.isEmpty()) {
+            data.setArchivio(archivio);
+        }
 
         return true;
     }
@@ -185,7 +213,6 @@ public class PersistenceManager {
     // ================================================================
     // SERIALIZZAZIONE HELPERS
     // ================================================================
-
     private String serializzaCampo(Campo c) {
         return "{\"nome\": " + jsonStr(c.getNome())
                 + ", \"obbligatorio\": " + c.isObbligatorio()
@@ -206,7 +233,9 @@ public class PersistenceManager {
             sb.append("\"testo\": ").append(jsonStr(n.getTesto())).append(", ");
             sb.append("\"dataCreazione\": ").append(jsonStr(n.getDataCreazione().format(Notifica.DATE_FORMAT)));
             sb.append("}");
-            if (i < notifiche.size() - 1) sb.append(",");
+            if (i < notifiche.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append(indent).append("  ]\n");
@@ -234,7 +263,9 @@ public class PersistenceManager {
             sb.append("\"stato\": ").append(jsonStr(cs.stato.name())).append(", ");
             sb.append("\"data\": ").append(jsonStr(cs.data.format(Proposta.DATE_FORMAT)));
             sb.append("}");
-            if (i < storico.size() - 1) sb.append(",");
+            if (i < storico.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append(indent).append("  ],\n");
@@ -244,7 +275,9 @@ public class PersistenceManager {
         List<String> aderenti = p.getAderenti();
         for (int i = 0; i < aderenti.size(); i++) {
             sb.append(jsonStr(aderenti.get(i)));
-            if (i < aderenti.size() - 1) sb.append(", ");
+            if (i < aderenti.size() - 1) {
+                sb.append(", ");
+            }
         }
         sb.append("],\n");
 
@@ -255,14 +288,16 @@ public class PersistenceManager {
         List<String> nomi = new ArrayList<>(snapshot.keySet());
         for (int i = 0; i < nomi.size(); i++) {
             String nome = nomi.get(i);
-            boolean ob  = snapshot.get(nome);
-            String val  = valori.getOrDefault(nome, "");
+            boolean ob = snapshot.get(nome);
+            String val = valori.getOrDefault(nome, "");
             sb.append(indent).append("    {");
             sb.append("\"nome\": ").append(jsonStr(nome)).append(", ");
             sb.append("\"obbligatorio\": ").append(ob).append(", ");
             sb.append("\"valore\": ").append(jsonStr(val));
             sb.append("}");
-            if (i < nomi.size() - 1) sb.append(",");
+            if (i < nomi.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append(indent).append("  ]\n");
@@ -271,25 +306,29 @@ public class PersistenceManager {
     }
 
     private String jsonStr(String s) {
-        if (s == null) return "null";
+        if (s == null) {
+            return "null";
+        }
         return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"")
-                       .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\"";
+                .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\"";
     }
 
     // ================================================================
     // PARSING HELPERS
     // ================================================================
-
     private List<Configuratore> parseConfiguratori(String json) {
         List<Configuratore> result = new ArrayList<>();
         String section = extractArraySection(json, "configuratori");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
-            String  username     = extractStringValue(obj, "username");
-            String  password     = extractStringValue(obj, "password");
+            String username = extractStringValue(obj, "username");
+            String password = extractStringValue(obj, "password");
             boolean primoAccesso = extractBoolValue(obj, "primoAccesso");
-            if (username != null && password != null)
+            if (username != null && password != null) {
                 result.add(new Configuratore(username, password, primoAccesso));
+            }
         }
         return result;
     }
@@ -297,11 +336,15 @@ public class PersistenceManager {
     private List<Fruitore> parseFruitori(String json) {
         List<Fruitore> result = new ArrayList<>();
         String section = extractArraySection(json, "fruitori");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
             String username = extractStringValue(obj, "username");
             String password = extractStringValue(obj, "password");
-            if (username == null || password == null) continue;
+            if (username == null || password == null) {
+                continue;
+            }
             List<Notifica> notifiche = parseNotifiche(obj);
             result.add(new Fruitore(username, password, notifiche));
         }
@@ -311,16 +354,21 @@ public class PersistenceManager {
     private List<Notifica> parseNotifiche(String json) {
         List<Notifica> result = new ArrayList<>();
         String section = extractArraySection(json, "notifiche");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
-            int    id    = extractIntValue(obj, "id");
+            int id = extractIntValue(obj, "id");
             String testo = extractStringValue(obj, "testo");
             String dataStr = extractStringValue(obj, "dataCreazione");
-            if (id < 0 || testo == null || dataStr == null) continue;
+            if (id < 0 || testo == null || dataStr == null) {
+                continue;
+            }
             try {
                 LocalDate data = LocalDate.parse(dataStr.trim(), Notifica.DATE_FORMAT);
                 result.add(new Notifica(id, testo, data));
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         }
         return result;
     }
@@ -328,14 +376,18 @@ public class PersistenceManager {
     private List<Campo> parseCampi(String json, String arrayName) {
         List<Campo> result = new ArrayList<>();
         String section = extractArraySection(json, arrayName);
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
-            String  nome    = extractStringValue(obj, "nome");
-            boolean ob      = extractBoolValue(obj, "obbligatorio");
-            String  tipoStr = extractStringValue(obj, "tipo");
+            String nome = extractStringValue(obj, "nome");
+            boolean ob = extractBoolValue(obj, "obbligatorio");
+            String tipoStr = extractStringValue(obj, "tipo");
             if (nome != null && tipoStr != null) {
-                try { result.add(new Campo(nome, ob, Campo.TipoCampo.valueOf(tipoStr))); }
-                catch (IllegalArgumentException ignored) {}
+                try {
+                    result.add(new Campo(nome, ob, Campo.TipoCampo.valueOf(tipoStr)));
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
         return result;
@@ -344,20 +396,26 @@ public class PersistenceManager {
     private List<Categoria> parseCategorie(String json) {
         List<Categoria> result = new ArrayList<>();
         String section = extractArraySection(json, "categorie");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
             String nome = extractStringValue(obj, "nome");
-            if (nome == null) continue;
+            if (nome == null) {
+                continue;
+            }
             Categoria cat = new Categoria(nome);
             String csSection = extractArraySection(obj, "campiSpecifici");
             if (csSection != null && !csSection.isBlank()) {
                 for (String campoObj : splitJsonObjects(csSection)) {
-                    String  cn      = extractStringValue(campoObj, "nome");
-                    boolean ob      = extractBoolValue(campoObj, "obbligatorio");
-                    String  tipoStr = extractStringValue(campoObj, "tipo");
+                    String cn = extractStringValue(campoObj, "nome");
+                    boolean ob = extractBoolValue(campoObj, "obbligatorio");
+                    String tipoStr = extractStringValue(campoObj, "tipo");
                     if (cn != null && tipoStr != null) {
-                        try { cat.aggiungiCampoSpecifico(new Campo(cn, ob, Campo.TipoCampo.valueOf(tipoStr))); }
-                        catch (IllegalArgumentException ignored) {}
+                        try {
+                            cat.aggiungiCampoSpecifico(new Campo(cn, ob, Campo.TipoCampo.valueOf(tipoStr)));
+                        } catch (IllegalArgumentException ignored) {
+                        }
                     }
                 }
             }
@@ -369,20 +427,27 @@ public class PersistenceManager {
     private List<Proposta> parseArchivio(String json, String arrayName) {
         List<Proposta> result = new ArrayList<>();
         String section = extractArraySection(json, arrayName);
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
 
         for (String obj : splitJsonObjects(section)) {
-            int    id               = extractIntValue(obj, "id");
-            String nomeCategoria    = extractStringValue(obj, "nomeCategoria");
+            int id = extractIntValue(obj, "id");
+            String nomeCategoria = extractStringValue(obj, "nomeCategoria");
             String usernameCreatore = extractStringValue(obj, "usernameCreatore");
-            String statoStr         = extractStringValue(obj, "stato");
-            String dataPubStr       = extractStringValue(obj, "dataPubblicazione");
+            String statoStr = extractStringValue(obj, "stato");
+            String dataPubStr = extractStringValue(obj, "dataPubblicazione");
 
-            if (nomeCategoria == null || usernameCreatore == null || statoStr == null) continue;
+            if (nomeCategoria == null || usernameCreatore == null || statoStr == null) {
+                continue;
+            }
 
             StatoProposta stato;
-            try { stato = StatoProposta.valueOf(statoStr); }
-            catch (IllegalArgumentException e) { continue; }
+            try {
+                stato = StatoProposta.valueOf(statoStr);
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
 
             if (stato == StatoProposta.BOZZA || stato == StatoProposta.VALIDA) {
                 System.err.println("[PersistenceManager] Proposta con stato interno '"
@@ -392,8 +457,10 @@ public class PersistenceManager {
 
             LocalDate dataPub = null;
             if (dataPubStr != null && !dataPubStr.isBlank()) {
-                try { dataPub = LocalDate.parse(dataPubStr.trim(), Proposta.DATE_FORMAT); }
-                catch (Exception ignored) {}
+                try {
+                    dataPub = LocalDate.parse(dataPubStr.trim(), Proposta.DATE_FORMAT);
+                } catch (Exception ignored) {
+                }
             }
 
             // Storico stati
@@ -402,13 +469,16 @@ public class PersistenceManager {
             if (storicoSection != null && !storicoSection.isBlank()) {
                 for (String csObj : splitJsonObjects(storicoSection)) {
                     String csStatoStr = extractStringValue(csObj, "stato");
-                    String csDataStr  = extractStringValue(csObj, "data");
-                    if (csStatoStr == null || csDataStr == null) continue;
+                    String csDataStr = extractStringValue(csObj, "data");
+                    if (csStatoStr == null || csDataStr == null) {
+                        continue;
+                    }
                     try {
                         StatoProposta csStato = StatoProposta.valueOf(csStatoStr);
-                        LocalDate     csData  = LocalDate.parse(csDataStr.trim(), Proposta.DATE_FORMAT);
+                        LocalDate csData = LocalDate.parse(csDataStr.trim(), Proposta.DATE_FORMAT);
                         storico.add(new Proposta.CambioStato(csStato, csData));
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                 }
             }
 
@@ -419,20 +489,29 @@ public class PersistenceManager {
                 int ai = 0;
                 while (ai < aderSection.length()) {
                     int qStart = aderSection.indexOf('"', ai);
-                    if (qStart < 0) break;
+                    if (qStart < 0) {
+                        break;
+                    }
                     int qEnd = qStart + 1;
                     while (qEnd < aderSection.length()) {
                         if (aderSection.charAt(qEnd) == '"') {
                             int bs = 0, check = qEnd - 1;
-                            while (check >= qStart + 1 && aderSection.charAt(check) == '\\') { bs++; check--; }
-                            if (bs % 2 == 0) break;
+                            while (check >= qStart + 1 && aderSection.charAt(check) == '\\') {
+                                bs++;
+                                check--;
+                            }
+                            if (bs % 2 == 0) {
+                                break;
+                            }
                         }
                         qEnd++;
                     }
                     if (qEnd < aderSection.length()) {
                         String uname = aderSection.substring(qStart + 1, qEnd)
                                 .replace("\\\"", "\"").replace("\\\\", "\\");
-                        if (!uname.isBlank()) aderenti.add(uname);
+                        if (!uname.isBlank()) {
+                            aderenti.add(uname);
+                        }
                     }
                     ai = qEnd + 1;
                 }
@@ -440,13 +519,13 @@ public class PersistenceManager {
 
             // Campi (snapshot + valori)
             LinkedHashMap<String, Boolean> campiSnapshot = new LinkedHashMap<>();
-            LinkedHashMap<String, String>  valori        = new LinkedHashMap<>();
+            LinkedHashMap<String, String> valori = new LinkedHashMap<>();
             String campiSection = extractArraySection(obj, "campi");
             if (campiSection != null && !campiSection.isBlank()) {
                 for (String campoObj : splitJsonObjects(campiSection)) {
-                    String  nome = extractStringValue(campoObj, "nome");
-                    boolean ob   = extractBoolValue(campoObj, "obbligatorio");
-                    String  val  = extractStringValue(campoObj, "valore");
+                    String nome = extractStringValue(campoObj, "nome");
+                    boolean ob = extractBoolValue(campoObj, "obbligatorio");
+                    String val = extractStringValue(campoObj, "valore");
                     if (nome != null) {
                         campiSnapshot.put(nome, ob);
                         valori.put(nome, val != null ? val : "");
@@ -468,7 +547,6 @@ public class PersistenceManager {
     // ================================================================
     // UTILITIES PARSER JSON MINIMALE
     // ================================================================
-
     private int findKeyPosition(String json, String key, int fromIndex) {
         String search = "\"" + key + "\"";
         int searchLen = search.length();
@@ -478,15 +556,26 @@ public class PersistenceManager {
             char ch = json.charAt(i);
             if (ch == '"') {
                 int bs = 0, check = i - 1;
-                while (check >= fromIndex && json.charAt(check) == '\\') { bs++; check--; }
+                while (check >= fromIndex && json.charAt(check) == '\\') {
+                    bs++;
+                    check--;
+                }
                 if (bs % 2 == 0) {
-                    if (inString) { inString = false; i++; continue; }
+                    if (inString) {
+                        inString = false;
+                        i++;
+                        continue;
+                    }
                     if (i + searchLen <= json.length()
                             && json.substring(i, i + searchLen).equals(search)) {
                         int j = i + searchLen;
                         while (j < json.length() && (json.charAt(j) == ' ' || json.charAt(j) == '\n'
-                                || json.charAt(j) == '\r' || json.charAt(j) == '\t')) j++;
-                        if (j < json.length() && json.charAt(j) == ':') return i;
+                                || json.charAt(j) == '\r' || json.charAt(j) == '\t')) {
+                            j++;
+                        }
+                        if (j < json.length() && json.charAt(j) == ':') {
+                            return i;
+                        }
                     }
                     inString = true;
                 }
@@ -498,28 +587,51 @@ public class PersistenceManager {
 
     private String extractArraySection(String json, String key) {
         int keyIdx = findKeyPosition(json, key, 0);
-        if (keyIdx < 0) return null;
+        if (keyIdx < 0) {
+            return null;
+        }
         int bracketStart = -1;
         for (int i = keyIdx + key.length() + 2; i < json.length(); i++) {
             char c = json.charAt(i);
-            if (c == '[') { bracketStart = i; break; }
-            if (c != ':' && c != ' ' && c != '\n' && c != '\r' && c != '\t') break;
+            if (c == '[') {
+                bracketStart = i;
+                break;
+            }
+            if (c != ':' && c != ' ' && c != '\n' && c != '\r' && c != '\t') {
+                break;
+            }
         }
-        if (bracketStart < 0) return null;
+        if (bracketStart < 0) {
+            return null;
+        }
         int depth = 0, end = -1;
         boolean inString = false;
         for (int i = bracketStart; i < json.length(); i++) {
             char ch = json.charAt(i);
             if (ch == '"') {
                 int bs = 0, check = i - 1;
-                while (check >= 0 && json.charAt(check) == '\\') { bs++; check--; }
-                if (bs % 2 == 0) inString = !inString;
+                while (check >= 0 && json.charAt(check) == '\\') {
+                    bs++;
+                    check--;
+                }
+                if (bs % 2 == 0) {
+                    inString = !inString;
+                }
             } else if (!inString) {
-                if (ch == '[') depth++;
-                else if (ch == ']') { depth--; if (depth == 0) { end = i; break; } }
+                if (ch == '[') {
+                    depth++; 
+                }else if (ch == ']') {
+                    depth--;
+                    if (depth == 0) {
+                        end = i;
+                        break;
+                    }
+                }
             }
         }
-        if (end < 0) return null;
+        if (end < 0) {
+            return null;
+        }
         return json.substring(bracketStart + 1, end).trim();
     }
 
@@ -531,13 +643,25 @@ public class PersistenceManager {
             char ch = arrayContent.charAt(i);
             if (ch == '"') {
                 int bs = 0, check = i - 1;
-                while (check >= 0 && arrayContent.charAt(check) == '\\') { bs++; check--; }
-                if (bs % 2 == 0) inString = !inString;
+                while (check >= 0 && arrayContent.charAt(check) == '\\') {
+                    bs++;
+                    check--;
+                }
+                if (bs % 2 == 0) {
+                    inString = !inString;
+                }
             } else if (!inString) {
-                if (ch == '{') { if (depth == 0) start = i; depth++; }
-                else if (ch == '}') {
+                if (ch == '{') {
+                    if (depth == 0) {
+                        start = i;
+                    
+                    }depth++;
+                } else if (ch == '}') {
                     depth--;
-                    if (depth == 0 && start >= 0) { result.add(arrayContent.substring(start, i + 1)); start = -1; }
+                    if (depth == 0 && start >= 0) {
+                        result.add(arrayContent.substring(start, i + 1));
+                        start = -1;
+                    }
                 }
             }
         }
@@ -546,48 +670,77 @@ public class PersistenceManager {
 
     private String extractStringValue(String obj, String key) {
         int keyIdx = findKeyPosition(obj, key, 0);
-        if (keyIdx < 0) return null;
+        if (keyIdx < 0) {
+            return null;
+        }
         int colon = obj.indexOf(':', keyIdx + key.length() + 2);
-        if (colon < 0) return null;
+        if (colon < 0) {
+            return null;
+        }
         int quoteStart = obj.indexOf('"', colon + 1);
-        if (quoteStart < 0) return null;
+        if (quoteStart < 0) {
+            return null;
+        }
         int quoteEnd = quoteStart + 1;
         while (quoteEnd < obj.length()) {
             if (obj.charAt(quoteEnd) == '"') {
                 int bs = 0, check = quoteEnd - 1;
-                while (check >= quoteStart + 1 && obj.charAt(check) == '\\') { bs++; check--; }
-                if (bs % 2 == 0) break;
+                while (check >= quoteStart + 1 && obj.charAt(check) == '\\') {
+                    bs++;
+                    check--;
+                }
+                if (bs % 2 == 0) {
+                    break;
+                }
             }
             quoteEnd++;
         }
         return obj.substring(quoteStart + 1, quoteEnd)
-                  .replace("\\\"", "\"").replace("\\\\", "\\")
-                  .replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t");
+                .replace("\\\"", "\"").replace("\\\\", "\\")
+                .replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t");
     }
 
     private boolean extractBoolValue(String obj, String key) {
         int keyIdx = findKeyPosition(obj, key, 0);
-        if (keyIdx < 0) return false;
+        if (keyIdx < 0) {
+            return false;
+        }
         int colon = obj.indexOf(':', keyIdx + key.length() + 2);
-        if (colon < 0) return false;
+        if (colon < 0) {
+            return false;
+        }
         return obj.substring(colon + 1).trim().startsWith("true");
     }
 
     private int extractIntValue(String obj, String key) {
         int keyIdx = findKeyPosition(obj, key, 0);
-        if (keyIdx < 0) return -1;
+        if (keyIdx < 0) {
+            return -1;
+        }
         int colon = obj.indexOf(':', keyIdx + key.length() + 2);
-        if (colon < 0) return -1;
+        if (colon < 0) {
+            return -1;
+        }
         String rest = obj.substring(colon + 1).trim();
         StringBuilder num = new StringBuilder();
         for (char c : rest.toCharArray()) {
-            if (Character.isDigit(c)) num.append(c);
-            else if (num.length() > 0) break;
+            if (Character.isDigit(c)) {
+                num.append(c); 
+            }else if (num.length() > 0) {
+                break;
+            }
         }
-        if (num.length() == 0) return -1;
-        try { return Integer.parseInt(num.toString()); }
-        catch (NumberFormatException e) { return -1; }
+        if (num.length() == 0) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(num.toString());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
-    public String getDataFilePath() { return dataFilePath; }
+    public String getDataFilePath() {
+        return dataFilePath;
+    }
 }
