@@ -5,18 +5,15 @@ import it.easyevent.v1.model.Campo;
 import it.easyevent.v1.model.Categoria;
 import it.easyevent.v1.model.Configuratore;
 import it.easyevent.v1.persistence.PersistenceManager;
-
 import java.io.IOException;
 import java.util.List;
 
 /**
- * Controller per tutte le operazioni del configuratore (Versione 1).
- * Incapsula la logica di business e media tra la view e il model.
+ * Controller per tutte le operazioni del configuratore (Versione 1). Incapsula
+ * la logica di business e media tra la view e il model.
  *
- * Invariante di classe:
- * - appData != null
- * - persistenceManager != null
- * - configuratoreCorrente può essere null (nessun utente loggato)
+ * Invariante di classe: - appData != null - persistenceManager != null -
+ * configuratoreCorrente può essere null (nessun utente loggato)
  */
 public class ConfiguratoreController {
 
@@ -25,12 +22,16 @@ public class ConfiguratoreController {
     private Configuratore configuratoreCorrente;
 
     /**
-     * @param appData            stato dell'applicazione, non null
+     * @param appData stato dell'applicazione, non null
      * @param persistenceManager gestore persistenza, non null
      */
     public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager) {
-        if (appData == null) throw new IllegalArgumentException("AppData non può essere null.");
-        if (persistenceManager == null) throw new IllegalArgumentException("PersistenceManager non può essere null.");
+        if (appData == null) {
+            throw new IllegalArgumentException("AppData non può essere null.");
+        }
+        if (persistenceManager == null) {
+            throw new IllegalArgumentException("PersistenceManager non può essere null.");
+        }
         this.appData = appData;
         this.persistenceManager = persistenceManager;
         this.configuratoreCorrente = null;
@@ -39,10 +40,9 @@ public class ConfiguratoreController {
     // ================================================================
     // AUTENTICAZIONE
     // ================================================================
-
     /**
-     * Effettua il login di un configuratore.
-     * Se è il primo configuratore e non ce ne sono ancora registrati, usa le credenziali di default.
+     * Effettua il login di un configuratore. Se è il primo configuratore e non
+     * ce ne sono ancora registrati, usa le credenziali di default.
      *
      * @param username username inserito
      * @param password password inserita
@@ -50,7 +50,9 @@ public class ConfiguratoreController {
      */
     public boolean login(String username, String password) {
         // Precondizioni
-        if (username == null || password == null) return false;
+        if (username == null || password == null) {
+            return false;
+        }
 
         // Caso: nessun configuratore ancora registrato → usa credenziali default
         if (appData.getConfiguratori().isEmpty()) {
@@ -88,7 +90,8 @@ public class ConfiguratoreController {
     }
 
     /**
-     * @return true se il configuratore corrente deve ancora scegliere le credenziali personali
+     * @return true se il configuratore corrente deve ancora scegliere le
+     * credenziali personali
      */
     public boolean richiedeCambioCredenziali() {
         return configuratoreCorrente != null && configuratoreCorrente.isPrimoAccesso();
@@ -103,10 +106,18 @@ public class ConfiguratoreController {
      */
     public String impostaCredenzialiPersonali(String nuovoUsername, String nuovaPassword) {
         // Precondizioni
-        if (!isLoggato()) return "Nessun configuratore loggato.";
-        if (!richiedeCambioCredenziali()) return "Le credenziali personali sono già state impostate.";
-        if (nuovoUsername == null || nuovoUsername.isBlank()) return "Lo username non può essere vuoto.";
-        if (nuovaPassword == null || nuovaPassword.isBlank()) return "La password non può essere vuota.";
+        if (!isLoggato()) {
+            return "Nessun configuratore loggato.";
+        }
+        if (!richiedeCambioCredenziali()) {
+            return "Le credenziali personali sono già state impostate.";
+        }
+        if (nuovoUsername == null || nuovoUsername.isBlank()) {
+            return "Lo username non può essere vuoto.";
+        }
+        if (nuovaPassword == null || nuovaPassword.isBlank()) {
+            return "La password non può essere vuota.";
+        }
 
         // Verifica unicità username (escludendo se stesso)
         String vecchioUsername = configuratoreCorrente.getUsername();
@@ -134,9 +145,9 @@ public class ConfiguratoreController {
     // ================================================================
     // CAMPI BASE
     // ================================================================
-
     /**
-     * Inizializza i campi base se non già fatto. Operazione eseguita solo al primo avvio.
+     * Inizializza i campi base se non già fatto. Operazione eseguita solo al
+     * primo avvio.
      *
      * @return messaggio di esito (stringa vuota = successo o già inizializzati)
      */
@@ -163,17 +174,20 @@ public class ConfiguratoreController {
     // ================================================================
     // CAMPI COMUNI
     // ================================================================
-
     /**
      * Aggiunge un campo comune.
      *
-     * @param nome         nome del campo, non null e non blank
+     * @param nome nome del campo, non null e non blank
      * @param obbligatorio true se obbligatorio
      * @return messaggio di errore, stringa vuota se successo
      */
     public String aggiungiCampoComune(String nome, boolean obbligatorio) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
-        if (nome == null || nome.isBlank()) return "Il nome del campo non può essere vuoto.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
+        if (nome == null || nome.isBlank()) {
+            return "Il nome del campo non può essere vuoto.";
+        }
         try {
             Campo campo = new Campo(nome.trim(), obbligatorio, Campo.TipoCampo.COMUNE);
             appData.aggiungiCampoComune(campo);
@@ -193,10 +207,16 @@ public class ConfiguratoreController {
      * @return messaggio di errore, stringa vuota se successo
      */
     public String rimuoviCampoComune(String nomeCampo) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
-        if (nomeCampo == null || nomeCampo.isBlank()) return "Il nome del campo non può essere vuoto.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
+        if (nomeCampo == null || nomeCampo.isBlank()) {
+            return "Il nome del campo non può essere vuoto.";
+        }
         boolean rimosso = appData.rimuoviCampoComune(nomeCampo);
-        if (!rimosso) return "Nessun campo comune trovato con nome: " + nomeCampo;
+        if (!rimosso) {
+            return "Nessun campo comune trovato con nome: " + nomeCampo;
+        }
         try {
             salva();
             return "";
@@ -208,14 +228,18 @@ public class ConfiguratoreController {
     /**
      * Modifica l'obbligatorietà di un campo comune.
      *
-     * @param nomeCampo    nome del campo
+     * @param nomeCampo nome del campo
      * @param obbligatorio nuovo valore
      * @return messaggio di errore, stringa vuota se successo
      */
     public String modificaObbligatorietaCampoComune(String nomeCampo, boolean obbligatorio) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
         boolean modificato = appData.modificaObbligatorietaCampoComune(nomeCampo, obbligatorio);
-        if (!modificato) return "Nessun campo comune trovato con nome: " + nomeCampo;
+        if (!modificato) {
+            return "Nessun campo comune trovato con nome: " + nomeCampo;
+        }
         try {
             salva();
             return "";
@@ -234,7 +258,6 @@ public class ConfiguratoreController {
     // ================================================================
     // CATEGORIE
     // ================================================================
-
     /**
      * Crea e aggiunge una nuova categoria.
      *
@@ -242,8 +265,12 @@ public class ConfiguratoreController {
      * @return messaggio di errore, stringa vuota se successo
      */
     public String aggiungiCategoria(String nomeCategoria) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
-        if (nomeCategoria == null || nomeCategoria.isBlank()) return "Il nome della categoria non può essere vuoto.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
+        if (nomeCategoria == null || nomeCategoria.isBlank()) {
+            return "Il nome della categoria non può essere vuoto.";
+        }
         try {
             Categoria cat = new Categoria(nomeCategoria.trim());
             appData.aggiungiCategoria(cat);
@@ -263,10 +290,16 @@ public class ConfiguratoreController {
      * @return messaggio di errore, stringa vuota se successo
      */
     public String rimuoviCategoria(String nomeCategoria) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
-        if (nomeCategoria == null || nomeCategoria.isBlank()) return "Il nome della categoria non può essere vuoto.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
+        if (nomeCategoria == null || nomeCategoria.isBlank()) {
+            return "Il nome della categoria non può essere vuoto.";
+        }
         boolean rimossa = appData.rimuoviCategoria(nomeCategoria);
-        if (!rimossa) return "Nessuna categoria trovata con nome: " + nomeCategoria;
+        if (!rimossa) {
+            return "Nessuna categoria trovata con nome: " + nomeCategoria;
+        }
         try {
             salva();
             return "";
@@ -279,17 +312,25 @@ public class ConfiguratoreController {
      * Aggiunge un campo specifico a una categoria esistente.
      *
      * @param nomeCategoria nome della categoria
-     * @param nomeCampo     nome del campo specifico
-     * @param obbligatorio  true se obbligatorio
+     * @param nomeCampo nome del campo specifico
+     * @param obbligatorio true se obbligatorio
      * @return messaggio di errore, stringa vuota se successo
      */
     public String aggiungiCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
-        if (nomeCategoria == null || nomeCategoria.isBlank()) return "Il nome della categoria non può essere vuoto.";
-        if (nomeCampo == null || nomeCampo.isBlank()) return "Il nome del campo non può essere vuoto.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
+        if (nomeCategoria == null || nomeCategoria.isBlank()) {
+            return "Il nome della categoria non può essere vuoto.";
+        }
+        if (nomeCampo == null || nomeCampo.isBlank()) {
+            return "Il nome del campo non può essere vuoto.";
+        }
 
         Categoria cat = appData.getCategoria(nomeCategoria);
-        if (cat == null) return "Categoria non trovata: " + nomeCategoria;
+        if (cat == null) {
+            return "Categoria non trovata: " + nomeCategoria;
+        }
 
         // Verifica che il nome non coincida con un campo base o comune
         if (appData.esisteCampoBase(nomeCampo)) {
@@ -315,15 +356,21 @@ public class ConfiguratoreController {
      * Rimuove un campo specifico da una categoria.
      *
      * @param nomeCategoria nome della categoria
-     * @param nomeCampo     nome del campo da rimuovere
+     * @param nomeCampo nome del campo da rimuovere
      * @return messaggio di errore, stringa vuota se successo
      */
     public String rimuoviCampoSpecifico(String nomeCategoria, String nomeCampo) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
         Categoria cat = appData.getCategoria(nomeCategoria);
-        if (cat == null) return "Categoria non trovata: " + nomeCategoria;
+        if (cat == null) {
+            return "Categoria non trovata: " + nomeCategoria;
+        }
         boolean rimosso = cat.rimuoviCampoSpecifico(nomeCampo);
-        if (!rimosso) return "Nessun campo specifico trovato con nome: " + nomeCampo;
+        if (!rimosso) {
+            return "Nessun campo specifico trovato con nome: " + nomeCampo;
+        }
         try {
             salva();
             return "";
@@ -336,16 +383,22 @@ public class ConfiguratoreController {
      * Modifica l'obbligatorietà di un campo specifico di una categoria.
      *
      * @param nomeCategoria nome della categoria
-     * @param nomeCampo     nome del campo
-     * @param obbligatorio  nuovo valore
+     * @param nomeCampo nome del campo
+     * @param obbligatorio nuovo valore
      * @return messaggio di errore, stringa vuota se successo
      */
     public String modificaObbligatorietaCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
-        if (!isLoggato()) return "Accesso negato: effettuare il login.";
+        if (!isLoggato()) {
+            return "Accesso negato: effettuare il login.";
+        }
         Categoria cat = appData.getCategoria(nomeCategoria);
-        if (cat == null) return "Categoria non trovata: " + nomeCategoria;
+        if (cat == null) {
+            return "Categoria non trovata: " + nomeCategoria;
+        }
         boolean modificato = cat.modificaObbligatorietaCampoSpecifico(nomeCampo, obbligatorio);
-        if (!modificato) return "Nessun campo specifico trovato con nome: " + nomeCampo;
+        if (!modificato) {
+            return "Nessun campo specifico trovato con nome: " + nomeCampo;
+        }
         try {
             salva();
             return "";
@@ -374,7 +427,6 @@ public class ConfiguratoreController {
     // ================================================================
     // UTILITÀ
     // ================================================================
-
     /**
      * Salva lo stato corrente su file.
      *

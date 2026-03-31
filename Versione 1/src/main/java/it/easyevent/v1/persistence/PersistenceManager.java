@@ -4,26 +4,24 @@ import it.easyevent.v1.model.AppData;
 import it.easyevent.v1.model.Campo;
 import it.easyevent.v1.model.Categoria;
 import it.easyevent.v1.model.Configuratore;
-
 import java.io.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Gestore della persistenza su file JSON (implementazione manuale senza librerie esterne).
- * Salva e carica lo stato completo dell'applicazione (Versione 1).
+ * Gestore della persistenza su file JSON (implementazione manuale senza
+ * librerie esterne). Salva e carica lo stato completo dell'applicazione
+ * (Versione 1).
  *
- * Il file ha la seguente struttura:
- * {
- *   "configuratori": [...],
- *   "campiBase": [...],
- *   "campiComuni": [...],
- *   "categorie": [...]
+ * Il file ha la seguente struttura: { 
+ *  "configuratori": [...], 
+ *  "campiBase"    : [...],
+ *  "campiComuni"  : [...], 
+ *  "categorie"    : [...] 
  * }
  *
- * Invariante di classe:
- * - dataFilePath != null && !dataFilePath.isBlank()
+ * Invariante di classe: - dataFilePath != null && !dataFilePath.isBlank()
  */
 public class PersistenceManager {
 
@@ -43,7 +41,6 @@ public class PersistenceManager {
     // ================================================================
     // SALVATAGGIO
     // ================================================================
-
     /**
      * Salva lo stato corrente di AppData su file JSON.
      *
@@ -51,7 +48,9 @@ public class PersistenceManager {
      * @throws IOException in caso di errore di scrittura
      */
     public void salva(AppData data) throws IOException {
-        if (data == null) throw new IllegalArgumentException("AppData non può essere null.");
+        if (data == null) {
+            throw new IllegalArgumentException("AppData non può essere null.");
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
@@ -66,7 +65,9 @@ public class PersistenceManager {
             sb.append("\"password\": ").append(jsonStr(c.getPassword())).append(", ");
             sb.append("\"primoAccesso\": ").append(c.isPrimoAccesso());
             sb.append("}");
-            if (i < confs.size() - 1) sb.append(",");
+            if (i < confs.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -76,7 +77,9 @@ public class PersistenceManager {
         List<Campo> cb = data.getCampiBase();
         for (int i = 0; i < cb.size(); i++) {
             sb.append("    ").append(serializzaCampo(cb.get(i)));
-            if (i < cb.size() - 1) sb.append(",");
+            if (i < cb.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -86,7 +89,9 @@ public class PersistenceManager {
         List<Campo> cc = data.getCampiComuni();
         for (int i = 0; i < cc.size(); i++) {
             sb.append("    ").append(serializzaCampo(cc.get(i)));
-            if (i < cc.size() - 1) sb.append(",");
+            if (i < cc.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -102,12 +107,16 @@ public class PersistenceManager {
             List<Campo> cs = cat.getCampiSpecifici();
             for (int j = 0; j < cs.size(); j++) {
                 sb.append("        ").append(serializzaCampo(cs.get(j)));
-                if (j < cs.size() - 1) sb.append(",");
+                if (j < cs.size() - 1) {
+                    sb.append(",");
+                }
                 sb.append("\n");
             }
             sb.append("      ]\n");
             sb.append("    }");
-            if (i < cats.size() - 1) sb.append(",");
+            if (i < cats.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ]\n");
@@ -125,16 +134,18 @@ public class PersistenceManager {
     // ================================================================
     // CARICAMENTO
     // ================================================================
-
     /**
      * Carica lo stato dell'applicazione dal file JSON e lo imposta su AppData.
      *
      * @param data istanza di AppData da popolare, non null
-     * @return true se il file esiste ed è stato caricato, false se il file non esiste
+     * @return true se il file esiste ed è stato caricato, false se il file non
+     * esiste
      * @throws IOException in caso di errore di lettura o parsing
      */
     public boolean carica(AppData data) throws IOException {
-        if (data == null) throw new IllegalArgumentException("AppData non può essere null.");
+        if (data == null) {
+            throw new IllegalArgumentException("AppData non può essere null.");
+        }
 
         Path path = Paths.get(dataFilePath);
         if (!Files.exists(path)) {
@@ -165,11 +176,10 @@ public class PersistenceManager {
     // ================================================================
     // HELPERS SERIALIZZAZIONE
     // ================================================================
-
     private String serializzaCampo(Campo c) {
-        return "{\"nome\": " + jsonStr(c.getNome()) +
-                ", \"obbligatorio\": " + c.isObbligatorio() +
-                ", \"tipo\": " + jsonStr(c.getTipo().name()) + "}";
+        return "{\"nome\": " + jsonStr(c.getNome())
+                + ", \"obbligatorio\": " + c.isObbligatorio()
+                + ", \"tipo\": " + jsonStr(c.getTipo().name()) + "}";
     }
 
     private String jsonStr(String s) {
@@ -183,11 +193,12 @@ public class PersistenceManager {
     // ================================================================
     // HELPERS PARSING (parser JSON minimale)
     // ================================================================
-
     private List<Configuratore> parseConfiguratori(String json) {
         List<Configuratore> result = new ArrayList<>();
         String section = extractArraySection(json, "configuratori");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
 
         List<String> objects = splitJsonObjects(section);
         for (String obj : objects) {
@@ -204,7 +215,9 @@ public class PersistenceManager {
     private List<Campo> parseCampi(String json, String arrayName) {
         List<Campo> result = new ArrayList<>();
         String section = extractArraySection(json, arrayName);
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
 
         List<String> objects = splitJsonObjects(section);
         for (String obj : objects) {
@@ -226,13 +239,17 @@ public class PersistenceManager {
     private List<Categoria> parseCategorie(String json) {
         List<Categoria> result = new ArrayList<>();
         String section = extractArraySection(json, "categorie");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
 
         // Splitta per oggetti di primo livello (ogni categoria è un oggetto)
         List<String> objects = splitJsonObjects(section);
         for (String obj : objects) {
             String nome = extractStringValue(obj, "nome");
-            if (nome == null) continue;
+            if (nome == null) {
+                continue;
+            }
             Categoria cat = new Categoria(nome);
             // Estrai campiSpecifici
             String csSection = extractArraySection(obj, "campiSpecifici");
@@ -263,15 +280,20 @@ public class PersistenceManager {
     private String extractArraySection(String json, String key) {
         String search = "\"" + key + "\"";
         int keyIdx = json.indexOf(search);
-        if (keyIdx < 0) return null;
+        if (keyIdx < 0) {
+            return null;
+        }
         int bracketStart = json.indexOf('[', keyIdx + search.length());
-        if (bracketStart < 0) return null;
+        if (bracketStart < 0) {
+            return null;
+        }
         int depth = 0;
         int end = bracketStart;
         for (int i = bracketStart; i < json.length(); i++) {
             char ch = json.charAt(i);
-            if (ch == '[') depth++;
-            else if (ch == ']') {
+            if (ch == '[') {
+                depth++; 
+            }else if (ch == ']') {
                 depth--;
                 if (depth == 0) {
                     end = i;
@@ -292,7 +314,9 @@ public class PersistenceManager {
         for (int i = 0; i < arrayContent.length(); i++) {
             char ch = arrayContent.charAt(i);
             if (ch == '{') {
-                if (depth == 0) start = i;
+                if (depth == 0) {
+                    start = i;
+                }
                 depth++;
             } else if (ch == '}') {
                 depth--;
@@ -311,14 +335,22 @@ public class PersistenceManager {
     private String extractStringValue(String obj, String key) {
         String search = "\"" + key + "\"";
         int idx = obj.indexOf(search);
-        if (idx < 0) return null;
+        if (idx < 0) {
+            return null;
+        }
         int colon = obj.indexOf(':', idx + search.length());
-        if (colon < 0) return null;
+        if (colon < 0) {
+            return null;
+        }
         int quoteStart = obj.indexOf('"', colon + 1);
-        if (quoteStart < 0) return null;
+        if (quoteStart < 0) {
+            return null;
+        }
         int quoteEnd = quoteStart + 1;
         while (quoteEnd < obj.length()) {
-            if (obj.charAt(quoteEnd) == '"' && obj.charAt(quoteEnd - 1) != '\\') break;
+            if (obj.charAt(quoteEnd) == '"' && obj.charAt(quoteEnd - 1) != '\\') {
+                break;
+            }
             quoteEnd++;
         }
         return obj.substring(quoteStart + 1, quoteEnd)
@@ -332,9 +364,13 @@ public class PersistenceManager {
     private boolean extractBoolValue(String obj, String key) {
         String search = "\"" + key + "\"";
         int idx = obj.indexOf(search);
-        if (idx < 0) return false;
+        if (idx < 0) {
+            return false;
+        }
         int colon = obj.indexOf(':', idx + search.length());
-        if (colon < 0) return false;
+        if (colon < 0) {
+            return false;
+        }
         String rest = obj.substring(colon + 1).trim();
         return rest.startsWith("true");
     }

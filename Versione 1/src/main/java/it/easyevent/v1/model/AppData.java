@@ -5,19 +5,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Contenitore centrale dello stato dell'applicazione (Versione 1).
- * Gestisce: configuratori, campi base, campi comuni, categorie.
+ * Contenitore centrale dello stato dell'applicazione (Versione 1). Gestisce:
+ * configuratori, campi base, campi comuni, categorie.
  *
  * Pattern Singleton: una sola istanza per tutta l'applicazione.
  *
- * Invariante di classe:
- * - configuratori != null
- * - campiBase != null (impostati una volta sola al primo avvio, poi immutabili)
- * - campiComuni != null
- * - categorie != null
- * - ogni configuratore ha username univoco
- * - ogni categoria ha nome univoco
- * - nessun campo comune ha lo stesso nome di un campo base
+ * Invariante di classe: - configuratori != null - campiBase != null (impostati
+ * una volta sola al primo avvio, poi immutabili) - campiComuni != null -
+ * categorie != null - ogni configuratore ha username univoco - ogni categoria
+ * ha nome univoco - nessun campo comune ha lo stesso nome di un campo base
  */
 public class AppData {
 
@@ -61,7 +57,9 @@ public class AppData {
         return instance;
     }
 
-    /** Resetta l'istanza singleton (usato per test e deserializzazione). */
+    /**
+     * Resetta l'istanza singleton (usato per test e deserializzazione).
+     */
     public static void resetInstance() {
         instance = null;
     }
@@ -69,15 +67,17 @@ public class AppData {
     // ================================================================
     // GESTIONE CONFIGURATORI
     // ================================================================
-
     /**
      * Aggiunge un configuratore al sistema.
      *
      * @param conf configuratore da aggiungere, non null
-     * @throws IllegalArgumentException se conf è null o esiste già uno con lo stesso username
+     * @throws IllegalArgumentException se conf è null o esiste già uno con lo
+     * stesso username
      */
     public void aggiungiConfiguratore(Configuratore conf) {
-        if (conf == null) throw new IllegalArgumentException("Configuratore non può essere null.");
+        if (conf == null) {
+            throw new IllegalArgumentException("Configuratore non può essere null.");
+        }
         if (esisteUsername(conf.getUsername())) {
             throw new IllegalArgumentException("Username già in uso: " + conf.getUsername());
         }
@@ -86,13 +86,16 @@ public class AppData {
     }
 
     /**
-     * Verifica se uno username è già in uso (sia configuratori sia, nelle versioni future, fruitori).
+     * Verifica se uno username è già in uso (sia configuratori sia, nelle
+     * versioni future, fruitori).
      *
      * @param username username da verificare
      * @return true se in uso
      */
     public boolean esisteUsername(String username) {
-        if (username == null) return false;
+        if (username == null) {
+            return false;
+        }
         return configuratori.stream()
                 .anyMatch(c -> c.getUsername().equalsIgnoreCase(username));
     }
@@ -104,7 +107,9 @@ public class AppData {
      * @return il Configuratore trovato, o null se assente
      */
     public Configuratore getConfiguratore(String username) {
-        if (username == null) return null;
+        if (username == null) {
+            return null;
+        }
         return configuratori.stream()
                 .filter(c -> c.getUsername().equalsIgnoreCase(username))
                 .findFirst()
@@ -118,11 +123,12 @@ public class AppData {
     // ================================================================
     // GESTIONE CAMPI BASE
     // ================================================================
-
     /**
-     * Inizializza i campi base al primo avvio. Operazione eseguibile una sola volta.
+     * Inizializza i campi base al primo avvio. Operazione eseguibile una sola
+     * volta.
      *
-     * @throws IllegalStateException se i campi base sono già stati inizializzati
+     * @throws IllegalStateException se i campi base sono già stati
+     * inizializzati
      */
     public void inizializzaCampiBase() {
         if (campiBaseInizialized) {
@@ -147,23 +153,26 @@ public class AppData {
      * Verifica se esiste un campo base con il nome dato.
      */
     public boolean esisteCampoBase(String nome) {
-        if (nome == null) return false;
+        if (nome == null) {
+            return false;
+        }
         return campiBase.stream().anyMatch(c -> c.getNome().equalsIgnoreCase(nome));
     }
 
     // ================================================================
     // GESTIONE CAMPI COMUNI
     // ================================================================
-
     /**
      * Aggiunge un campo comune.
      *
      * @param campo campo da aggiungere, non null, di tipo COMUNE
-     * @throws IllegalArgumentException se campo è null, non COMUNE,
-     *         ha lo stesso nome di un campo base, o è già presente tra i comuni
+     * @throws IllegalArgumentException se campo è null, non COMUNE, ha lo
+     * stesso nome di un campo base, o è già presente tra i comuni
      */
     public void aggiungiCampoComune(Campo campo) {
-        if (campo == null) throw new IllegalArgumentException("Il campo non può essere null.");
+        if (campo == null) {
+            throw new IllegalArgumentException("Il campo non può essere null.");
+        }
         if (campo.getTipo() != Campo.TipoCampo.COMUNE) {
             throw new IllegalArgumentException("Il campo deve essere di tipo COMUNE.");
         }
@@ -192,7 +201,7 @@ public class AppData {
     /**
      * Modifica l'obbligatorietà di un campo comune.
      *
-     * @param nomeCampo    nome del campo
+     * @param nomeCampo nome del campo
      * @param obbligatorio nuovo valore
      * @return true se modifica avvenuta
      */
@@ -207,12 +216,16 @@ public class AppData {
     }
 
     public boolean esisteCampoComune(String nome) {
-        if (nome == null) return false;
+        if (nome == null) {
+            return false;
+        }
         return campiComuni.stream().anyMatch(c -> c.getNome().equalsIgnoreCase(nome));
     }
 
     public Campo getCampoComune(String nome) {
-        if (nome == null) return null;
+        if (nome == null) {
+            return null;
+        }
         return campiComuni.stream()
                 .filter(c -> c.getNome().equalsIgnoreCase(nome))
                 .findFirst()
@@ -226,15 +239,17 @@ public class AppData {
     // ================================================================
     // GESTIONE CATEGORIE
     // ================================================================
-
     /**
      * Aggiunge una nuova categoria.
      *
      * @param categoria categoria da aggiungere, non null
-     * @throws IllegalArgumentException se categoria è null o esiste già con lo stesso nome
+     * @throws IllegalArgumentException se categoria è null o esiste già con lo
+     * stesso nome
      */
     public void aggiungiCategoria(Categoria categoria) {
-        if (categoria == null) throw new IllegalArgumentException("La categoria non può essere null.");
+        if (categoria == null) {
+            throw new IllegalArgumentException("La categoria non può essere null.");
+        }
         if (esisteCategoria(categoria.getNome())) {
             throw new IllegalArgumentException("Esiste già una categoria con nome: " + categoria.getNome());
         }
@@ -255,12 +270,16 @@ public class AppData {
     }
 
     public boolean esisteCategoria(String nome) {
-        if (nome == null) return false;
+        if (nome == null) {
+            return false;
+        }
         return categorie.stream().anyMatch(cat -> cat.getNome().equalsIgnoreCase(nome));
     }
 
     public Categoria getCategoria(String nome) {
-        if (nome == null) return null;
+        if (nome == null) {
+            return null;
+        }
         return categorie.stream()
                 .filter(cat -> cat.getNome().equalsIgnoreCase(nome))
                 .findFirst()
@@ -274,7 +293,6 @@ public class AppData {
     // ================================================================
     // SETTERS PER DESERIALIZZAZIONE
     // ================================================================
-
     public void setCampiBase(List<Campo> campiBase) {
         this.campiBase = new ArrayList<>(campiBase);
         this.campiBaseInizialized = !campiBase.isEmpty();
@@ -295,7 +313,6 @@ public class AppData {
     // ================================================================
     // INVARIANTE
     // ================================================================
-
     /**
      * Verifica l'invariante di classe.
      */
@@ -307,15 +324,21 @@ public class AppData {
         long usernameDistinti = configuratori.stream()
                 .map(c -> c.getUsername().toLowerCase())
                 .distinct().count();
-        if (usernameDistinti != configuratori.size()) return false;
+        if (usernameDistinti != configuratori.size()) {
+            return false;
+        }
         // Nomi categorie univoci
         long nomiDistinti = categorie.stream()
                 .map(cat -> cat.getNome().toLowerCase())
                 .distinct().count();
-        if (nomiDistinti != categorie.size()) return false;
+        if (nomiDistinti != categorie.size()) {
+            return false;
+        }
         // Nessun campo comune col nome di un campo base
         for (Campo cc : campiComuni) {
-            if (esisteCampoBase(cc.getNome())) return false;
+            if (esisteCampoBase(cc.getNome())) {
+                return false;
+            }
         }
         return true;
     }

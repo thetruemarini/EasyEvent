@@ -1,17 +1,16 @@
 package it.easyevent.v1;
 
-import java.io.IOException;
-
 import it.easyevent.v1.controller.ConfiguratoreController;
 import it.easyevent.v1.model.AppData;
 import it.easyevent.v1.persistence.PersistenceManager;
 import it.easyevent.v1.view.ConfiguratoreView;
+import java.io.IOException;
 
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent – Versione 1.
  *
- * Avvia il back-end per i configuratori.
- * Carica i dati persistenti (se presenti) e lancia la view testuale.
+ * Avvia il back-end per i configuratori. Carica i dati persistenti (se
+ * presenti) e lancia la view testuale.
  */
 public class MainV1 {
 

@@ -13,7 +13,9 @@ import java.util.Scanner;
  * business è delegata al ConfiguratoreController. La separazione garantisce
  * facilità di sostituzione con una GUI in futuro.
  *
- * Invariante di classe: - controller != null - scanner != null
+ * Invariante di classe: 
+ * - controller != null 
+ * - scanner != null
  */
 public class ConfiguratoreView {
 
@@ -435,8 +437,8 @@ public class ConfiguratoreView {
                     boolean ob = chiediObbligatorio();
                     String err = controller.aggiungiCampoSpecifico(nomeCategoria, nome, ob);
                     if (err.isEmpty()) {
-                        System.out.println("  Campo '" + nome + "' aggiunto."); 
-                    }else {
+                        System.out.println("  Campo '" + nome + "' aggiunto.");
+                    } else {
                         stampaErrore(err);
                     }
                 }
@@ -445,8 +447,8 @@ public class ConfiguratoreView {
                     String nome = scanner.nextLine().trim();
                     String err = controller.rimuoviCampoSpecifico(nomeCategoria, nome);
                     if (err.isEmpty()) {
-                        System.out.println("  Campo '" + nome + "' rimosso."); 
-                    }else {
+                        System.out.println("  Campo '" + nome + "' rimosso.");
+                    } else {
                         stampaErrore(err);
                     }
                 }
@@ -456,8 +458,8 @@ public class ConfiguratoreView {
                     boolean ob = chiediObbligatorio();
                     String err = controller.modificaObbligatorietaCampoSpecifico(nomeCategoria, nome, ob);
                     if (err.isEmpty()) {
-                        System.out.println("  Obbligatorietà aggiornata."); 
-                    }else {
+                        System.out.println("  Obbligatorietà aggiornata.");
+                    } else {
                         stampaErrore(err);
                     }
                 }
@@ -485,14 +487,14 @@ public class ConfiguratoreView {
         controller.getCampiBase().forEach(c -> System.out.println("    - " + c));
         System.out.println("  -- Campi COMUNI (condivisi da tutte le categorie) --");
         if (controller.getCampiComuni().isEmpty()) {
-            System.out.println("    (nessuno)"); 
-        }else {
+            System.out.println("    (nessuno)");
+        } else {
             controller.getCampiComuni().forEach(c -> System.out.println("    - " + c));
         }
         System.out.println("  -- Campi SPECIFICI di '" + cat.getNome() + "' --");
         if (cat.getCampiSpecifici().isEmpty()) {
-            System.out.println("    (nessuno)"); 
-        }else {
+            System.out.println("    (nessuno)");
+        } else {
             cat.getCampiSpecifici().forEach(c -> System.out.println("    - " + c));
         }
 
@@ -511,16 +513,16 @@ public class ConfiguratoreView {
         System.out.println("\n  [CAMPI BASE - obbligatori - condivisi da tutte le categorie]");
         List<Campo> campiBase = controller.getCampiBase();
         if (campiBase.isEmpty()) {
-            System.out.println("    (non ancora inizializzati)"); 
-        }else {
+            System.out.println("    (non ancora inizializzati)");
+        } else {
             campiBase.forEach(c -> System.out.println("    - " + c.getNome() + " (obbligatorio)"));
         }
 
         System.out.println("\n  [CAMPI COMUNI - condivisi da tutte le categorie]");
         List<Campo> campiComuni = controller.getCampiComuni();
         if (campiComuni.isEmpty()) {
-            System.out.println("    (nessuno definito)"); 
-        }else {
+            System.out.println("    (nessuno definito)");
+        } else {
             campiComuni.forEach(c -> System.out.println("    - " + c));
         }
 
