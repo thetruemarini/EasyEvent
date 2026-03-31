@@ -1,7 +1,5 @@
 {
-  "prossimoIdProposta": 1,
   "configuratori": [
-    {"username": "duce", "password": "duce123", "primoAccesso": false}
   ],
   "campiBase": [
     {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
@@ -16,21 +14,5 @@
   "campiComuni": [
   ],
   "categorie": [
-    {
-      "nome": "Sport",
-      "campiSpecifici": [
-        {"nome": "scarpe", "obbligatorio": false, "tipo": "SPECIFICO"},
-        {"nome": "campo", "obbligatorio": true, "tipo": "SPECIFICO"},
-        {"nome": "pallone", "obbligatorio": true, "tipo": "SPECIFICO"}
-      ]
-    },
-    {
-      "nome": "Cibo",
-      "campiSpecifici": [
-        {"nome": "primo", "obbligatorio": true, "tipo": "SPECIFICO"}
-      ]
-    }
-  ],
-  "bacheca": [
   ]
 }

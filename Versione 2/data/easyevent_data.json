@@ -1,7 +1,6 @@
 {
   "prossimoIdProposta": 1,
   "configuratori": [
-    {"username": "ciao", "password": "ciao", "primoAccesso": false}
   ],
   "campiBase": [
     {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
@@ -16,26 +15,6 @@
   "campiComuni": [
   ],
   "categorie": [
-    {
-      "nome": "Sport",
-      "campiSpecifici": [
-        {"nome": "campetto", "obbligatorio": false, "tipo": "SPECIFICO"},
-        {"nome": "scarpe", "obbligatorio": true, "tipo": "SPECIFICO"},
-        {"nome": "pallone", "obbligatorio": true, "tipo": "SPECIFICO"}
-      ]
-    },
-    {
-      "nome": "Cibo",
-      "campiSpecifici": [
-        {"nome": "primo", "obbligatorio": false, "tipo": "SPECIFICO"}
-      ]
-    },
-    {
-      "nome": "Lettura",
-      "campiSpecifici": [
-        {"nome": "libro", "obbligatorio": true, "tipo": "SPECIFICO"}
-      ]
-    }
   ],
   "bacheca": [
   ]

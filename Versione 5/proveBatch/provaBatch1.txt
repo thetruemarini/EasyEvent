@@ -1,9 +1,0 @@
-CAMPO_COMUNE | Durata | no
-CAMPO_COMUNE | Note | no
-CAMPO_COMUNE | Compreso nella quota | no
-
-CATEGORIA | Musica
-CATEGORIA | Sport | CAMPO_SPECIFICO | Certificato medico | si
-CATEGORIA | Gite | CAMPO_SPECIFICO | Mezzo di trasporto | no | CAMPO_SPECIFICO | Guida | si
-
-PROPOSTA | Sport | Titolo = Torneo di Padel | Numero di partecipanti = 8 | Termine ultimo di iscrizione = 30/06/2026 | Luogo = Palestra Centrale | Data inizio = 10/07/2026 | Ora = 09:00 | Quota individuale = 15 | Data conclusiva = 10/07/2026 | Certificato medico = Si | Durata = 6 ore
