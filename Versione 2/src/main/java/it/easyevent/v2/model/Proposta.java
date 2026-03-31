@@ -12,40 +12,40 @@ import java.util.Map;
 /**
  * Rappresenta una proposta di iniziativa (Versione 2).
  *
- * Ciclo di vita in V2:
- *   BOZZA → (campi compilati + vincoli soddisfatti) → VALIDA
- *                                                       ↓ (pubblicazione)
- *                                                     APERTA  (persistita)
+ * Ciclo di vita in V2: BOZZA → (campi compilati + vincoli soddisfatti) → VALIDA
+ *                                                                             ↓ (pubblicazione) APERTA (persistita)
  *
- * Al termine della sessione, proposte BOZZA e VALIDA vengono scartate;
- * solo le proposte APERTE sono salvate su file.
+ * Al termine della sessione, proposte BOZZA e VALIDA vengono scartate; solo le
+ * proposte APERTE sono salvate su file.
  *
- * Lo snapshot dei campi (nome → obbligatorio) viene acquisito al momento
- * della creazione e non risente di successive modifiche alla configurazione.
+ * Lo snapshot dei campi (nome → obbligatorio) viene acquisito al momento della
+ * creazione e non risente di successive modifiche alla configurazione.
  *
- * Invariante di classe:
- *   - id >= 0
- *   - nomeCategoria != null && !nomeCategoria.isBlank()
- *   - usernameCreatore != null && !usernameCreatore.isBlank()
- *   - campiSnapshot != null (può essere vuoto ma non null)
- *   - valori != null, contiene una chiave per ogni campo nello snapshot
- *   - stato != null
- *   - dataPubblicazione != null ↔ stato == APERTA
+ * Invariante di classe: 
+ * - id >= 0 
+ * - nomeCategoria != null && !nomeCategoria.isBlank() 
+ * - usernameCreatore != null && !usernameCreatore.isBlank() 
+ * - campiSnapshot != null (può essere vuoto ma non null) 
+ * - valori != null, contiene una chiave per ogni campo nello snapshot 
+ * - stato != null 
+ * - dataPubblicazione != null ↔ stato == APERTA
  */
 public class Proposta {
 
-    /** Formato data usato nell'applicazione: gg/mm/aaaa. */
-    public static final DateTimeFormatter DATE_FORMAT =
-            DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    /**
+     * Formato data usato nell'applicazione: gg/mm/aaaa.
+     */
+    public static final DateTimeFormatter DATE_FORMAT
+            = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     // Nomi dei campi base coinvolti nei vincoli di data
     public static final String CAMPO_TERMINE_ISCRIZIONE = "Termine ultimo di iscrizione";
-    public static final String CAMPO_DATA               = "Data inizio";
-    public static final String CAMPO_DATA_CONCLUSIVA    = "Data conclusiva";
-    public static final String CAMPO_ORA                = "Ora";
+    public static final String CAMPO_DATA = "Data inizio";
+    public static final String CAMPO_DATA_CONCLUSIVA = "Data conclusiva";
+    public static final String CAMPO_ORA = "Ora";
 
     // ---- Dati identificativi ----
-    private final int    id;
+    private final int id;
     private final String nomeCategoria;
     private final String usernameCreatore;
 
@@ -58,39 +58,42 @@ public class Proposta {
 
     // ---- Stato e metadati di pubblicazione ----
     private StatoProposta stato;
-    private LocalDate     dataPubblicazione; // null finché non pubblicata
+    private LocalDate dataPubblicazione; // null finché non pubblicata
 
     // ================================================================
     // COSTRUTTORI
     // ================================================================
-
     /**
      * Costruttore per proposte create interattivamente in sessione.
      *
-     * @param id               identificativo progressivo (>= 0)
-     * @param nomeCategoria    nome della categoria, non null/blank
+     * @param id identificativo progressivo (>= 0)
+     * @param nomeCategoria nome della categoria, non null/blank
      * @param usernameCreatore username del configuratore, non null/blank
-     * @param campiOrdinati    snapshot dei campi (nome → obbligatorio), non null
+     * @param campiOrdinati snapshot dei campi (nome → obbligatorio), non null
      * @throws IllegalArgumentException se uno dei parametri non è valido
      */
     public Proposta(int id, String nomeCategoria, String usernameCreatore,
-                    LinkedHashMap<String, Boolean> campiOrdinati) {
+            LinkedHashMap<String, Boolean> campiOrdinati) {
         // Precondizioni
-        if (id < 0)
+        if (id < 0) {
             throw new IllegalArgumentException("L'id della proposta non può essere negativo.");
-        if (nomeCategoria == null || nomeCategoria.isBlank())
+        }
+        if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Il nome della categoria non può essere null o vuoto.");
-        if (usernameCreatore == null || usernameCreatore.isBlank())
+        }
+        if (usernameCreatore == null || usernameCreatore.isBlank()) {
             throw new IllegalArgumentException("Lo username del creatore non può essere null o vuoto.");
-        if (campiOrdinati == null)
+        }
+        if (campiOrdinati == null) {
             throw new IllegalArgumentException("La mappa dei campi non può essere null.");
+        }
 
-        this.id               = id;
-        this.nomeCategoria    = nomeCategoria;
+        this.id = id;
+        this.nomeCategoria = nomeCategoria;
         this.usernameCreatore = usernameCreatore;
-        this.campiSnapshot    = new LinkedHashMap<>(campiOrdinati);
-        this.valori           = new LinkedHashMap<>();
-        this.stato            = StatoProposta.BOZZA;
+        this.campiSnapshot = new LinkedHashMap<>(campiOrdinati);
+        this.valori = new LinkedHashMap<>();
+        this.stato = StatoProposta.BOZZA;
         this.dataPubblicazione = null;
 
         // Inizializza tutti i valori a stringa vuota
@@ -105,38 +108,38 @@ public class Proposta {
     /**
      * Costruttore per la deserializzazione (proposte APERTE caricate da file).
      *
-     * @param id               id della proposta
-     * @param nomeCategoria    categoria
+     * @param id id della proposta
+     * @param nomeCategoria categoria
      * @param usernameCreatore creatore
-     * @param campiOrdinati    snapshot dei campi
-     * @param valori           valori dei campi
-     * @param stato            stato della proposta
+     * @param campiOrdinati snapshot dei campi
+     * @param valori valori dei campi
+     * @param stato stato della proposta
      * @param dataPubblicazione data di pubblicazione (non null se APERTA)
      */
     public Proposta(int id, String nomeCategoria, String usernameCreatore,
-                    LinkedHashMap<String, Boolean> campiOrdinati,
-                    Map<String, String> valori, StatoProposta stato,
-                    LocalDate dataPubblicazione) {
-        this.id                = id;
-        this.nomeCategoria     = nomeCategoria;
-        this.usernameCreatore  = usernameCreatore;
-        this.campiSnapshot     = new LinkedHashMap<>(campiOrdinati);
-        this.valori            = new LinkedHashMap<>(valori);
-        this.stato             = stato;
+            LinkedHashMap<String, Boolean> campiOrdinati,
+            Map<String, String> valori, StatoProposta stato,
+            LocalDate dataPubblicazione) {
+        this.id = id;
+        this.nomeCategoria = nomeCategoria;
+        this.usernameCreatore = usernameCreatore;
+        this.campiSnapshot = new LinkedHashMap<>(campiOrdinati);
+        this.valori = new LinkedHashMap<>(valori);
+        this.stato = stato;
         this.dataPubblicazione = dataPubblicazione;
     }
 
     // ================================================================
-    // GESTIONE VALORI
+    // GESTIONE VALORI 
     // ================================================================
-
     /**
      * Imposta il valore di un campo della proposta.
      *
      * @param nomeCampo nome del campo (deve essere nello snapshot)
-     * @param valore    valore da assegnare; null o blank svuota il campo
-     * @throws IllegalArgumentException se nomeCampo non è presente nello snapshot
-     * @throws IllegalStateException    se la proposta è già APERTA
+     * @param valore valore da assegnare; null o blank svuota il campo
+     * @throws IllegalArgumentException se nomeCampo non è presente nello
+     * snapshot
+     * @throws IllegalStateException se la proposta è già APERTA
      */
     public void setValore(String nomeCampo, String valore) {
         // Precondizioni
@@ -160,18 +163,20 @@ public class Proposta {
     }
 
     // ================================================================
-    // VALIDAZIONE E STATO
+    // VALIDAZIONE E STATO 
     // ================================================================
-
     /**
-     * Ricalcola e aggiorna lo stato della proposta:
-     * VALIDA se non ci sono errori di validazione, BOZZA altrimenti.
-     * Non modifica lo stato se la proposta è già APERTA.
+     * Ricalcola e aggiorna lo stato della proposta: VALIDA se non ci sono
+     * errori di validazione, BOZZA altrimenti. Non modifica lo stato se la
+     * proposta è già APERTA.
      *
-     * @param dataOggi data corrente (usata per il vincolo "Termine iscrizione > oggi")
+     * @param dataOggi data corrente (usata per il vincolo "Termine iscrizione >
+     * oggi")
      */
     public void aggiornaStato(LocalDate dataOggi) {
-        if (stato == StatoProposta.APERTA) return;
+        if (stato == StatoProposta.APERTA) {
+            return;
+        }
         stato = validazioneErrori(dataOggi).isEmpty()
                 ? StatoProposta.VALIDA
                 : StatoProposta.BOZZA;
@@ -196,12 +201,12 @@ public class Proposta {
         }
 
         // --- 2. Vincoli di data ---
-        String strTermine  = getValore(CAMPO_TERMINE_ISCRIZIONE);
-        String strData     = getValore(CAMPO_DATA);
+        String strTermine = getValore(CAMPO_TERMINE_ISCRIZIONE);
+        String strData = getValore(CAMPO_DATA);
         String strDataConc = getValore(CAMPO_DATA_CONCLUSIVA);
 
-        LocalDate termine  = parseDateSafe(strTermine);
-        LocalDate data     = parseDateSafe(strData);
+        LocalDate termine = parseDateSafe(strTermine);
+        LocalDate data = parseDateSafe(strData);
         LocalDate dataConc = parseDateSafe(strDataConc);
 
         if (!strTermine.isBlank() && termine == null) {
@@ -239,7 +244,7 @@ public class Proposta {
             errori.add("'" + CAMPO_DATA_CONCLUSIVA + "' non può essere precedente a '"
                     + CAMPO_DATA + "'.");
         }
-        
+
         // --- 3. Vincolo di formato sul campo "Ora" ---
         // Formato atteso: HH:MM  (ore 0-23, minuti 0-59, con o senza zero iniziale)
         String strOra = getValore(CAMPO_ORA);
@@ -256,9 +261,11 @@ public class Proposta {
      * <p>
      * Regole:
      * <ul>
-     *   <li>Deve contenere esattamente un separatore ':'.</li>
-     *   <li>La parte ore deve essere un intero compreso tra 0 e 23 (con o senza zero iniziale).</li>
-     *   <li>La parte minuti deve essere un intero compreso tra 0 e 59 (con o senza zero iniziale).</li>
+     * <li>Deve contenere esattamente un separatore ':'.</li>
+     * <li>La parte ore deve essere un intero compreso tra 0 e 23 (con o senza
+     * zero iniziale).</li>
+     * <li>La parte minuti deve essere un intero compreso tra 0 e 59 (con o
+     * senza zero iniziale).</li>
      * </ul>
      *
      * @param ora stringa da verificare, non null
@@ -267,19 +274,33 @@ public class Proposta {
     private static boolean isFormatoOraValido(String ora) {
         // Deve contenere esattamente un ':'
         int sep = ora.indexOf(':');
-        if (sep < 0 || sep != ora.lastIndexOf(':')) return false;
- 
-        String parteOre     = ora.substring(0, sep).trim();
-        String parteMinuti  = ora.substring(sep + 1).trim();
- 
+        if (sep < 0 || sep != ora.lastIndexOf(':')) {
+            return false;
+        }
+
+        String parteOre = ora.substring(0, sep).trim();
+        String parteMinuti = ora.substring(sep + 1).trim();
+
         // Entrambe le parti devono essere non vuote e composte solo da cifre
-        if (parteOre.isEmpty() || parteMinuti.isEmpty()) return false;
-        for (char c : parteOre.toCharArray())    if (!Character.isDigit(c)) return false;
-        for (char c : parteMinuti.toCharArray()) if (!Character.isDigit(c)) return false;
- 
+        if (parteOre.isEmpty() || parteMinuti.isEmpty()) {
+            return false;
+        }
+        for (char c : parteOre.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+        for (char c : parteMinuti.toCharArray()) {
+            if (!Character.isDigit(c)) {
+                return false;
+            }
+        }
+
         // Lunghezza massima 2 cifre per parte (evita overflow e formati tipo "009")
-        if (parteOre.length() > 2 || parteMinuti.length() > 2) return false;
- 
+        if (parteOre.length() > 2 || parteMinuti.length() > 2) {
+            return false;
+        }
+
         try {
             int h = Integer.parseInt(parteOre);
             int m = Integer.parseInt(parteMinuti);
@@ -290,11 +311,10 @@ public class Proposta {
     }
 
     /**
-     * Pubblica la proposta in bacheca.
-     * Precondizione: stato == VALIDA.
+     * Pubblica la proposta in bacheca. Precondizione: stato == VALIDA.
      *
      * @param dataPubblicazione data di pubblicazione, non null
-     * @throws IllegalStateException    se la proposta non è in stato VALIDA
+     * @throws IllegalStateException se la proposta non è in stato VALIDA
      * @throws IllegalArgumentException se dataPubblicazione è null
      */
     public void pubblicaInBacheca(LocalDate dataPubblicazione) {
@@ -306,50 +326,81 @@ public class Proposta {
         if (dataPubblicazione == null) {
             throw new IllegalArgumentException("La data di pubblicazione non può essere null.");
         }
-        this.stato             = StatoProposta.APERTA;
+        this.stato = StatoProposta.APERTA;
         this.dataPubblicazione = dataPubblicazione;
 
         // Postcondizioni
         assert this.stato == StatoProposta.APERTA : "Postcondizione violata: stato non APERTA";
-        assert this.dataPubblicazione != null      : "Postcondizione violata: dataPubblicazione null";
+        assert this.dataPubblicazione != null : "Postcondizione violata: dataPubblicazione null";
         assert repOk() : "Invariante violato dopo pubblicaInBacheca";
     }
 
     // ================================================================
-    // GETTERS
+    // GETTERS 
     // ================================================================
+    public int getId() {
+        return id;
+    }
 
-    public int getId()                                         { return id; }
-    public String getNomeCategoria()                           { return nomeCategoria; }
-    public String getUsernameCreatore()                        { return usernameCreatore; }
-    public StatoProposta getStato()                            { return stato; }
-    public LocalDate getDataPubblicazione()                    { return dataPubblicazione; }
-    public LinkedHashMap<String, Boolean> getCampiSnapshot()   { return new LinkedHashMap<>(campiSnapshot); }
-    public Map<String, String> getValori()                     { return Collections.unmodifiableMap(valori); }
+    public String getNomeCategoria() {
+        return nomeCategoria;
+    }
+
+    public String getUsernameCreatore() {
+        return usernameCreatore;
+    }
+
+    public StatoProposta getStato() {
+        return stato;
+    }
+
+    public LocalDate getDataPubblicazione() {
+        return dataPubblicazione;
+    }
+
+    public LinkedHashMap<String, Boolean> getCampiSnapshot() {
+        return new LinkedHashMap<>(campiSnapshot);
+    }
+
+    public Map<String, String> getValori() {
+        return Collections.unmodifiableMap(valori);
+    }
 
     // ================================================================
-    // INVARIANTE
+    // INVARIANTE 
     // ================================================================
-
     /**
      * Verifica l'invariante di classe.
      */
     public boolean repOk() {
-        if (id < 0) return false;
-        if (nomeCategoria == null || nomeCategoria.isBlank()) return false;
-        if (usernameCreatore == null || usernameCreatore.isBlank()) return false;
-        if (campiSnapshot == null || valori == null || stato == null) return false;
-        if (stato == StatoProposta.APERTA && dataPubblicazione == null) return false;
-        if (stato != StatoProposta.APERTA && dataPubblicazione != null) return false;
+        if (id < 0) {
+            return false;
+        }
+        if (nomeCategoria == null || nomeCategoria.isBlank()) {
+            return false;
+        }
+        if (usernameCreatore == null || usernameCreatore.isBlank()) {
+            return false;
+        }
+        if (campiSnapshot == null || valori == null || stato == null) {
+            return false;
+        }
+        if (stato == StatoProposta.APERTA && dataPubblicazione == null) {
+            return false;
+        }
+        if (stato != StatoProposta.APERTA && dataPubblicazione != null) {
+            return false;
+        }
         return true;
     }
 
     // ================================================================
-    // UTILITY
+    // UTILITY 
     // ================================================================
-
     private static LocalDate parseDateSafe(String s) {
-        if (s == null || s.isBlank()) return null;
+        if (s == null || s.isBlank()) {
+            return null;
+        }
         try {
             return LocalDate.parse(s.trim(), DATE_FORMAT);
         } catch (DateTimeParseException e) {

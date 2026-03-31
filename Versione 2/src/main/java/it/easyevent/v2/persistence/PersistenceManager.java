@@ -1,6 +1,11 @@
 package it.easyevent.v2.persistence;
 
-
+import it.easyevent.v2.model.AppData;
+import it.easyevent.v2.model.Campo;
+import it.easyevent.v2.model.Categoria;
+import it.easyevent.v2.model.Configuratore;
+import it.easyevent.v2.model.Proposta;
+import it.easyevent.v2.model.StatoProposta;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
@@ -9,19 +14,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import it.easyevent.v2.model.AppData;
-import it.easyevent.v2.model.Campo;
-import it.easyevent.v2.model.Categoria;
-import it.easyevent.v2.model.Configuratore;
-import it.easyevent.v2.model.Proposta;
-import it.easyevent.v2.model.StatoProposta;
-
 /**
  * Gestore della persistenza su file JSON (Versione 2).
  * Estende la V1 aggiungendo la serializzazione/deserializzazione
  * della bacheca (proposte APERTE) e del contatore degli ID.
  *
- * Struttura del file JSON:
+ * Esempio di struttura del file JSON:
  * {
  *   "prossimoIdProposta": 3,
  *   "configuratori": [...],
@@ -51,15 +49,15 @@ public class PersistenceManager {
     private final String dataFilePath;
 
     public PersistenceManager(String dataFilePath) {
-        if (dataFilePath == null || dataFilePath.isBlank())
+        if (dataFilePath == null || dataFilePath.isBlank()) {
             throw new IllegalArgumentException("Il percorso del file non può essere null o vuoto.");
+        }
         this.dataFilePath = dataFilePath;
     }
 
     // ================================================================
     // SALVATAGGIO
     // ================================================================
-
     /**
      * Salva lo stato corrente di AppData su file JSON (V2: include bacheca).
      *
@@ -67,7 +65,9 @@ public class PersistenceManager {
      * @throws IOException in caso di errore di scrittura
      */
     public void salva(AppData data) throws IOException {
-        if (data == null) throw new IllegalArgumentException("AppData non può essere null.");
+        if (data == null) {
+            throw new IllegalArgumentException("AppData non può essere null.");
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append("{\n");
@@ -85,7 +85,9 @@ public class PersistenceManager {
             sb.append("\"password\": ").append(jsonStr(c.getPassword())).append(", ");
             sb.append("\"primoAccesso\": ").append(c.isPrimoAccesso());
             sb.append("}");
-            if (i < confs.size() - 1) sb.append(",");
+            if (i < confs.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -95,7 +97,9 @@ public class PersistenceManager {
         List<Campo> cb = data.getCampiBase();
         for (int i = 0; i < cb.size(); i++) {
             sb.append("    ").append(serializzaCampo(cb.get(i)));
-            if (i < cb.size() - 1) sb.append(",");
+            if (i < cb.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -105,7 +109,9 @@ public class PersistenceManager {
         List<Campo> cc = data.getCampiComuni();
         for (int i = 0; i < cc.size(); i++) {
             sb.append("    ").append(serializzaCampo(cc.get(i)));
-            if (i < cc.size() - 1) sb.append(",");
+            if (i < cc.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -121,12 +127,16 @@ public class PersistenceManager {
             List<Campo> cs = cat.getCampiSpecifici();
             for (int j = 0; j < cs.size(); j++) {
                 sb.append("        ").append(serializzaCampo(cs.get(j)));
-                if (j < cs.size() - 1) sb.append(",");
+                if (j < cs.size() - 1) {
+                    sb.append(",");
+                }
                 sb.append("\n");
             }
             sb.append("      ]\n");
             sb.append("    }");
-            if (i < cats.size() - 1) sb.append(",");
+            if (i < cats.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ],\n");
@@ -136,7 +146,9 @@ public class PersistenceManager {
         List<Proposta> proposte = data.getBacheca();
         for (int i = 0; i < proposte.size(); i++) {
             sb.append(serializzaProposta(proposte.get(i), "    "));
-            if (i < proposte.size() - 1) sb.append(",");
+            if (i < proposte.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append("  ]\n");
@@ -145,14 +157,15 @@ public class PersistenceManager {
 
         // Scrittura su file
         Path path = Paths.get(dataFilePath);
-        if (path.getParent() != null) Files.createDirectories(path.getParent());
+        if (path.getParent() != null) {
+            Files.createDirectories(path.getParent());
+        }
         Files.writeString(path, sb.toString());
     }
 
     // ================================================================
     // CARICAMENTO
     // ================================================================
-
     /**
      * Carica lo stato dell'applicazione dal file JSON e popola AppData.
      * Compatibile con file V1 (senza "bacheca"): la bacheca sarà vuota.
@@ -162,16 +175,22 @@ public class PersistenceManager {
      * @throws IOException in caso di errore di lettura o parsing
      */
     public boolean carica(AppData data) throws IOException {
-        if (data == null) throw new IllegalArgumentException("AppData non può essere null.");
+        if (data == null) {
+            throw new IllegalArgumentException("AppData non può essere null.");
+        }
 
         Path path = Paths.get(dataFilePath);
-        if (!Files.exists(path)) return false;
+        if (!Files.exists(path)) {
+            return false;
+        }
 
         String json = Files.readString(path);
 
         // Contatore ID proposte (opzionale – presente solo in V2)
         int prossimoId = extractIntValue(json, "prossimoIdProposta");
-        if (prossimoId > 0) data.setProssimoIdProposta(prossimoId);
+        if (prossimoId > 0) {
+            data.setProssimoIdProposta(prossimoId);
+        }
 
         data.setConfiguratori(parseConfiguratori(json));
         data.setCampiBase(parseCampi(json, "campiBase"));
@@ -190,7 +209,6 @@ public class PersistenceManager {
     // ================================================================
     // SERIALIZZAZIONE HELPERS
     // ================================================================
-
     private String serializzaCampo(Campo c) {
         return "{\"nome\": " + jsonStr(c.getNome())
                 + ", \"obbligatorio\": " + c.isObbligatorio()
@@ -218,14 +236,16 @@ public class PersistenceManager {
         List<String> nomi = new ArrayList<>(snapshot.keySet());
         for (int i = 0; i < nomi.size(); i++) {
             String nome = nomi.get(i);
-            boolean ob  = snapshot.get(nome);
-            String val  = valori.getOrDefault(nome, "");
+            boolean ob = snapshot.get(nome);
+            String val = valori.getOrDefault(nome, "");
             sb.append(indent).append("    {");
             sb.append("\"nome\": ").append(jsonStr(nome)).append(", ");
             sb.append("\"obbligatorio\": ").append(ob).append(", ");
             sb.append("\"valore\": ").append(jsonStr(val));
             sb.append("}");
-            if (i < nomi.size() - 1) sb.append(",");
+            if (i < nomi.size() - 1) {
+                sb.append(",");
+            }
             sb.append("\n");
         }
         sb.append(indent).append("  ]\n");
@@ -234,25 +254,29 @@ public class PersistenceManager {
     }
 
     private String jsonStr(String s) {
-    if (s == null) return "null";
-    return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"")
-                   .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\"";
-}
+        if (s == null) {
+            return "null";
+        }
+        return "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"")
+                .replace("\n", "\\n").replace("\r", "\\r").replace("\t", "\\t") + "\"";
+    }
 
     // ================================================================
     // PARSING HELPERS
     // ================================================================
-
     private List<Configuratore> parseConfiguratori(String json) {
         List<Configuratore> result = new ArrayList<>();
         String section = extractArraySection(json, "configuratori");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
-            String  username    = extractStringValue(obj, "username");
-            String  password    = extractStringValue(obj, "password");
+            String username = extractStringValue(obj, "username");
+            String password = extractStringValue(obj, "password");
             boolean primoAccesso = extractBoolValue(obj, "primoAccesso");
-            if (username != null && password != null)
+            if (username != null && password != null) {
                 result.add(new Configuratore(username, password, primoAccesso));
+            }
         }
         return result;
     }
@@ -260,15 +284,18 @@ public class PersistenceManager {
     private List<Campo> parseCampi(String json, String arrayName) {
         List<Campo> result = new ArrayList<>();
         String section = extractArraySection(json, arrayName);
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
-            String  nome    = extractStringValue(obj, "nome");
-            boolean ob      = extractBoolValue(obj, "obbligatorio");
-            String  tipoStr = extractStringValue(obj, "tipo");
+            String nome = extractStringValue(obj, "nome");
+            boolean ob = extractBoolValue(obj, "obbligatorio");
+            String tipoStr = extractStringValue(obj, "tipo");
             if (nome != null && tipoStr != null) {
                 try {
                     result.add(new Campo(nome, ob, Campo.TipoCampo.valueOf(tipoStr)));
-                } catch (IllegalArgumentException ignored) {}
+                } catch (IllegalArgumentException ignored) {
+                }
             }
         }
         return result;
@@ -277,21 +304,26 @@ public class PersistenceManager {
     private List<Categoria> parseCategorie(String json) {
         List<Categoria> result = new ArrayList<>();
         String section = extractArraySection(json, "categorie");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
         for (String obj : splitJsonObjects(section)) {
             String nome = extractStringValue(obj, "nome");
-            if (nome == null) continue;
+            if (nome == null) {
+                continue;
+            }
             Categoria cat = new Categoria(nome);
             String csSection = extractArraySection(obj, "campiSpecifici");
             if (csSection != null && !csSection.isBlank()) {
                 for (String campoObj : splitJsonObjects(csSection)) {
-                    String  cn      = extractStringValue(campoObj, "nome");
-                    boolean ob      = extractBoolValue(campoObj, "obbligatorio");
-                    String  tipoStr = extractStringValue(campoObj, "tipo");
+                    String cn = extractStringValue(campoObj, "nome");
+                    boolean ob = extractBoolValue(campoObj, "obbligatorio");
+                    String tipoStr = extractStringValue(campoObj, "tipo");
                     if (cn != null && tipoStr != null) {
                         try {
                             cat.aggiungiCampoSpecifico(new Campo(cn, ob, Campo.TipoCampo.valueOf(tipoStr)));
-                        } catch (IllegalArgumentException ignored) {}
+                        } catch (IllegalArgumentException ignored) {
+                        }
                     }
                 }
             }
@@ -306,40 +338,49 @@ public class PersistenceManager {
     private List<Proposta> parseBacheca(String json) {
         List<Proposta> result = new ArrayList<>();
         String section = extractArraySection(json, "bacheca");
-        if (section == null || section.isBlank()) return result;
+        if (section == null || section.isBlank()) {
+            return result;
+        }
 
         for (String obj : splitJsonObjects(section)) {
-            int    id               = extractIntValue(obj, "id");
-            if (id < 0) continue;
-            String nomeCategoria    = extractStringValue(obj, "nomeCategoria");
+            int id = extractIntValue(obj, "id");
+            if (id < 0) {
+                continue;
+            }
+            String nomeCategoria = extractStringValue(obj, "nomeCategoria");
             String usernameCreatore = extractStringValue(obj, "usernameCreatore");
-            String statoStr         = extractStringValue(obj, "stato");
-            String dataPubStr       = extractStringValue(obj, "dataPubblicazione");
+            String statoStr = extractStringValue(obj, "stato");
+            String dataPubStr = extractStringValue(obj, "dataPubblicazione");
 
-            if (nomeCategoria == null || usernameCreatore == null || statoStr == null) continue;
+            if (nomeCategoria == null || usernameCreatore == null || statoStr == null) {
+                continue;
+            }
 
             StatoProposta stato;
             try {
                 stato = StatoProposta.valueOf(statoStr);
-            } catch (IllegalArgumentException e) { continue; }
+            } catch (IllegalArgumentException e) {
+                continue;
+            }
 
             LocalDate dataPub = null;
             if (dataPubStr != null && !dataPubStr.isBlank()) {
                 try {
                     dataPub = LocalDate.parse(dataPubStr.trim(), Proposta.DATE_FORMAT);
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
 
             // Parsing dei campi (snapshot + valori)
             LinkedHashMap<String, Boolean> campiSnapshot = new LinkedHashMap<>();
-            LinkedHashMap<String, String>  valori        = new LinkedHashMap<>();
+            LinkedHashMap<String, String> valori = new LinkedHashMap<>();
 
             String campiSection = extractArraySection(obj, "campi");
             if (campiSection != null && !campiSection.isBlank()) {
                 for (String campoObj : splitJsonObjects(campiSection)) {
-                    String  nome = extractStringValue(campoObj, "nome");
-                    boolean ob   = extractBoolValue(campoObj, "obbligatorio");
-                    String  val  = extractStringValue(campoObj, "valore");
+                    String nome = extractStringValue(campoObj, "nome");
+                    boolean ob = extractBoolValue(campoObj, "obbligatorio");
+                    String val = extractStringValue(campoObj, "valore");
                     if (nome != null) {
                         campiSnapshot.put(nome, ob);
                         valori.put(nome, val != null ? val : "");
@@ -357,18 +398,28 @@ public class PersistenceManager {
     // ================================================================
     // UTILITIES PARSER JSON MINIMALE
     // ================================================================
-
     private String extractArraySection(String json, String key) {
         String search = "\"" + key + "\"";
         int keyIdx = json.indexOf(search);
-        if (keyIdx < 0) return null;
+        if (keyIdx < 0) {
+            return null;
+        }
         int bracketStart = json.indexOf('[', keyIdx + search.length());
-        if (bracketStart < 0) return null;
+        if (bracketStart < 0) {
+            return null;
+        }
         int depth = 0, end = bracketStart;
         for (int i = bracketStart; i < json.length(); i++) {
             char ch = json.charAt(i);
-            if (ch == '[') depth++;
-            else if (ch == ']') { depth--; if (depth == 0) { end = i; break; } }
+            if (ch == '[') {
+                depth++;
+            } else if (ch == ']') {
+                depth--;
+                if (depth == 0) {
+                    end = i;
+                    break;
+                }
+            }
         }
         return json.substring(bracketStart + 1, end).trim();
     }
@@ -378,8 +429,19 @@ public class PersistenceManager {
         int depth = 0, start = -1;
         for (int i = 0; i < arrayContent.length(); i++) {
             char ch = arrayContent.charAt(i);
-            if (ch == '{') { if (depth == 0) start = i; depth++; }
-            else if (ch == '}') { depth--; if (depth == 0 && start >= 0) { result.add(arrayContent.substring(start, i + 1)); start = -1; } }
+            if (ch == '{') {
+                if (depth == 0) {
+                    start = i;
+
+                }
+                depth++;
+            } else if (ch == '}') {
+                depth--;
+                if (depth == 0 && start >= 0) {
+                    result.add(arrayContent.substring(start, i + 1));
+                    start = -1;
+                }
+            }
         }
         return result;
     }
@@ -387,47 +449,75 @@ public class PersistenceManager {
     private String extractStringValue(String obj, String key) {
         String search = "\"" + key + "\"";
         int idx = obj.indexOf(search);
-        if (idx < 0) return null;
+        if (idx < 0) {
+            return null;
+        }
         int colon = obj.indexOf(':', idx + search.length());
-        if (colon < 0) return null;
+        if (colon < 0) {
+            return null;
+        }
         int quoteStart = obj.indexOf('"', colon + 1);
-        if (quoteStart < 0) return null;
+        if (quoteStart < 0) {
+            return null;
+        }
         int quoteEnd = quoteStart + 1;
         while (quoteEnd < obj.length()) {
-            if (obj.charAt(quoteEnd) == '"' && obj.charAt(quoteEnd - 1) != '\\') break;
+            if (obj.charAt(quoteEnd) == '"' && obj.charAt(quoteEnd - 1) != '\\') {
+                break;
+            }
             quoteEnd++;
         }
         return obj.substring(quoteStart + 1, quoteEnd)
-          .replace("\\\"", "\"").replace("\\\\", "\\")
-          .replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t");
+                .replace("\\\"", "\"").replace("\\\\", "\\")
+                .replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t");
     }
 
     private boolean extractBoolValue(String obj, String key) {
         String search = "\"" + key + "\"";
         int idx = obj.indexOf(search);
-        if (idx < 0) return false;
+        if (idx < 0) {
+            return false;
+        }
         int colon = obj.indexOf(':', idx + search.length());
-        if (colon < 0) return false;
+        if (colon < 0) {
+            return false;
+        }
         return obj.substring(colon + 1).trim().startsWith("true");
     }
 
-    /** Estrae un valore intero. Restituisce -1 se non trovato. */
+    /**
+     * Estrae un valore intero. Restituisce -1 se non trovato.
+     */
     private int extractIntValue(String obj, String key) {
         String search = "\"" + key + "\"";
         int idx = obj.indexOf(search);
-        if (idx < 0) return -1;
+        if (idx < 0) {
+            return -1;
+        }
         int colon = obj.indexOf(':', idx + search.length());
-        if (colon < 0) return -1;
+        if (colon < 0) {
+            return -1;
+        }
         String rest = obj.substring(colon + 1).trim();
         StringBuilder num = new StringBuilder();
         for (char c : rest.toCharArray()) {
-            if (Character.isDigit(c)) num.append(c);
-            else if (!num.isEmpty()) break;
+            if (Character.isDigit(c)) {
+                num.append(c);
+            } else if (!num.isEmpty()) {
+                break;
+            }
         }
-        if (num.length() == 0) return -1;
-        try { return Integer.parseInt(num.toString()); }
-        catch (NumberFormatException e) { return -1; }
+        if (num.length() == 0) {
+            return -1;
+        }
+        try {
+            return Integer.parseInt(num.toString());
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
-    public String getDataFilePath() { return dataFilePath; }
+    public String getDataFilePath() {
+        return dataFilePath;
+    }
 }

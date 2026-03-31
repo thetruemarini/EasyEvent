@@ -1,17 +1,15 @@
 package it.easyevent.v2.view;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
-import java.util.stream.Collectors;
-
 import it.easyevent.v2.controller.ConfiguratoreController;
 import it.easyevent.v2.model.Campo;
 import it.easyevent.v2.model.Categoria;
 import it.easyevent.v2.model.Proposta;
 import it.easyevent.v2.model.StatoProposta;
-
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.stream.Collectors;
 /**
  * Interfaccia testuale (CLI) per il configuratore - Versione 2.
  *
@@ -259,8 +257,8 @@ public class ConfiguratoreView {
         }
         String err = controller.aggiungiCampoComune(nome, chiediObbligatorio());
         if (err.isEmpty()) {
-            System.out.println("  Campo comune '" + nome + "' aggiunto."); 
-        }else {
+            System.out.println("  Campo comune '" + nome + "' aggiunto.");
+        } else {
             stampaErrore(err);
         }
     }
@@ -270,8 +268,8 @@ public class ConfiguratoreView {
         String nome = scanner.nextLine().trim();
         String err = controller.rimuoviCampoComune(nome);
         if (err.isEmpty()) {
-            System.out.println("  Campo comune '" + nome + "' rimosso."); 
-        }else {
+            System.out.println("  Campo comune '" + nome + "' rimosso.");
+        } else {
             stampaErrore(err);
         }
     }
@@ -281,8 +279,8 @@ public class ConfiguratoreView {
         String nome = scanner.nextLine().trim();
         String err = controller.modificaObbligatorietaCampoComune(nome, chiediObbligatorio());
         if (err.isEmpty()) {
-            System.out.println("  Obbligatorieta' di '" + nome + "' aggiornata."); 
-        }else {
+            System.out.println("  Obbligatorieta' di '" + nome + "' aggiornata.");
+        } else {
             stampaErrore(err);
         }
     }
@@ -359,8 +357,8 @@ public class ConfiguratoreView {
             }
             String err = controller.aggiungiCampoSpecifico(nomeCategoria, nome, chiediObbligatorio());
             if (err.isEmpty()) {
-                System.out.println("  Campo '" + nome + "' aggiunto."); 
-            }else {
+                System.out.println("  Campo '" + nome + "' aggiunto.");
+            } else {
                 stampaErrore(err);
             }
 
@@ -386,8 +384,8 @@ public class ConfiguratoreView {
         }
         String err = controller.rimuoviCategoria(nome);
         if (err.isEmpty()) {
-            System.out.println("  Categoria '" + nome + "' rimossa (compresi tutti i campi specifici)."); 
-        }else {
+            System.out.println("  Categoria '" + nome + "' rimossa (compresi tutti i campi specifici).");
+        } else {
             stampaErrore(err);
         }
     }
@@ -433,8 +431,8 @@ public class ConfiguratoreView {
                     }
                     String err = controller.aggiungiCampoSpecifico(nomeCategoria, n, chiediObbligatorio());
                     if (err.isEmpty()) {
-                        System.out.println("  Campo '" + n + "' aggiunto."); 
-                    }else {
+                        System.out.println("  Campo '" + n + "' aggiunto.");
+                    } else {
                         stampaErrore(err);
                     }
                 }
@@ -443,8 +441,8 @@ public class ConfiguratoreView {
                     String n = scanner.nextLine().trim();
                     String err = controller.rimuoviCampoSpecifico(nomeCategoria, n);
                     if (err.isEmpty()) {
-                        System.out.println("  Campo '" + n + "' rimosso."); 
-                    }else {
+                        System.out.println("  Campo '" + n + "' rimosso.");
+                    } else {
                         stampaErrore(err);
                     }
                 }
@@ -454,8 +452,8 @@ public class ConfiguratoreView {
                     String err = controller.modificaObbligatorietaCampoSpecifico(
                             nomeCategoria, n, chiediObbligatorio());
                     if (err.isEmpty()) {
-                        System.out.println("  Obbligatorieta' aggiornata."); 
-                    }else {
+                        System.out.println("  Obbligatorieta' aggiornata.");
+                    } else {
                         stampaErrore(err);
                     }
                 }
@@ -515,16 +513,16 @@ public class ConfiguratoreView {
         System.out.println("\n  CAMPI BASE  (obbligatori - condivisi da tutte le categorie)");
         List<Campo> cb = controller.getCampiBase();
         if (cb.isEmpty()) {
-            System.out.println("    (non ancora inizializzati)"); 
-        }else {
+            System.out.println("    (non ancora inizializzati)");
+        } else {
             cb.forEach(c -> System.out.println("    - " + c.getNome()));
         }
 
         System.out.println("\n  CAMPI COMUNI  (condivisi da tutte le categorie)");
         List<Campo> cc = controller.getCampiComuni();
         if (cc.isEmpty()) {
-            System.out.println("    (nessuno definito)"); 
-        }else {
+            System.out.println("    (nessuno definito)");
+        } else {
             cc.forEach(c -> System.out.println("    - " + c.getNome()
                     + "  [" + (c.isObbligatorio() ? "obbligatorio" : "facoltativo") + "]"));
         }
@@ -706,13 +704,14 @@ public class ConfiguratoreView {
         if (p.getStato() == StatoProposta.APERTA) {
             return; // gia' pubblicata
 
-                }if (p.getStato() == StatoProposta.VALIDA) {
+        }
+        if (p.getStato() == StatoProposta.VALIDA) {
             System.out.print("\n  La proposta e' VALIDA. Pubblicarla in bacheca ora? (s/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 String err = controller.pubblicaProposta(p);
                 if (err.isEmpty()) {
-                    System.out.println("  Proposta [ID " + p.getId() + "] pubblicata in bacheca."); 
-                }else {
+                    System.out.println("  Proposta [ID " + p.getId() + "] pubblicata in bacheca.");
+                } else {
                     stampaErrore(err);
                 }
             } else {
@@ -760,8 +759,8 @@ public class ConfiguratoreView {
         }
         String err = controller.pubblicaProposta(scelta);
         if (err.isEmpty()) {
-            System.out.println("  Proposta [ID " + scelta.getId() + "] pubblicata in bacheca."); 
-        }else {
+            System.out.println("  Proposta [ID " + scelta.getId() + "] pubblicata in bacheca.");
+        } else {
             stampaErrore(err);
         }
     }

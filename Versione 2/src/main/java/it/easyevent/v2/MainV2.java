@@ -1,12 +1,10 @@
 package it.easyevent.v2;
 
-import java.io.IOException;
-
 import it.easyevent.v2.controller.ConfiguratoreController;
 import it.easyevent.v2.model.AppData;
 import it.easyevent.v2.persistence.PersistenceManager;
 import it.easyevent.v2.view.ConfiguratoreView;
-
+import java.io.IOException;
 
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent – Versione 2.
@@ -48,8 +46,8 @@ public class MainV2 {
         }
 
         // 4. Controller
-        ConfiguratoreController controller =
-                new ConfiguratoreController(appData, persistenceManager);
+        ConfiguratoreController controller
+                = new ConfiguratoreController(appData, persistenceManager);
 
         // 5. View testuale (V2)
         ConfiguratoreView view = new ConfiguratoreView(controller);

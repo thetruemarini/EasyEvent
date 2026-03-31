@@ -1,14 +1,12 @@
 package it.easyevent.v2.model;
 
-import it.easyevent.v2.model.Configuratore;
-
 /**
- * Rappresenta un utente configuratore del sistema.
- * Il configuratore accede al back-end dell'applicazione.
+ * Rappresenta un utente configuratore del sistema. Il configuratore accede al
+ * back-end dell'applicazione.
  *
- * Invariante di classe:
- * - username != null && !username.isBlank()
- * - password != null && !password.isBlank()
+ * Invariante di classe: 
+ * - username != null && !username.isBlank() 
+ * - password != null && !password.isBlank() 
  * - primoAccesso indica se il configuratore non ha ancora cambiato le credenziali predefinite
  */
 public class Configuratore {
@@ -41,8 +39,8 @@ public class Configuratore {
     /**
      * Costruttore completo (usato per la deserializzazione).
      *
-     * @param username    username
-     * @param password    password
+     * @param username username
+     * @param password password
      * @param primoAccesso stato del primo accesso
      */
     public Configuratore(String username, String password, boolean primoAccesso) {
@@ -63,8 +61,9 @@ public class Configuratore {
      *
      * @param nuovoUsername nuovo username, non null e non blank
      * @param nuovaPassword nuova password, non null e non blank
-     * @throws IllegalArgumentException     se i parametri sono null o blank
-     * @throws IllegalStateException        se il configuratore ha già completato il primo accesso
+     * @throws IllegalArgumentException se i parametri sono null o blank
+     * @throws IllegalStateException se il configuratore ha già completato il
+     * primo accesso
      */
     public void impostaCredenzialiPersonali(String nuovoUsername, String nuovaPassword) {
         // Precondizioni
@@ -92,35 +91,36 @@ public class Configuratore {
      * @return true se le credenziali corrispondono
      */
     public boolean verificaCredenziali(String username, String password) {
-        if (username == null || password == null) return false;
+        if (username == null || password == null) {
+            return false;
+        }
         return this.username.equalsIgnoreCase(username.trim()) && this.password.equals(password);
     }
 
     /**
- * Riporta le credenziali ai valori precedenti annullando un cambio fallito.
- * Da usare ESCLUSIVAMENTE come rollback quando
- * impostaCredenzialiPersonali() ha avuto successo ma il salvataggio su
- * disco ha fallito.
- *
- * @param vecchioUsername username precedente, non null e non blank
- * @param vecchiaPassword password precedente, non null e non blank
- */
-public void revertCredenziali(String vecchioUsername, String vecchiaPassword) {
-    if (vecchioUsername == null || vecchioUsername.isBlank()) {
-        throw new IllegalArgumentException("vecchioUsername non puo' essere null o vuoto.");
-    }
-    if (vecchiaPassword == null || vecchiaPassword.isBlank()) {
-        throw new IllegalArgumentException("vecchiaPassword non puo' essere null o vuota.");
-    }
-    this.username = vecchioUsername;
-    this.password = vecchiaPassword;
-    this.primoAccesso = true;
+     * Riporta le credenziali ai valori precedenti annullando un cambio fallito.
+     * Da usare ESCLUSIVAMENTE come rollback quando
+     * impostaCredenzialiPersonali() ha avuto successo ma il salvataggio su
+     * disco ha fallito.
+     *
+     * @param vecchioUsername username precedente, non null e non blank
+     * @param vecchiaPassword password precedente, non null e non blank
+     */
+    public void revertCredenziali(String vecchioUsername, String vecchiaPassword) {
+        if (vecchioUsername == null || vecchioUsername.isBlank()) {
+            throw new IllegalArgumentException("vecchioUsername non puo' essere null o vuoto.");
+        }
+        if (vecchiaPassword == null || vecchiaPassword.isBlank()) {
+            throw new IllegalArgumentException("vecchiaPassword non puo' essere null o vuota.");
+        }
+        this.username = vecchioUsername;
+        this.password = vecchiaPassword;
+        this.primoAccesso = true;
 
-    assert repOk() : "Invariante violato dopo revertCredenziali";
-}
+        assert repOk() : "Invariante violato dopo revertCredenziali";
+    }
 
     // ---- Getters ----
-
     public String getUsername() {
         return username;
     }
@@ -148,8 +148,12 @@ public void revertCredenziali(String vecchioUsername, String vecchiaPassword) {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Configuratore)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Configuratore)) {
+            return false;
+        }
         return this.username.equalsIgnoreCase(((Configuratore) obj).username);
     }
 
