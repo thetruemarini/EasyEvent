@@ -51,6 +51,7 @@ public class Proposta {
     public static final String CAMPO_DATA               = "Data";
     public static final String CAMPO_DATA_CONCLUSIVA    = "Data conclusiva";
     public static final String CAMPO_NUM_PARTECIPANTI   = "Numero di partecipanti";
+    private static final String CAMPO_ORA               = "Ora";
 
     // ---- Dati identificativi ----
     private final int    id;
@@ -253,6 +254,12 @@ public class Proposta {
         if (data != null && dataConc != null && dataConc.isBefore(data))
             errori.add("'" + CAMPO_DATA_CONCLUSIVA + "' non puo' essere precedente a '" + CAMPO_DATA + "'.");
 
+        String strOra = getValore(CAMPO_ORA);
+        if (!strOra.isBlank() && !isFormatoOraValido(strOra)) {
+            errori.add("'" + CAMPO_ORA
+                    + "': formato non valido (usare HH:MM, es. 09:30 oppure 14:00).");
+        }
+
         // Verifica che "Numero di partecipanti" sia un intero strettamente positivo.
         // Il controllo "campo obbligatorio non blank" sopra garantisce solo che il valore
         // esista, non che sia valido. Con "0" la proposta diventa pubblicabile, blocca
@@ -274,6 +281,30 @@ public class Proposta {
         return errori;
     }
 
+    private static boolean isFormatoOraValido(String ora) {
+        // Deve contenere esattamente un ':'
+        int sep = ora.indexOf(':');
+        if (sep < 0 || sep != ora.lastIndexOf(':')) return false;
+ 
+        String parteOre     = ora.substring(0, sep).trim();
+        String parteMinuti  = ora.substring(sep + 1).trim();
+ 
+        // Entrambe le parti devono essere non vuote e composte solo da cifre
+        if (parteOre.isEmpty() || parteMinuti.isEmpty()) return false;
+        for (char c : parteOre.toCharArray())    if (!Character.isDigit(c)) return false;
+        for (char c : parteMinuti.toCharArray()) if (!Character.isDigit(c)) return false;
+ 
+        // Lunghezza massima 2 cifre per parte (evita overflow e formati tipo "009")
+        if (parteOre.length() > 2 || parteMinuti.length() > 2) return false;
+ 
+        try {
+            int h = Integer.parseInt(parteOre);
+            int m = Integer.parseInt(parteMinuti);
+            return h >= 0 && h <= 23 && m >= 0 && m <= 59;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
     /**
      * Pubblica la proposta in bacheca.
      * Precondizione: stato == VALIDA.
