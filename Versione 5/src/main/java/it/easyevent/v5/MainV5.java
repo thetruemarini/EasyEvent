@@ -6,17 +6,15 @@ import it.easyevent.v5.model.AppData;
 import it.easyevent.v5.persistence.PersistenceManager;
 import it.easyevent.v5.view.ConfiguratoreView;
 import it.easyevent.v5.view.FruitoreView;
-
 import java.io.IOException;
 import java.util.Scanner;
-
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent - Versione 5.
  *
  * Novita' rispetto alla V4:
  *   - Il configuratore puo' importare categorie, campi e proposte in modalita'
  *     batch (da uno o piu' file di testo), oltre a operare in modo interattivo
- *     come nelle versioni precedenti (UC-CONF-09).
+ *     come nelle versioni precedenti.
  *
  * Compatibilita': legge file di dati V4/V3/V2/V1 senza modifiche.
  * Il formato del file JSON di persistenza e' invariato rispetto alla V4.
@@ -47,18 +45,21 @@ public class MainV5 {
         }
 
         // 4. Controller
-        ConfiguratoreController confController =
-                new ConfiguratoreController(appData, persistenceManager);
+        ConfiguratoreController confController
+                = new ConfiguratoreController(appData, persistenceManager);
 
         // Inizializza campi base se necessario
         String errInit = confController.inizializzaCampiBase();
-        if (!errInit.isEmpty()) System.err.println("[Sistema] " + errInit);
+        if (!errInit.isEmpty()) {
+            System.err.println("[Sistema] " + errInit);
+        }
 
         // 5. Transizioni automatiche di stato (da invocare ad ogni avvio)
         int nTransizioni = confController.aggiornaTransizioni();
-        if (nTransizioni > 0)
+        if (nTransizioni > 0) {
             System.out.println("[Sistema] Transizioni automatiche applicate: "
                     + nTransizioni + " proposta/e aggiornata/e.");
+        }
 
         // Riepilogo avvio
         System.out.println("[Sistema] Proposte aperte in bacheca: " + appData.getBacheca().size());
@@ -76,10 +77,9 @@ public class MainV5 {
     // ================================================================
     // SELEZIONE RUOLO
     // ================================================================
-
     private static void menuSelezioneRuolo(ConfiguratoreController confController,
-                                            FruitoreController fruitController,
-                                            Scanner scanner) {
+            FruitoreController fruitController,
+            Scanner scanner) {
         String SEP = "------------------------------------------------------------";
         while (true) {
             System.out.println("\n" + SEP);
@@ -95,17 +95,25 @@ public class MainV5 {
 
             switch (scelta) {
                 case "1" -> {
-                    ConfiguratoreView confView =
-                            new ConfiguratoreView(confController, scanner);
-                    if (!confView.avvia()) return;
+                    ConfiguratoreView confView
+                            = new ConfiguratoreView(confController, scanner);
+                    if (!confView.avvia()) {
+                        return;
+                    }
                 }
                 case "2" -> {
-                    FruitoreView fruitView =
-                            new FruitoreView(fruitController, scanner);
-                    if (!fruitView.avvia()) return;
+                    FruitoreView fruitView
+                            = new FruitoreView(fruitController, scanner);
+                    if (!fruitView.avvia()) {
+                        return;
+                    }
                 }
-                case "0" -> { System.out.println("\n  Arrivederci."); return; }
-                default  -> System.out.println("\n  ERRORE: Scelta non valida.");
+                case "0" -> {
+                    System.out.println("\n  Arrivederci.");
+                    return;
+                }
+                default ->
+                    System.out.println("\n  ERRORE: Scelta non valida.");
             }
         }
     }

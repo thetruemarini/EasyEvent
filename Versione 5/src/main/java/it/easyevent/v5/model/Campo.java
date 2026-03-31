@@ -1,5 +1,4 @@
 package it.easyevent.v5.model;
-
 /**
  * Rappresenta un campo generico che descrive un'iniziativa.
  *
@@ -13,28 +12,39 @@ public class Campo {
         BASE, COMUNE, SPECIFICO
     }
 
-    private String    nome;
-    private boolean   obbligatorio;
+    private String nome;
+    private boolean obbligatorio;
     private TipoCampo tipo;
 
     public Campo(String nome, boolean obbligatorio, TipoCampo tipo) {
-        if (nome == null || nome.isBlank())
+        if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Il nome del campo non puo' essere null o vuoto.");
-        if (tipo == null)
+        }
+        if (tipo == null) {
             throw new IllegalArgumentException("Il tipo del campo non puo' essere null.");
-        this.nome         = nome.trim();
+        }
+        this.nome = nome.trim();
         this.obbligatorio = obbligatorio;
-        this.tipo         = tipo;
+        this.tipo = tipo;
         assert repOk() : "Invariante violato dopo costruzione Campo";
     }
 
-    public String    getNome()         { return nome; }
-    public boolean   isObbligatorio()  { return obbligatorio; }
-    public TipoCampo getTipo()         { return tipo; }
+    public String getNome() {
+        return nome;
+    }
+
+    public boolean isObbligatorio() {
+        return obbligatorio;
+    }
+
+    public TipoCampo getTipo() {
+        return tipo;
+    }
 
     public void setObbligatorio(boolean obbligatorio) {
-        if (this.tipo == TipoCampo.BASE)
+        if (this.tipo == TipoCampo.BASE) {
             throw new UnsupportedOperationException("I campi BASE sono immutabili.");
+        }
         this.obbligatorio = obbligatorio;
     }
 
@@ -49,8 +59,12 @@ public class Campo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Campo)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Campo)) {
+            return false;
+        }
         Campo other = (Campo) obj;
         return this.nome.equalsIgnoreCase(other.nome) && this.tipo == other.tipo;
     }

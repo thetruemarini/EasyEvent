@@ -1,5 +1,10 @@
 package it.easyevent.v5.batch;
 
+import it.easyevent.v5.model.AppData;
+import it.easyevent.v5.model.Campo;
+import it.easyevent.v5.model.Categoria;
+import it.easyevent.v5.model.Proposta;
+import it.easyevent.v5.model.StatoProposta;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -9,13 +14,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import it.easyevent.v5.model.AppData;
-import it.easyevent.v5.model.Campo;
-import it.easyevent.v5.model.Categoria;
-import it.easyevent.v5.model.Proposta;
-import it.easyevent.v5.model.StatoProposta;
-
 /**
  * Motore di importazione batch per EasyEvent – Versione 5.
  *
@@ -39,31 +37,41 @@ import it.easyevent.v5.model.StatoProposta;
  */
 public class BatchImporter {
 
-    /** Separatore tra i token di ogni riga batch. */
+    /**
+     * Separatore tra i token di ogni riga batch.
+     */
     public static final String SEP = " | ";
 
-    /** Prefisso per i comandi di tipo campo comune. */
-    public static final String CMD_CAMPO_COMUNE    = "CAMPO_COMUNE";
+    /**
+     * Prefisso per i comandi di tipo campo comune.
+     */
+    public static final String CMD_CAMPO_COMUNE = "CAMPO_COMUNE";
 
-    /** Prefisso per i comandi di tipo categoria. */
-    public static final String CMD_CATEGORIA       = "CATEGORIA";
+    /**
+     * Prefisso per i comandi di tipo categoria.
+     */
+    public static final String CMD_CATEGORIA = "CATEGORIA";
 
-    /** Prefisso per i comandi di tipo proposta. */
-    public static final String CMD_PROPOSTA        = "PROPOSTA";
+    /**
+     * Prefisso per i comandi di tipo proposta.
+     */
+    public static final String CMD_PROPOSTA = "PROPOSTA";
 
-    /** Parola chiave per i campi specifici inline nelle righe CATEGORIA. */
-    public static final String KW_CAMPO_SPECIFICO  = "CAMPO_SPECIFICO";
+    /**
+     * Parola chiave per i campi specifici inline nelle righe CATEGORIA.
+     */
+    public static final String KW_CAMPO_SPECIFICO = "CAMPO_SPECIFICO";
 
     // ================================================================
     // INTERFACCIA FUNZIONALE per il callback di salvataggio
     // ================================================================
-
     /**
-     * Callback invocato da BatchImporter per salvare lo stato su disco.
-     * Il controller passa la propria implementazione di {@code salva()}.
+     * Callback invocato da BatchImporter per salvare lo stato su disco. Il
+     * controller passa la propria implementazione di {@code salva()}.
      */
     @FunctionalInterface
     public interface SalvaCallback {
+
         /**
          * Salva lo stato corrente dell'applicazione.
          *
@@ -75,53 +83,58 @@ public class BatchImporter {
     // ================================================================
     // CAMPI
     // ================================================================
-
-    private final AppData      appData;
-    private final String       usernameCreatore;
+    private final AppData appData;
+    private final String usernameCreatore;
     private final SalvaCallback salvaCallback;
 
     // ================================================================
     // COSTRUTTORE
     // ================================================================
-
     /**
-     * @param appData          stato dell'applicazione, non null
-     * @param usernameCreatore username del configuratore loggato, non null/blank
-     * @param salvaCallback    callback per il salvataggio su disco, non null
+     * @param appData stato dell'applicazione, non null
+     * @param usernameCreatore username del configuratore loggato, non
+     * null/blank
+     * @param salvaCallback callback per il salvataggio su disco, non null
      * @throws IllegalArgumentException se qualche parametro non è valido
      */
     public BatchImporter(AppData appData, String usernameCreatore, SalvaCallback salvaCallback) {
-        if (appData == null)
+        if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
-        if (usernameCreatore == null || usernameCreatore.isBlank())
+        }
+        if (usernameCreatore == null || usernameCreatore.isBlank()) {
             throw new IllegalArgumentException("usernameCreatore non puo' essere null o vuoto.");
-        if (salvaCallback == null)
+        }
+        if (salvaCallback == null) {
             throw new IllegalArgumentException("salvaCallback non puo' essere null.");
-        this.appData          = appData;
+        }
+        this.appData = appData;
         this.usernameCreatore = usernameCreatore;
-        this.salvaCallback    = salvaCallback;
+        this.salvaCallback = salvaCallback;
     }
 
     // ================================================================
     // METODI PUBBLICI
     // ================================================================
-
     /**
      * Importa un singolo file batch.
      *
-     * @param percorsoFile path del file da importare (assoluto o relativo alla CWD)
+     * @param percorsoFile path del file da importare (assoluto o relativo alla
+     * CWD)
      * @return il resoconto dell'importazione
      * @throws IOException se il file non esiste o non è leggibile
      */
     public BatchRisultato importa(String percorsoFile) throws IOException {
-        if (percorsoFile == null || percorsoFile.isBlank())
+        if (percorsoFile == null || percorsoFile.isBlank()) {
             throw new IllegalArgumentException("Il percorso del file non puo' essere null o vuoto.");
+        }
 
         Path path = Paths.get(percorsoFile);
-        if (!Files.exists(path))
+        if (!Files.exists(path)) {
             throw new IOException("File non trovato: " + percorsoFile);
-        if (!Files.isRegularFile(path))
+        }
+        if (!Files.isRegularFile(path)) {
             throw new IOException("Il percorso non indica un file regolare: " + percorsoFile);
+        }
 
         List<String> righe = Files.readAllLines(path, StandardCharsets.UTF_8);
         return elaboraRighe(righe);
@@ -134,8 +147,9 @@ public class BatchImporter {
      * @return resoconto aggregato di tutti i file
      */
     public BatchRisultato importaMultipli(List<String> percorsiFile) {
-        if (percorsiFile == null)
+        if (percorsiFile == null) {
             throw new IllegalArgumentException("La lista dei percorsi non puo' essere null.");
+        }
 
         BatchRisultato totale = new BatchRisultato();
         for (String percorso : percorsiFile) {
@@ -154,7 +168,6 @@ public class BatchImporter {
     // ================================================================
     // ELABORAZIONE RIGHE
     // ================================================================
-
     /**
      * Elabora la lista di righe di un file batch e restituisce il resoconto.
      * Ogni riga è indipendente: errori su una riga non bloccano le successive.
@@ -205,19 +218,18 @@ public class BatchImporter {
     // ================================================================
     // ELABORAZIONE CAMPO COMUNE
     // ================================================================
-
     /**
      * Elabora una riga CAMPO_COMUNE.
      *
      * Formato: CAMPO_COMUNE | <nome> | <si/no>
      *
-     * Precondizioni:
-     * - token[0] == "CAMPO_COMUNE"
+     * Precondizioni: 
+     * - token[0] == "CAMPO_COMUNE" 
      * - token.length >= 3
      *
-     * @param token        array di token estratti dalla riga
-     * @param numeroRiga   numero di riga nel file (per i messaggi)
-     * @param risultato    accumulatore dei risultati
+     * @param token array di token estratti dalla riga
+     * @param numeroRiga numero di riga nel file (per i messaggi)
+     * @param risultato accumulatore dei risultati
      */
     private void elaboraCampoComune(String[] token, int numeroRiga, BatchRisultato risultato) {
         if (token.length < 3) {
@@ -227,8 +239,8 @@ public class BatchImporter {
             return;
         }
 
-        String nomeCampo   = token[1].trim();
-        String obbligStr   = token[2].trim().toLowerCase();
+        String nomeCampo = token[1].trim();
+        String obbligStr = token[2].trim().toLowerCase();
 
         if (nomeCampo.isEmpty()) {
             risultato.aggiungiErrore(numeroRiga, "Il nome del campo comune non puo' essere vuoto.");
@@ -236,7 +248,7 @@ public class BatchImporter {
         }
 
         boolean obbligatorio = obbligStr.equals("si") || obbligStr.equals("sì")
-                            || obbligStr.equals("yes") || obbligStr.equals("true");
+                || obbligStr.equals("yes") || obbligStr.equals("true");
 
         // Verifica se già esiste come campo base o comune
         if (appData.esisteCampoBase(nomeCampo)) {
@@ -271,20 +283,18 @@ public class BatchImporter {
     // ================================================================
     // ELABORAZIONE CATEGORIA
     // ================================================================
-
     /**
      * Elabora una riga CATEGORIA (con eventuali campi specifici inline).
      *
-     * Formato:
-     *   CATEGORIA | <nome>
-     *   CATEGORIA | <nome> | CAMPO_SPECIFICO | <nome_campo> | <si/no> [| CAMPO_SPECIFICO | ...]
+     * Formato: CATEGORIA | <nome>
+     * CATEGORIA | <nome> | CAMPO_SPECIFICO | <nome_campo> | <si/no> [| CAMPO_SPECIFICO | ...]
      *
-     * I campi specifici vengono aggiunti solo se la categoria è nuova.
-     * Se la categoria già esiste, i campi specifici sono ignorati (con warning).
+     * I campi specifici vengono aggiunti solo se la categoria è nuova. Se la
+     * categoria già esiste, i campi specifici sono ignorati (con warning).
      *
-     * @param token        array di token estratti dalla riga
-     * @param numeroRiga   numero di riga nel file
-     * @param risultato    accumulatore dei risultati
+     * @param token array di token estratti dalla riga
+     * @param numeroRiga numero di riga nel file
+     * @param risultato accumulatore dei risultati
      */
     private void elaboraCategoria(String[] token, int numeroRiga, BatchRisultato risultato) {
         if (token.length < 2) {
@@ -312,8 +322,8 @@ public class BatchImporter {
                     i++; // salta comunque
                     continue;
                 }
-                String nomeCS    = token[i + 1].trim();
-                String obbligCS  = token[i + 2].trim().toLowerCase();
+                String nomeCS = token[i + 1].trim();
+                String obbligCS = token[i + 2].trim().toLowerCase();
                 campiSpecificiDaAggiungere.add(new String[]{nomeCS, obbligCS});
                 i += 2; // salta nome e obbligatorio già letti
             } else {
@@ -340,7 +350,7 @@ public class BatchImporter {
         // Aggiunge i campi specifici alla categoria (prima del salvataggio)
         List<String> campiAggiuntiOk = new ArrayList<>();
         for (String[] cs : campiSpecificiDaAggiungere) {
-            String nomeCS   = cs[0];
+            String nomeCS = cs[0];
             String obbligCS = cs[1];
             if (nomeCS.isEmpty()) {
                 risultato.aggiungiWarning(numeroRiga,
@@ -361,7 +371,7 @@ public class BatchImporter {
                 continue;
             }
             boolean ob = obbligCS.equals("si") || obbligCS.equals("sì")
-                      || obbligCS.equals("yes") || obbligCS.equals("true");
+                    || obbligCS.equals("yes") || obbligCS.equals("true");
             try {
                 categoria.aggiungiCampoSpecifico(
                         new Campo(nomeCS, ob, Campo.TipoCampo.SPECIFICO));
@@ -396,20 +406,18 @@ public class BatchImporter {
     // ================================================================
     // ELABORAZIONE PROPOSTA
     // ================================================================
-
     /**
      * Elabora una riga PROPOSTA.
      *
-     * Formato:
-     *   PROPOSTA | <categoria> | <campo1> = <valore1> | <campo2> = <valore2> | ...
+     * Formato: PROPOSTA | <categoria> | <campo1> = <valore1> | <campo2> = <valore2> | ...
      *
      * La proposta è validata con le stesse regole della modalità interattiva.
-     * Se valida, viene pubblicata direttamente in bacheca (persistita).
-     * Se non valida, viene segnalata come errore e non salvata.
+     * Se valida, viene pubblicata direttamente in bacheca (persistita). Se non
+     * valida, viene segnalata come errore e non salvata.
      *
-     * @param token        array di token estratti dalla riga
-     * @param numeroRiga   numero di riga nel file
-     * @param risultato    accumulatore dei risultati
+     * @param token array di token estratti dalla riga
+     * @param numeroRiga numero di riga nel file
+     * @param risultato accumulatore dei risultati
      */
     private void elaboraProposta(String[] token, int numeroRiga, BatchRisultato risultato) {
         if (token.length < 3) {
@@ -434,13 +442,16 @@ public class BatchImporter {
 
         // Costruisce lo snapshot dei campi (BASE → COMUNI → SPECIFICI)
         LinkedHashMap<String, Boolean> snapshot = new LinkedHashMap<>();
-        for (Campo c : appData.getCampiBase())
+        for (Campo c : appData.getCampiBase()) {
             snapshot.put(c.getNome(), c.isObbligatorio());
-        for (Campo c : appData.getCampiComuni())
+        }
+        for (Campo c : appData.getCampiComuni()) {
             snapshot.put(c.getNome(), c.isObbligatorio());
+        }
         Categoria cat = appData.getCategoria(nomeCategoria);
-        for (Campo c : cat.getCampiSpecifici())
+        for (Campo c : cat.getCampiSpecifici()) {
             snapshot.put(c.getNome(), c.isObbligatorio());
+        }
 
         // Crea la proposta con un ID univoco
         int id = appData.getNuovoIdProposta();
@@ -450,7 +461,9 @@ public class BatchImporter {
         List<String> campiNonRiconosciuti = new ArrayList<>();
         for (int i = 2; i < token.length; i++) {
             String tokenVal = token[i].trim();
-            if (tokenVal.isEmpty()) continue;
+            if (tokenVal.isEmpty()) {
+                continue;
+            }
 
             int uguale = tokenVal.indexOf('=');
             if (uguale < 0) {
@@ -460,7 +473,7 @@ public class BatchImporter {
             }
 
             String nomeCampo = tokenVal.substring(0, uguale).trim();
-            String valore    = tokenVal.substring(uguale + 1).trim();
+            String valore = tokenVal.substring(uguale + 1).trim();
 
             if (!snapshot.containsKey(nomeCampo)) {
                 // Cerca case-insensitive
@@ -495,8 +508,7 @@ public class BatchImporter {
             // La proposta non è pubblicabile: segnala gli errori di validazione
             List<String> erroriValidazione = proposta.validazioneErrori(oggi);
             // L'ID consumato va "restituito" resettando il contatore: non è possibile
-            // in modo sicuro senza un metodo dedicato. Come da nota 3 delle scelte
-            // implementative, gli ID sono progrediti anche per proposte scartate
+            // in modo sicuro senza un metodo dedicato. Gli ID sono progrediti anche per proposte scartate
             // (il contatore non viene decrementato per garantire l'unicità degli ID
             // anche in caso di race condition su file batch multipli).
             risultato.aggiungiErrore(numeroRiga,
@@ -530,18 +542,20 @@ public class BatchImporter {
     // ================================================================
     // UTILITY
     // ================================================================
-
     /**
      * Cerca una chiave nella mappa in modo case-insensitive.
      *
-     * @param mappa    la mappa in cui cercare
-     * @param chiave   la chiave da trovare
-     * @return la chiave nella forma originale presente nella mappa, o null se non trovata
+     * @param mappa la mappa in cui cercare
+     * @param chiave la chiave da trovare
+     * @return la chiave nella forma originale presente nella mappa, o null se
+     * non trovata
      */
     private static String trovaChiaveCaseInsensitive(
             LinkedHashMap<String, Boolean> mappa, String chiave) {
         for (String k : mappa.keySet()) {
-            if (k.equalsIgnoreCase(chiave)) return k;
+            if (k.equalsIgnoreCase(chiave)) {
+                return k;
+            }
         }
         return null;
     }
