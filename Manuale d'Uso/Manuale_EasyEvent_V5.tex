@@ -47,11 +47,12 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{\small\sffamily\textcolor{GRIGIOSCURO}{EasyEvent – Manuale di Installazione e Uso (V5)}}
+\fancyhead[L]{\small\sffamily\textcolor{GRIGIOSCURO}{EasyEvent \textperiodcentered{} V5}}
 \fancyhead[R]{\small\sffamily\textcolor{GRIGIOSCURO}{\nouppercase{\leftmark}}}
 \fancyfoot[C]{\small\sffamily\textcolor{GRIGIOSCURO}{\thepage}}
 \renewcommand{\headrulewidth}{0.4pt}
 \renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{15.5pt}
 \fancypagestyle{plain}{%
   \fancyhf{}
   \fancyfoot[C]{\small\sffamily\thepage}
@@ -62,11 +63,11 @@
 \usepackage{titlesec}
 \titleformat{\chapter}[display]
   {\sffamily\bfseries\color{BLU}\LARGE}
-  {\sffamily\large\color{LBLU}Capitolo \thechapter}
-  {8pt}
-  {\rule{\textwidth}{1.5pt}\vspace{4pt}}
-  [\vspace{2pt}\rule{\textwidth}{0.4pt}]
-\titlespacing{\chapter}{0pt}{0pt}{20pt}
+  {\sffamily\small\mdseries\color{GRIGIOSCURO}\textsc{Capitolo}~\thechapter}
+  {4pt}
+  {}
+  [\vspace{2pt}\textcolor{BLU}{\rule{\textwidth}{1.5pt}}]
+\titlespacing{\chapter}{0pt}{30pt}{24pt}
 
 \titleformat{\section}
   {\sffamily\bfseries\large\color{BLU}}
@@ -164,7 +165,7 @@
 % ── Hyperref (TOC cliccabile) ─────────────────────────────────
 \usepackage[
   pdftitle={EasyEvent -- Manuale di Installazione e Uso},
-  pdfauthor={Progetto Ingegneria del Software A.A. 2025-2026},
+  pdfauthor={Riccardo Marini, Raffaele Principe – Ingegneria del Software A.A. 2025-2026},
   pdfsubject={Versione 5},
   colorlinks=true,
   linkcolor=BLU,
@@ -192,6 +193,8 @@
   {\sffamily\normalsize\color{GRIGIOSCURO} Versione 5 — Sistema per la gestione di iniziative ricreative}
 }
 \author{%
+  {\sffamily Riccardo Marini (matr.\ 746230)}\\
+  {\sffamily Raffaele Principe (matr.\ 749438)}\\[4pt]
   {\sffamily Progetto di Ingegneria del Software}\\
   {\sffamily Allievi del III anno in Ingegneria Informatica}\\
   {\sffamily Università degli Studi di Brescia}\\[4pt]
@@ -229,6 +232,9 @@
     \sffamily\textbf{Corso} & \sffamily III anno – Ingegneria Informatica \\
     \sffamily\textbf{Docente} & \sffamily Marina Zanella \\
     \sffamily\textbf{Ateneo} & \sffamily Università degli Studi di Brescia \\
+    \midrule
+    \sffamily\textbf{Autori} & \sffamily Riccardo Marini \quad matr.\ 746230 \\
+                              & \sffamily Raffaele Principe \quad matr.\ 749438 \\
     \bottomrule
   \end{tabular}
   \vspace{1.5cm}
