@@ -1,17 +1,15 @@
 package it.easyevent.v3.controller;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import it.easyevent.v3.model.AppData;
 import it.easyevent.v3.model.Fruitore;
 import it.easyevent.v3.model.Notifica;
 import it.easyevent.v3.model.Proposta;
 import it.easyevent.v3.persistence.PersistenceManager;
-
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 /**
  * Controller per tutte le operazioni del fruitore (Versione 3).
  *
@@ -39,19 +37,20 @@ public class FruitoreController {
     private Fruitore fruitoreCorrente;
 
     public FruitoreController(AppData appData, PersistenceManager persistenceManager) {
-        if (appData == null)
+        if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
-        if (persistenceManager == null)
+        }
+        if (persistenceManager == null) {
             throw new IllegalArgumentException("PersistenceManager non puo' essere null.");
-        this.appData            = appData;
+        }
+        this.appData = appData;
         this.persistenceManager = persistenceManager;
-        this.fruitoreCorrente   = null;
+        this.fruitoreCorrente = null;
     }
 
     // ================================================================
     // AUTENTICAZIONE E REGISTRAZIONE
     // ================================================================
-
     /**
      * Effettua il login di un fruitore esistente.
      *
@@ -60,7 +59,9 @@ public class FruitoreController {
      * @return true se le credenziali sono corrette
      */
     public boolean login(String username, String password) {
-        if (username == null || password == null) return false;
+        if (username == null || password == null) {
+            return false;
+        }
         Fruitore trovato = appData.getFruitore(username);
         if (trovato != null && trovato.verificaCredenziali(username, password)) {
             fruitoreCorrente = trovato;
@@ -70,19 +71,24 @@ public class FruitoreController {
     }
 
     /**
-     * Registra un nuovo fruitore.
-     * Lo username deve essere univoco globalmente (tra configuratori e fruitori).
+     * Registra un nuovo fruitore. Lo username deve essere univoco globalmente
+     * (tra configuratori e fruitori).
      *
-     * @param username  username scelto
-     * @param password  password scelta
+     * @param username username scelto
+     * @param password password scelta
      * @return stringa vuota se successo, messaggio di errore altrimenti
      */
     public String registra(String username, String password) {
-        if (username == null || username.isBlank()) return "Lo username non puo' essere vuoto.";
-        if (password == null || password.isBlank()) return "La password non puo' essere vuota.";
-        if (appData.esisteUsernameGlobale(username))
+        if (username == null || username.isBlank()) {
+            return "Lo username non puo' essere vuoto.";
+        }
+        if (password == null || password.isBlank()) {
+            return "La password non puo' essere vuota.";
+        }
+        if (appData.esisteUsernameGlobale(username)) {
             return "Username gia' in uso: " + username
-                 + ". Scegliere uno username diverso.";
+                    + ". Scegliere uno username diverso.";
+        }
         try {
             Fruitore f = new Fruitore(username.trim(), password);
             appData.aggiungiFruitore(f);
@@ -92,8 +98,9 @@ public class FruitoreController {
             // fruitoreCorrente resta null, evitando uno stato incoerente.
             fruitoreCorrente = f;
             return "";
-        } catch (IllegalArgumentException e) { return e.getMessage(); }
-          catch (IOException e) {
+        } catch (IllegalArgumentException e) {
+            return e.getMessage();
+        } catch (IOException e) {
             // Rollback: rimuove il fruitore appena aggiunto per ripristinare
             // la coerenza tra stato in memoria e stato su disco.
             appData.rimuoviFruitore(username.trim());
@@ -101,20 +108,28 @@ public class FruitoreController {
         }
     }
 
-    /** @return true se esiste un fruitore con tale username */
+    /**
+     * @return true se esiste un fruitore con tale username
+     */
     public boolean esisteFruitore(String username) {
         return appData.getFruitore(username) != null;
     }
 
-    public void logout() { fruitoreCorrente = null; }
+    public void logout() {
+        fruitoreCorrente = null;
+    }
 
-    public boolean isLoggato() { return fruitoreCorrente != null; }
-    public Fruitore getFruitoreCorrente() { return fruitoreCorrente; }
+    public boolean isLoggato() {
+        return fruitoreCorrente != null;
+    }
+
+    public Fruitore getFruitoreCorrente() {
+        return fruitoreCorrente;
+    }
 
     // ================================================================
     // BACHECA (proposte APERTE, visibile ai fruitori)
     // ================================================================
-
     /**
      * @return lista di tutte le proposte in stato APERTA
      */
@@ -156,7 +171,6 @@ public class FruitoreController {
     // ================================================================
     // ISCRIZIONI
     // ================================================================
-
     /**
      * Iscrive il fruitore corrente a una proposta aperta.
      *
@@ -164,10 +178,13 @@ public class FruitoreController {
      * @return stringa vuota se successo, messaggio di errore altrimenti
      */
     public String aderisci(int idProposta) {
-        if (!isLoggato()) return "Nessun fruitore loggato.";
+        if (!isLoggato()) {
+            return "Nessun fruitore loggato.";
+        }
         Proposta p = getPropostaAperta(idProposta);
-        if (p == null)
+        if (p == null) {
             return "Proposta non trovata o non piu' aperta (ID: " + idProposta + ").";
+        }
 
         String username = fruitoreCorrente.getUsername();
         // Cattura la data UNA SOLA VOLTA: se la chiamata attraversa la mezzanotte,
@@ -175,7 +192,9 @@ public class FruitoreController {
         // fallire silenziosamente (isIscrizioneAperta restituirebbe false il giorno dopo).
         LocalDate oggi = LocalDate.now();
         String err = p.aggiungiAderente(username, oggi);
-        if (!err.isEmpty()) return err;
+        if (!err.isEmpty()) {
+            return err;
+        }
 
         try {
             salva();
@@ -189,10 +208,13 @@ public class FruitoreController {
     }
 
     /**
-     * @return true se il fruitore corrente e' gia' iscritto alla proposta con tale ID
+     * @return true se il fruitore corrente e' gia' iscritto alla proposta con
+     * tale ID
      */
     public boolean isIscritto(int idProposta) {
-        if (!isLoggato()) return false;
+        if (!isLoggato()) {
+            return false;
+        }
         Proposta p = getPropostaAperta(idProposta);
         return p != null && p.isAderito(fruitoreCorrente.getUsername());
     }
@@ -200,12 +222,13 @@ public class FruitoreController {
     // ================================================================
     // SPAZIO PERSONALE (notifiche)
     // ================================================================
-
     /**
      * @return lista delle notifiche del fruitore corrente (dal piu' recente)
      */
     public List<Notifica> getNotifiche() {
-        if (!isLoggato()) return new ArrayList<>();
+        if (!isLoggato()) {
+            return new ArrayList<>();
+        }
         List<Notifica> lista = new ArrayList<>(fruitoreCorrente.getNotifiche());
         // Ordine inverso: piu' recenti prima
         java.util.Collections.reverse(lista);
@@ -219,16 +242,21 @@ public class FruitoreController {
      * @return stringa vuota se successo, messaggio di errore altrimenti
      */
     public String cancellaNotifica(int idNotifica) {
-        if (!isLoggato()) return "Nessun fruitore loggato.";
+        if (!isLoggato()) {
+            return "Nessun fruitore loggato.";
+        }
         // Recupera la notifica prima di rimuoverla, per poter fare rollback.
         Notifica daRimuovere = fruitoreCorrente.getNotifiche().stream()
                 .filter(n -> n.getId() == idNotifica)
                 .findFirst().orElse(null);
-        if (daRimuovere == null)
+        if (daRimuovere == null) {
             return "Notifica non trovata con ID: " + idNotifica;
+        }
         fruitoreCorrente.rimuoviNotifica(idNotifica);
-        try { salva(); return ""; }
-        catch (IOException e) {
+        try {
+            salva();
+            return "";
+        } catch (IOException e) {
             // Rollback: ripristina la notifica rimossa per mantenere
             // la coerenza tra stato in memoria e stato su disco.
             fruitoreCorrente.aggiungiNotifica(daRimuovere);
@@ -242,12 +270,16 @@ public class FruitoreController {
      * @return stringa vuota se successo, messaggio di errore altrimenti
      */
     public String cancellaAllNotifiche() {
-        if (!isLoggato()) return "Nessun fruitore loggato.";
+        if (!isLoggato()) {
+            return "Nessun fruitore loggato.";
+        }
         // Salva una copia ORDINATA per rollback prima di rimuovere dalla memoria.
         List<Notifica> copia = new ArrayList<>(fruitoreCorrente.getNotifiche());
         copia.forEach(n -> fruitoreCorrente.rimuoviNotifica(n.getId()));
-        try { salva(); return ""; }
-        catch (IOException e) {
+        try {
+            salva();
+            return "";
+        } catch (IOException e) {
             // Rollback: usa ripristinaNotifiche invece di aggiungiNotifica() in loop,
             // perche' append in coda altererebbe l'ordine originale delle notifiche
             // (visibile nella view che mostra le notifiche in ordine inverso).
@@ -259,6 +291,7 @@ public class FruitoreController {
     // ================================================================
     // UTILITA'
     // ================================================================
-
-    private void salva() throws IOException { persistenceManager.salva(appData); }
+    private void salva() throws IOException {
+        persistenceManager.salva(appData);
+    }
 }

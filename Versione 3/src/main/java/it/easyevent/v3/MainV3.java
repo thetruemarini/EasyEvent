@@ -8,7 +8,6 @@ import it.easyevent.v3.view.ConfiguratoreView;
 import it.easyevent.v3.view.FruitoreView;
 import java.io.IOException;
 import java.util.Scanner;
-
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent - Versione 3.
  *
@@ -47,12 +46,14 @@ public class MainV3 {
         }
 
         // 4. Controller
-        ConfiguratoreController confController =
-                new ConfiguratoreController(appData, persistenceManager);
+        ConfiguratoreController confController
+                = new ConfiguratoreController(appData, persistenceManager);
 
         // Inizializza i campi base se necessario
         String errInit = confController.inizializzaCampiBase();
-        if (!errInit.isEmpty()) System.err.println("[Sistema] " + errInit);
+        if (!errInit.isEmpty()) {
+            System.err.println("[Sistema] " + errInit);
+        }
 
         // 5. Transizioni automatiche di stato (da chiamare ad ogni avvio)
         //    Gestisce il caso in cui l'app non fosse in esecuzione alla mezzanotte
@@ -78,10 +79,9 @@ public class MainV3 {
     // ================================================================
     // SELEZIONE RUOLO
     // ================================================================
-
     private static void menuSelezioneRuolo(ConfiguratoreController confController,
-                                            FruitoreController fruitController,
-                                            Scanner scanner) {
+            FruitoreController fruitController,
+            Scanner scanner) {
         String SEP = "------------------------------------------------------------";
         while (true) {
             System.out.println("\n" + SEP);
@@ -98,17 +98,22 @@ public class MainV3 {
             switch (scelta) {
                 case "1" -> {
                     ConfiguratoreView confView = new ConfiguratoreView(confController, scanner);
-                    if (!confView.avvia()) return;
+                    if (!confView.avvia()) {
+                        return;
+                    }
                 }
                 case "2" -> {
                     FruitoreView fruitView = new FruitoreView(fruitController, scanner);
-                    if (!fruitView.avvia()) return;
+                    if (!fruitView.avvia()) {
+                        return;
+                    }
                 }
                 case "0" -> {
                     System.out.println("\n  Arrivederci.");
                     return;
                 }
-                default -> System.out.println("\n  ERRORE: Scelta non valida.");
+                default ->
+                    System.out.println("\n  ERRORE: Scelta non valida.");
             }
         }
     }

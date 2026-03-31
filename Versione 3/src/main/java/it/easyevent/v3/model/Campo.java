@@ -1,5 +1,4 @@
 package it.easyevent.v3.model;
-
 /**
  * Rappresenta un campo generico che descrive un'iniziativa.
  * 
@@ -19,10 +18,10 @@ public class Campo {
 
     /**
      * Costruttore.
-     * 
-     * @param nome        nome univoco del campo, non null e non blank
+     *
+     * @param nome nome univoco del campo, non null e non blank
      * @param obbligatorio true se la compilazione è obbligatoria
-     * @param tipo        tipologia del campo (BASE, COMUNE, SPECIFICO)
+     * @param tipo tipologia del campo (BASE, COMUNE, SPECIFICO)
      * @throws IllegalArgumentException se nome è null o blank, o tipo è null
      */
     public Campo(String nome, boolean obbligatorio, TipoCampo tipo) {
@@ -43,7 +42,6 @@ public class Campo {
     }
 
     // ---- Getters ----
-
     public String getNome() {
         return nome;
     }
@@ -57,11 +55,10 @@ public class Campo {
     }
 
     // ---- Setters con precondizioni ----
-
     /**
-     * Modifica l'obbligatorietà del campo.
-     * Solo i campi COMUNE e SPECIFICO possono essere modificati.
-     * 
+     * Modifica l'obbligatorietà del campo. Solo i campi COMUNE e SPECIFICO
+     * possono essere modificati.
+     *
      * @param obbligatorio nuovo valore di obbligatorietà
      * @throws UnsupportedOperationException se il campo è BASE
      */
@@ -86,8 +83,12 @@ public class Campo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (!(obj instanceof Campo)) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Campo)) {
+            return false;
+        }
         Campo other = (Campo) obj;
         return this.nome.equalsIgnoreCase(other.nome) && this.tipo == other.tipo;
     }

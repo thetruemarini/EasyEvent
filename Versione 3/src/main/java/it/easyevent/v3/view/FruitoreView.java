@@ -6,7 +6,6 @@ import it.easyevent.v3.model.Proposta;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
-
 /**
  * Interfaccia testuale (CLI) per il fruitore - Versione 3.
  *
@@ -22,34 +21,37 @@ import java.util.stream.Collectors;
  */
 public class FruitoreView {
 
-    private static final String SEP  = "------------------------------------------------------------";
+    private static final String SEP = "------------------------------------------------------------";
     private static final String SEP2 = "  ----------------------------------------------------------";
 
     private final FruitoreController controller;
     private final Scanner scanner;
 
     public FruitoreView(FruitoreController controller, Scanner scanner) {
-        if (controller == null)
+        if (controller == null) {
             throw new IllegalArgumentException("Controller non puo' essere null.");
-        if (scanner == null)
+        }
+        if (scanner == null) {
             throw new IllegalArgumentException("Scanner non puo' essere null.");
+        }
         this.controller = controller;
-        this.scanner    = scanner;
+        this.scanner = scanner;
     }
 
     // ================================================================
     // ENTRY POINT
     // ================================================================
-
     /**
-     * Avvia il flusso di interazione per il fruitore.
-     * Ritorna quando il fruitore sceglie di uscire.
+     * Avvia il flusso di interazione per il fruitore. Ritorna quando il
+     * fruitore sceglie di uscire.
      */
     public boolean avvia() {
         stampaBanner();
         while (true) {
             if (!controller.isLoggato()) {
-                if (!gestioneAccesso()) { return true; }
+                if (!gestioneAccesso()) {
+                    return true;
+                }
             }
             boolean continua = menuPrincipale();
             if (!continua) {
@@ -68,9 +70,9 @@ public class FruitoreView {
     // ================================================================
     // ACCESSO (login o registrazione)
     // ================================================================
-
     /**
      * Chiede all'utente se vuole effettuare il login o registrarsi.
+     *
      * @return true se l'accesso ha avuto successo
      */
     private boolean gestioneAccesso() {
@@ -84,9 +86,12 @@ public class FruitoreView {
         System.out.print("  Scelta: ");
         String scelta = scanner.nextLine().trim();
         return switch (scelta) {
-            case "1" -> gestioneLogin();
-            case "2" -> gestioneRegistrazione();
-            default  -> false;
+            case "1" ->
+                gestioneLogin();
+            case "2" ->
+                gestioneRegistrazione();
+            default ->
+                false;
         };
     }
 
@@ -99,7 +104,9 @@ public class FruitoreView {
         for (int t = 0; t < 3; t++) {
             System.out.print("  Username: ");
             String username = scanner.nextLine().trim();
-            if (username.equalsIgnoreCase("annulla")) return false;
+            if (username.equalsIgnoreCase("annulla")) {
+                return false;
+            }
             System.out.print("  Password: ");
             String password = scanner.nextLine().trim();
             if (controller.login(username, password)) {
@@ -111,7 +118,9 @@ public class FruitoreView {
             int rimasti = 2 - t;
             stampaErrore("Credenziali non valide."
                     + (rimasti > 0 ? " Tentativi rimasti: " + rimasti : ""));
-            if (rimasti > 0) System.out.println();
+            if (rimasti > 0) {
+                System.out.println();
+            }
         }
         System.out.println("\n  Accesso bloccato: numero massimo di tentativi raggiunto.");
         return false;
@@ -125,10 +134,14 @@ public class FruitoreView {
         System.out.println();
         System.out.print("  Scegli username: ");
         String username = scanner.nextLine().trim();
-        if (username.equalsIgnoreCase("annulla")) return false;
+        if (username.equalsIgnoreCase("annulla")) {
+            return false;
+        }
         System.out.print("  Scegli password: ");
         String password = scanner.nextLine().trim();
-        if (password.equalsIgnoreCase("annulla")) return false;
+        if (password.equalsIgnoreCase("annulla")) {
+            return false;
+        }
         System.out.print("  Conferma password: ");
         String conferma = scanner.nextLine().trim();
         if (!password.equals(conferma)) {
@@ -147,7 +160,6 @@ public class FruitoreView {
     // ================================================================
     // MENU PRINCIPALE FRUITORE
     // ================================================================
-
     private boolean menuPrincipale() {
         while (true) {
             int nNotifiche = controller.getNotifiche().size();
@@ -162,11 +174,17 @@ public class FruitoreView {
             System.out.println();
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
-                case "1" -> visualizzaBacheca();
-                case "2" -> aderisciAProposta();
-                case "3" -> spazioPersonale();
-                case "0" -> { return false; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "1" ->
+                    visualizzaBacheca();
+                case "2" ->
+                    aderisciAProposta();
+                case "3" ->
+                    spazioPersonale();
+                case "0" -> {
+                    return false;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
@@ -174,7 +192,6 @@ public class FruitoreView {
     // ================================================================
     // BACHECA
     // ================================================================
-
     private void visualizzaBacheca() {
         System.out.println("\n" + SEP);
         System.out.println("  BACHECA  -  PROPOSTE APERTE");
@@ -206,7 +223,7 @@ public class FruitoreView {
         String termineFmt = p.getValore(Proposta.CAMPO_TERMINE_ISCRIZIONE);
         boolean iscritto = controller.isIscritto(p.getId());
         int iscritti = p.getAderenti().size();
-        int maxPart  = p.getNumeroMaxPartecipanti();
+        int maxPart = p.getNumeroMaxPartecipanti();
         String maxStr = maxPart < 0 ? "N/D" : String.valueOf(maxPart);
 
         System.out.println();
@@ -217,20 +234,29 @@ public class FruitoreView {
 
         // Stampa i principali campi informativi
         String[] campiDaStampare = {"Data", "Ora", "Luogo", "Quota individuale",
-                "Data conclusiva", "Durata", "Ora conclusiva", "Compreso nella quota", "Note"};
+            "Data conclusiva", "Durata", "Ora conclusiva", "Compreso nella quota", "Note"};
         for (String campo : campiDaStampare) {
             String val = p.getValore(campo);
-            if (!val.isBlank()) System.out.println("    " + campo + ": " + val);
+            if (!val.isBlank()) {
+                System.out.println("    " + campo + ": " + val);
+            }
         }
         // Campi specifici non previsti sopra
         for (String nome : p.getValori().keySet()) {
             boolean giaMostrato = false;
-            for (String c : campiDaStampare) if (c.equalsIgnoreCase(nome)) { giaMostrato = true; break; }
+            for (String c : campiDaStampare) {
+                if (c.equalsIgnoreCase(nome)) {
+                    giaMostrato = true;
+                    break;
+                }
+            }
             if (!giaMostrato && !nome.equalsIgnoreCase("Titolo")
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_TERMINE_ISCRIZIONE)
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_NUM_PARTECIPANTI)) {
                 String val = p.getValore(nome);
-                if (!val.isBlank()) System.out.println("    " + nome + ": " + val);
+                if (!val.isBlank()) {
+                    System.out.println("    " + nome + ": " + val);
+                }
             }
         }
     }
@@ -238,7 +264,6 @@ public class FruitoreView {
     // ================================================================
     // ISCRIZIONE
     // ================================================================
-
     private void aderisciAProposta() {
         List<Proposta> bacheca = controller.getBacheca();
         if (bacheca.isEmpty()) {
@@ -276,7 +301,9 @@ public class FruitoreView {
 
         System.out.print("\n  ID della proposta a cui vuoi aderire (0 per annullare): ");
         String input = scanner.nextLine().trim();
-        if (input.equals("0")) return;
+        if (input.equals("0")) {
+            return;
+        }
 
         try {
             int id = Integer.parseInt(input);
@@ -296,7 +323,6 @@ public class FruitoreView {
     // ================================================================
     // SPAZIO PERSONALE (notifiche)
     // ================================================================
-
     private void spazioPersonale() {
         while (true) {
             List<Notifica> notifiche = controller.getNotifiche();
@@ -321,44 +347,60 @@ public class FruitoreView {
             System.out.println();
             System.out.print("  Scelta: ");
             switch (scanner.nextLine().trim()) {
-                case "c" -> cancellaNotifica(notifiche);
-                case "t" -> cancellaAllNotifiche(notifiche);
-                case "0" -> { return; }
-                default  -> stampaErrore("Scelta non valida.");
+                case "c" ->
+                    cancellaNotifica(notifiche);
+                case "t" ->
+                    cancellaAllNotifiche(notifiche);
+                case "0" -> {
+                    return;
+                }
+                default ->
+                    stampaErrore("Scelta non valida.");
             }
         }
     }
 
     private void cancellaNotifica(List<Notifica> notifiche) {
-        if (notifiche.isEmpty()) { stampaErrore("Nessuna notifica da cancellare."); return; }
+        if (notifiche.isEmpty()) {
+            stampaErrore("Nessuna notifica da cancellare.");
+            return;
+        }
         System.out.print("  ID della notifica da cancellare: ");
         String input = scanner.nextLine().trim();
         try {
             int id = Integer.parseInt(input);
             String err = controller.cancellaNotifica(id);
-            if (err.isEmpty()) System.out.println("  Notifica [ID " + id + "] cancellata.");
-            else stampaErrore(err);
+            if (err.isEmpty()) {
+                System.out.println("  Notifica [ID " + id + "] cancellata."); 
+            }else {
+                stampaErrore(err);
+            }
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido: " + input);
         }
     }
 
     private void cancellaAllNotifiche(List<Notifica> notifiche) {
-        if (notifiche.isEmpty()) { stampaErrore("Nessuna notifica da cancellare."); return; }
+        if (notifiche.isEmpty()) {
+            stampaErrore("Nessuna notifica da cancellare.");
+            return;
+        }
         System.out.print("  Cancellare tutte le " + notifiche.size() + " notifiche? (s/n): ");
         if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
             System.out.println("  Operazione annullata.");
             return;
         }
         String err = controller.cancellaAllNotifiche();
-        if (err.isEmpty()) System.out.println("  Tutte le notifiche cancellate.");
-        else stampaErrore(err);
+        if (err.isEmpty()) {
+            System.out.println("  Tutte le notifiche cancellate."); 
+        }else {
+            stampaErrore(err);
+        }
     }
 
     // ================================================================
     // UTILITY
     // ================================================================
-
     private void premInvio() {
         System.out.println();
         System.out.print("  Premi INVIO per tornare al menu...");
