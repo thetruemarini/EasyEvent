@@ -1,0 +1,1086 @@
+% ============================================================
+%  Manuale di Installazione e Uso – EasyEvent Versione 5
+%  Ingegneria del Software – A.A. 2025-2026
+%  Formato universitario
+% ============================================================
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ── Encoding & lingua ─────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian,provide=*]{babel}
+
+% ── Layout ────────────────────────────────────────────────────
+\usepackage[
+  top=3cm, bottom=2.5cm,
+  left=3cm, right=2.5cm,
+  headheight=16pt
+]{geometry}
+\usepackage{microtype}
+\usepackage{parskip}          % spazio tra paragrafi, niente indentazione
+\setlength{\parskip}{6pt}
+
+% ── Font (palatino look) ──────────────────────────────────────
+\usepackage{palatino}
+\usepackage{helvet}           % sans-serif per titoli
+\renewcommand{\familydefault}{\rmdefault}
+
+% ── Colori ────────────────────────────────────────────────────
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{BLU}{RGB}{31,78,121}
+\definecolor{LBLU}{RGB}{46,117,182}
+\definecolor{VERDE}{RGB}{31,122,31}
+\definecolor{ARANCIO}{RGB}{193,90,0}
+\definecolor{ROSSO}{RGB}{180,30,30}
+\definecolor{GRIGIO}{RGB}{242,242,242}
+\definecolor{GRIGIOSCURO}{RGB}{88,88,88}
+\definecolor{CODEBG}{RGB}{248,248,248}
+\definecolor{CODEBORDER}{RGB}{200,200,200}
+\definecolor{ALERTBG}{RGB}{255,243,224}
+\definecolor{ALERTBORDER}{RGB}{193,90,0}
+\definecolor{NOTABG}{RGB}{232,244,253}
+\definecolor{NOTABORDER}{RGB}{46,117,182}
+\definecolor{OKBG}{RGB}{232,245,233}
+\definecolor{OKBORDER}{RGB}{31,122,31}
+
+% ── Intestazione / piè di pagina ──────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\sffamily\textcolor{GRIGIOSCURO}{EasyEvent – Manuale di Installazione e Uso (V5)}}
+\fancyhead[R]{\small\sffamily\textcolor{GRIGIOSCURO}{\nouppercase{\leftmark}}}
+\fancyfoot[C]{\small\sffamily\textcolor{GRIGIOSCURO}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\small\sffamily\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ── Titoli capitolo/sezione ───────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\sffamily\bfseries\color{BLU}\LARGE}
+  {\sffamily\large\color{LBLU}Capitolo \thechapter}
+  {8pt}
+  {\rule{\textwidth}{1.5pt}\vspace{4pt}}
+  [\vspace{2pt}\rule{\textwidth}{0.4pt}]
+\titlespacing{\chapter}{0pt}{0pt}{20pt}
+
+\titleformat{\section}
+  {\sffamily\bfseries\large\color{BLU}}
+  {\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\sffamily\bfseries\normalsize\color{LBLU}}
+  {\thesubsection}{0.8em}{}
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\small\color{GRIGIOSCURO}}
+  {\thesubsubsection}{0.8em}{}
+
+% ── Tabelle ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ── Elenchi ───────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.5em, itemsep=2pt, topsep=4pt}
+\setlist[enumerate]{leftmargin=1.5em, itemsep=2pt, topsep=4pt}
+
+% ── Codice sorgente ───────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  backgroundcolor=\color{CODEBG},
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  breakatwhitespace=false,
+  columns=flexible,
+  keepspaces=true,
+  showstringspaces=false,
+  frame=single,
+  rulecolor=\color{CODEBORDER},
+  framesep=4pt,
+  xleftmargin=6pt,
+  xrightmargin=6pt,
+  aboveskip=8pt,
+  belowskip=8pt,
+  numbers=none,
+}
+\lstdefinestyle{bash}{
+  language=bash,
+  keywordstyle=\bfseries\color{BLU},
+  commentstyle=\itshape\color{GRIGIOSCURO},
+  stringstyle=\color{VERDE},
+}
+\lstdefinestyle{batch}{
+  basicstyle=\ttfamily\small\color{black},
+  commentstyle=\itshape\color{GRIGIOSCURO},
+  morecomment=[l]{\#},
+}
+\lstdefinestyle{java}{
+  language=Java,
+  keywordstyle=\bfseries\color{BLU},
+  commentstyle=\itshape\color{GRIGIOSCURO},
+  stringstyle=\color{VERDE},
+}
+
+% ── Box colorati (note, avvisi, ecc.) ─────────────────────────
+\usepackage[framemethod=tikz]{mdframed}
+
+\newmdenv[
+  backgroundcolor=NOTABG,
+  linecolor=NOTABORDER,
+  linewidth=2pt,
+  leftline=true, rightline=false, topline=false, bottomline=false,
+  innerleftmargin=10pt, innerrightmargin=8pt,
+  innertopmargin=6pt, innerbottommargin=6pt,
+  skipabove=8pt, skipbelow=8pt,
+]{notabox}
+
+\newmdenv[
+  backgroundcolor=ALERTBG,
+  linecolor=ALERTBORDER,
+  linewidth=2pt,
+  leftline=true, rightline=false, topline=false, bottomline=false,
+  innerleftmargin=10pt, innerrightmargin=8pt,
+  innertopmargin=6pt, innerbottommargin=6pt,
+  skipabove=8pt, skipbelow=8pt,
+]{avvisobox}
+
+\newmdenv[
+  backgroundcolor=OKBG,
+  linecolor=OKBORDER,
+  linewidth=2pt,
+  leftline=true, rightline=false, topline=false, bottomline=false,
+  innerleftmargin=10pt, innerrightmargin=8pt,
+  innertopmargin=6pt, innerbottommargin=6pt,
+  skipabove=8pt, skipbelow=8pt,
+]{successobox}
+
+% ── Hyperref (TOC cliccabile) ─────────────────────────────────
+\usepackage[
+  pdftitle={EasyEvent -- Manuale di Installazione e Uso},
+  pdfauthor={Progetto Ingegneria del Software A.A. 2025-2026},
+  pdfsubject={Versione 5},
+  colorlinks=true,
+  linkcolor=BLU,
+  urlcolor=LBLU,
+  citecolor=VERDE,
+  bookmarksopen=true,
+  bookmarksnumbered=true,
+  pdfstartview=FitH
+]{hyperref}
+
+% ── Macro utili ───────────────────────────────────────────────
+\newcommand{\cmd}[1]{\texttt{\small#1}}
+\newcommand{\file}[1]{\texttt{\small#1}}
+\newcommand{\badge}[2]{\colorbox{#1}{\small\sffamily\bfseries\color{white}~#2~}}
+\newcommand{\nuovo}{\badge{VERDE}{NUOVO V5}}
+\newcommand{\menupunto}[1]{\textbf{«#1»}}
+\newcommand{\tasto}[1]{\fbox{\small\ttfamily#1}}
+\newcommand{\versione}{5}
+
+% ── Informazioni documento ────────────────────────────────────
+\title{%
+  \vspace{-1cm}
+  {\sffamily\bfseries\color{BLU}\Huge EasyEvent}\\[6pt]
+  {\sffamily\large\color{LBLU} Manuale di Installazione e Uso}\\[4pt]
+  {\sffamily\normalsize\color{GRIGIOSCURO} Versione 5 — Sistema per la gestione di iniziative ricreative}
+}
+\author{%
+  {\sffamily Progetto di Ingegneria del Software}\\
+  {\sffamily Allievi del III anno in Ingegneria Informatica}\\
+  {\sffamily Università degli Studi di Brescia}\\[4pt]
+  {\sffamily\small A.A. 2025-2026}
+}
+\date{}
+
+% ============================================================
+\begin{document}
+
+% ── Copertina ─────────────────────────────────────────────────
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\sffamily\bfseries\color{BLU}\fontsize{48}{52}\selectfont EasyEvent\par}
+  \vspace{0.4cm}
+  \rule{\textwidth}{2pt}\par
+  \vspace{0.3cm}
+  {\sffamily\bfseries\color{LBLU}\LARGE Manuale di Installazione e Uso\par}
+  \vspace{0.2cm}
+  {\sffamily\large\color{GRIGIOSCURO} Versione 5\par}
+  \vspace{0.5cm}
+  \rule{\textwidth}{0.4pt}\par
+  \vspace{1cm}
+  {\sffamily\normalsize
+    Sistema software per la gestione di iniziative ricreative,\\
+    amatoriali e dilettantistiche\\[8pt]
+    \textit{Back-end per configuratori · Front-end per fruitori · Importazione batch}
+  \par}
+  \vfill
+  \begin{tabular}{ll}
+    \toprule
+    \sffamily\textbf{Insegnamento} & \sffamily Ingegneria del Software (9 CFU) \\
+    \sffamily\textbf{Anno accademico} & \sffamily 2025-2026 \\
+    \sffamily\textbf{Corso} & \sffamily III anno – Ingegneria Informatica \\
+    \sffamily\textbf{Docente} & \sffamily Marina Zanella \\
+    \sffamily\textbf{Ateneo} & \sffamily Università degli Studi di Brescia \\
+    \bottomrule
+  \end{tabular}
+  \vspace{1.5cm}
+\end{titlepage}
+
+% ── Pagina vuota dopo copertina ───────────────────────────────
+\clearpage
+\thispagestyle{empty}
+\mbox{}
+\clearpage
+
+% ── Sommario esecutivo ────────────────────────────────────────
+\chapter*{Sommario}
+\addcontentsline{toc}{chapter}{Sommario}
+\markboth{Sommario}{Sommario}
+
+Il presente documento costituisce il \textbf{Manuale di Installazione e Uso} dell'applicazione \textbf{EasyEvent}, sviluppata nell'ambito del progetto di \textit{Ingegneria del Software} (A.A.\ 2025-2026). Il manuale è relativo alla \textbf{Versione 5}, che rappresenta la versione finale e completa del sistema.
+
+\bigskip
+\textbf{Scopo dell'applicazione.} EasyEvent è un sistema stand-alone per l'organizzazione di iniziative ricreative, amatoriali e dilettantistiche. Permette a enti senza scopo di lucro (circoli aziendali, uffici del tempo libero comunali, ecc.) di proporre eventi ai propri utenti, gestire le iscrizioni e comunicare automaticamente l'esito di ciascuna iniziativa.
+
+\bigskip
+\textbf{Due tipologie di utente:}
+\begin{itemize}
+  \item \textbf{Configuratore}: accede al back-end, definisce categorie e campi, crea e pubblica proposte, gestisce l'archivio e può ritirare iniziative già confermate.
+  \item \textbf{Fruitore}: accede al front-end, visualizza le proposte in bacheca, si iscrive alle iniziative di suo interesse e riceve notifiche sull'esito.
+\end{itemize}
+
+\bigskip
+\textbf{Novità della Versione 5.} Rispetto alla versione precedente, la Versione 5 introduce la \textbf{modalità batch}: il configuratore può importare categorie, campi e proposte di iniziative leggendole da uno o più file di testo strutturati, senza dover inserire ogni dato manualmente tramite la CLI. La modalità interattiva rimane invariata e pienamente operativa.
+
+\bigskip
+\textbf{Struttura del manuale.}
+\begin{itemize}
+  \item Capitolo~\ref{cap:installazione}: requisiti di sistema e istruzioni di installazione.
+  \item Capitolo~\ref{cap:avvio}: avvio dell'applicazione e primo accesso.
+  \item Capitolo~\ref{cap:configuratore}: guida completa al back-end del configuratore.
+  \item Capitolo~\ref{cap:fruitore}: guida completa al front-end del fruitore.
+  \item Capitolo~\ref{cap:batch}: importazione batch (funzionalità Versione 5).
+  \item Capitolo~\ref{cap:persistenza}: formato dei dati e gestione del file di persistenza.
+  \item Capitolo~\ref{cap:errori}: messaggi di errore e risoluzione dei problemi.
+  \item Appendice~\ref{app:credenziali}: credenziali demo precaricate.
+  \item Appendice~\ref{app:batch}: file batch di esempio completo.
+\end{itemize}
+
+\clearpage
+
+% ── Indice ────────────────────────────────────────────────────
+\tableofcontents
+\clearpage
+
+% ============================================================
+%  CAPITOLO 1 – INSTALLAZIONE
+% ============================================================
+\chapter{Installazione}
+\label{cap:installazione}
+
+\section{Requisiti di sistema}
+
+\subsection{Requisiti hardware}
+EasyEvent è un'applicazione leggera; non è richiesta alcuna configurazione hardware specifica.
+\begin{itemize}
+  \item \textbf{Processore}: qualsiasi CPU moderna a 64 bit.
+  \item \textbf{RAM}: almeno 128 MB disponibili per la JVM (512 MB consigliati).
+  \item \textbf{Spazio su disco}: circa 2 MB per il codice compilato; ulteriore spazio per il file di dati \file{easyevent\_data.json} (dimensione variabile in base al numero di proposte e fruitori).
+\end{itemize}
+
+\subsection{Requisiti software}
+\begin{itemize}
+  \item \textbf{Sistema operativo}: Windows 10/11, Linux (qualsiasi distribuzione recente), macOS 11+.
+  \item \textbf{Java Development Kit (JDK) versione 17 o superiore} (richiesto per la compilazione). \\
+        Download: \url{https://adoptium.net} oppure \url{https://www.oracle.com/java/technologies/downloads/}
+  \item \textbf{Java Runtime Environment (JRE) versione 17 o superiore} (sufficiente per la sola esecuzione del codice pre-compilato).
+\end{itemize}
+
+\begin{notabox}
+\textbf{Nota.} Il progetto non richiede alcun framework, database, server web o libreria esterna. L'unica dipendenza è il JDK/JRE standard.
+\end{notabox}
+
+\subsection{Verifica della versione Java installata}
+Aprire un terminale (o il Prompt dei comandi su Windows) e digitare:
+\begin{lstlisting}[style=bash]
+java -version
+\end{lstlisting}
+L'output atteso è simile a:
+\begin{lstlisting}
+openjdk version "21.0.x" ...
+\end{lstlisting}
+Se il comando non viene riconosciuto oppure la versione è inferiore a 17, installare il JDK come indicato alla sezione precedente.
+
+Per compilare, è necessario anche \cmd{javac}:
+\begin{lstlisting}[style=bash]
+javac -version
+# output atteso: javac 21.0.x
+\end{lstlisting}
+
+\section{Ottenere i file del progetto}
+
+Il progetto è distribuito come cartella \file{Versione 5/} contenente:
+\begin{itemize}
+  \item \file{src/} — sorgenti Java.
+  \item \file{data/} — file di persistenza JSON (creato automaticamente al primo salvataggio).
+  \item \file{batch\_examples/} — file batch di esempio per la funzionalità V5.
+  \item \file{run.sh} / \file{run.bat} — script di compilazione ed esecuzione.
+  \item \file{sources.txt} — elenco dei file sorgente per \cmd{javac}.
+\end{itemize}
+
+\begin{avvisobox}
+\textbf{Attenzione.} Non spostare singoli file dalla cartella di progetto: gli script e il programma fanno riferimento a percorsi relativi. Spostare sempre l'intera cartella \file{Versione 5/}.
+\end{avvisobox}
+
+\section{Compilazione}
+
+\subsection{Linux e macOS — script automatico}
+\begin{lstlisting}[style=bash]
+cd "Versione 5"
+chmod +x run.sh
+./run.sh
+\end{lstlisting}
+Lo script compila automaticamente tutti i file Java nella cartella \file{out/} e avvia l'applicazione.
+
+\subsection{Windows — script automatico}
+\begin{lstlisting}
+cd "Versione 5"
+run.bat
+\end{lstlisting}
+Lo script è equivalente a quello per Linux/macOS.
+
+\subsection{Compilazione manuale (qualsiasi sistema operativo)}
+Eseguire i comandi seguenti dalla cartella radice del progetto (\file{Versione 5/}):
+\begin{lstlisting}[style=bash]
+# Linux / macOS
+mkdir -p out
+find src -name "*.java" > sources.txt
+javac -encoding UTF-8 -d out @sources.txt
+
+# Windows (Prompt dei comandi)
+mkdir out
+dir /s /b src\*.java > sources.txt
+javac -encoding UTF-8 -d out @sources.txt
+\end{lstlisting}
+
+\begin{successobox}
+\textbf{Compilazione riuscita.} Se non appaiono messaggi di errore, il codice compilato si trova nella cartella \file{out/} ed è pronto per l'esecuzione.
+\end{successobox}
+
+\section{Prima esecuzione}
+Dopo la compilazione, avviare il programma con:
+\begin{lstlisting}[style=bash]
+# Linux / macOS
+java -ea -cp out it.easyevent.v5.MainV5
+
+# Windows
+java -ea -cp out it.easyevent.v5.MainV5
+\end{lstlisting}
+Il flag \cmd{-ea} attiva le asserzioni Java (\textit{assertions}), utili per verificare le precondizioni e le postcondizioni durante lo sviluppo e i test.
+
+\begin{notabox}
+\textbf{Nota.} Gli script \file{run.sh} e \file{run.bat} includono già il flag \cmd{-ea} e il percorso corretto; si raccomanda di usarli per l'avvio ordinario.
+\end{notabox}
+
+% ============================================================
+%  CAPITOLO 2 – AVVIO E NAVIGAZIONE
+% ============================================================
+\chapter{Avvio e navigazione generale}
+\label{cap:avvio}
+
+\section{Menu di selezione del ruolo}
+
+All'avvio, l'applicazione esegue automaticamente:
+\begin{enumerate}
+  \item Caricamento dei dati dal file \file{data/easyevent\_data.json} (se esistente).
+  \item Inizializzazione dei campi base (solo al primo avvio assoluto).
+  \item Aggiornamento automatico degli stati delle proposte scadute.
+\end{enumerate}
+
+Successivamente viene mostrato il menu di selezione del ruolo:
+\begin{lstlisting}
+------------------------------------------------------------
+  EasyEvent  -  Versione 5
+------------------------------------------------------------
+  Con quale ruolo vuoi accedere?
+  1. Configuratore  (back-end + importazione batch)
+  2. Fruitore       (front-end)
+  0. Esci
+\end{lstlisting}
+Digitare il numero corrispondente al ruolo desiderato e premere \tasto{INVIO}.
+
+\section{Convenzioni di interfaccia}
+
+\begin{itemize}
+  \item \textbf{Navigazione}: ogni schermata mostra un elenco di voci numerate o con lettere. Digitare il numero/lettera corrispondente e premere \tasto{INVIO}.
+  \item \textbf{Conferma}: dove richiesto, digitare \tasto{s} per confermare o \tasto{n} per annullare.
+  \item \textbf{Uscita}: digitare \tasto{0} in qualsiasi menu per tornare al livello superiore o effettuare il logout.
+  \item \textbf{Annullamento}: in alcune schermate è possibile digitare \cmd{annulla} per interrompere un'operazione in corso.
+  \item \textbf{Percorsi file}: possono essere assoluti (es.\ \file{/home/utente/file.batch}) o relativi alla directory di lavoro corrente (es.\ \file{batch\_examples/setup.batch}).
+  \item \textbf{Formato date}: tutte le date vanno inserite nel formato \textbf{gg/mm/aaaa} (es.\ \cmd{25/06/2026}).
+  \item \textbf{Formato ore}: nel formato \textbf{HH:MM} (es.\ \cmd{09:30}, \cmd{14:00}).
+\end{itemize}
+
+\section{Transizioni automatiche di stato}
+
+A ogni avvio dell'applicazione il sistema verifica automaticamente le proposte in bacheca e aggiorna i loro stati:
+
+\begin{center}
+\begin{tabular}{L{3.5cm}L{3.5cm}L{6cm}}
+\toprule
+\textbf{Da} & \textbf{A} & \textbf{Condizione} \\
+\midrule
+\textsc{aperta} & \textsc{confermata} & Oggi $>$ Termine iscrizione \textbf{e} aderenti $\geq$ N.\ partecipanti \\
+\textsc{aperta} & \textsc{annullata}  & Oggi $>$ Termine iscrizione \textbf{e} aderenti $<$ N.\ partecipanti \\
+\textsc{confermata} & \textsc{conclusa} & Oggi $>$ Data conclusiva \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Alla transizione \textsc{aperta}$\to$\textsc{confermata} o \textsc{aperta}$\to$\textsc{annullata} vengono generate automaticamente notifiche per tutti i fruitori iscritti.
+
+% ============================================================
+%  CAPITOLO 3 – CONFIGURATORE
+% ============================================================
+\chapter{Guida al back-end del configuratore}
+\label{cap:configuratore}
+
+\section{Accesso e gestione delle credenziali}
+
+\subsection{Primo accesso}
+Al primo avvio assoluto dell'applicazione, le credenziali predefinite sono:
+\begin{itemize}
+  \item \textbf{Username}: \cmd{admin}
+  \item \textbf{Password}: \cmd{admin123}
+\end{itemize}
+Il sistema riconosce automaticamente il primo accesso e richiede obbligatoriamente la scelta di credenziali personali prima di consentire qualsiasi altra operazione. Sono valide qualsiasi combinazione di username e password non vuote, purché lo username non sia già in uso.
+
+\begin{avvisobox}
+\textbf{Importante.} Lo username scelto deve essere univoco in tutto il sistema (non deve coincidere con quello di altri configuratori né di alcun fruitore già registrato). La parola \cmd{esci} è riservata e non può essere usata come username.
+\end{avvisobox}
+
+\subsection{Accessi successivi}
+Inserire username e password scelti al primo accesso. Il sistema concede massimo 3 tentativi prima di bloccare l'accesso per la sessione corrente.
+
+\subsection{Multi-configuratore}
+Il sistema supporta più configuratori. Il secondo configuratore (e quelli successivi) devono ricevere le credenziali predefinite da un configuratore già registrato. L'interpretazione adottata è quella semplice: le credenziali predefinite (\cmd{admin} / \cmd{admin123}) sono condivise e fisse.
+
+\section{Menu principale del configuratore}
+
+\begin{lstlisting}
+  MENU PRINCIPALE  [mario]
+  1. Gestione campi base
+  2. Gestione campi comuni
+  3. Gestione categorie
+  4. Visualizza riepilogo categorie e campi
+  5. Gestione proposte          [N in sessione]
+  6. Visualizza bacheca         [N proposte aperte]
+  7. Visualizza archivio proposte
+  8. Ritira proposta            [N ritirabili]
+  9. Importa da file batch      [NUOVO V5]
+  0. Logout
+\end{lstlisting}
+
+\section{Gestione dei campi}
+\label{sec:campi}
+
+\subsection{Campi base (voce 1)}
+I campi base sono definiti una volta sola al primo avvio e non possono essere modificati per tutta la vita operativa dell'applicazione. Questa schermata li visualizza a titolo informativo.
+
+I campi base predefiniti sono:
+
+\begin{center}
+\begin{tabular}{L{5cm}L{8cm}}
+\toprule
+\textbf{Nome campo} & \textbf{Descrizione} \\
+\midrule
+Titolo & Nome descrittivo dell'iniziativa. \\
+Numero di partecipanti & Numero esatto di persone richieste. \\
+Termine ultimo di iscrizione & Ultimo giorno per iscriversi (ore 23:59). \\
+Luogo & Indirizzo o luogo di ritrovo. \\
+Data inizio & Data di inizio (o data unica) dell'iniziativa. \\
+Ora & Ora di inizio. \\
+Quota individuale & Spesa a carico di ciascun partecipante (può essere 0). \\
+Data conclusiva & Data di fine (coincide con Data inizio per eventi di un giorno solo). \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Campi comuni (voce 2)}
+I campi comuni sono condivisi da tutte le categorie e possono essere aggiunti, rimossi o modificati in qualsiasi momento. Le modifiche non hanno effetto sulle proposte già pubblicate; si applicano solo alle nuove.
+
+\begin{center}
+\begin{tabular}{L{3cm}L{3cm}L{7cm}}
+\toprule
+\textbf{Opzione} & \textbf{Comando} & \textbf{Descrizione} \\
+\midrule
+Aggiungi & \tasto{a} & Inserire nome e obbligatorietà (s/n). \\
+Rimuovi  & \tasto{r} & Inserire il nome del campo da eliminare. \\
+Modifica & \tasto{m} & Cambiare l'obbligatorietà di un campo esistente. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Esempi di campi comuni utili: \textit{Durata}, \textit{Note}, \textit{Compreso nella quota}, \textit{Ora conclusiva}.
+
+\subsection{Campi specifici (voce 3 — sotto-menu campi specifici)}
+I campi specifici sono propri di una singola categoria e si gestiscono all'interno del menu categorie (§\ref{sec:categorie}).
+
+\section{Gestione delle categorie}
+\label{sec:categorie}
+
+\subsection{Aggiunta di una categoria (voce 3 -- a)}
+\begin{enumerate}
+  \item Selezionare \tasto{a} dal menu categorie.
+  \item Inserire il nome della nuova categoria (es.\ \textit{Sport}, \textit{Arte}, \textit{Gite}).
+  \item Il sistema chiede se aggiungere subito campi specifici; rispondere \tasto{s} per farlo o \tasto{n} per farlo in un secondo momento.
+\end{enumerate}
+
+\subsection{Gestione dei campi specifici (voce 3 -- c)}
+\begin{enumerate}
+  \item Selezionare \tasto{c} e inserire il nome della categoria.
+  \item Dal sotto-menu scegliere: \tasto{a} (aggiungi), \tasto{r} (rimuovi), \tasto{m} (modifica obbligatorietà).
+\end{enumerate}
+
+\begin{notabox}
+\textbf{Nota.} Un campo specifico non può avere lo stesso nome di un campo base o comune. I nomi sono confrontati senza distinzione tra maiuscole e minuscole.
+\end{notabox}
+
+\subsection{Rimozione di una categoria (voce 3 -- r)}
+Rimuovere una categoria elimina anche tutti i suoi campi specifici. La rimozione non ha effetto sulle proposte già pubblicate; si applica solo alle proposte future.
+
+\subsection{Visualizzazione (voce 4)}
+La voce 4 mostra un riepilogo completo di tutti i campi base, comuni e specifici di ogni categoria.
+
+\section{Gestione delle proposte}
+\label{sec:proposte}
+
+\subsection{Ciclo di vita di una proposta}
+
+\begin{center}
+\begin{tabular}{L{3cm}L{10cm}}
+\toprule
+\textbf{Stato} & \textbf{Significato} \\
+\midrule
+\textsc{bozza}     & Proposta in creazione; uno o più campi obbligatori mancanti o vincoli di data non rispettati. Non viene salvata se non pubblicata. \\
+\textsc{valida}    & Tutti i campi obbligatori compilati e vincoli rispettati. Non ancora pubblicata. Non viene salvata se non pubblicata. \\
+\textsc{aperta}    & Pubblicata in bacheca; iscrizioni attive. Salvata su file. \\
+\textsc{confermata}& Termine scaduto, aderenti $\geq$ N.\ partecipanti. Notifica inviata. \\
+\textsc{annullata} & Termine scaduto, aderenti $<$ N.\ partecipanti. Notifica inviata. \\
+\textsc{conclusa}  & Giorno successivo alla Data conclusiva (solo da Confermata). \\
+\textsc{ritirata}  & Ritirata dal configuratore (da Aperta o Confermata). Notifica inviata. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Creazione di una proposta (voce 5 -- n)}
+\begin{enumerate}
+  \item Selezionare la categoria tra quelle disponibili.
+  \item Compilare i campi presentati uno per uno. I campi \textbf{[OBB]}ligatòri devono essere valorizzati; i \textbf{[FAC]}oltativi possono essere saltati premendo \tasto{INVIO}.
+  \item Al termine il sistema mostra un riepilogo e lo stato (BOZZA o VALIDA).
+  \item Se la proposta è VALIDA, il sistema offre di pubblicarla immediatamente.
+\end{enumerate}
+
+\subsubsection{Vincoli di data obbligatori}
+\begin{itemize}
+  \item \textbf{Termine ultimo di iscrizione} deve essere successivo alla data odierna.
+  \item \textbf{Data inizio} deve essere almeno 2 giorni dopo il Termine ultimo di iscrizione.
+  \item \textbf{Data conclusiva} non può essere precedente alla Data inizio.
+  \item \textbf{Numero di partecipanti} deve essere un intero strettamente positivo.
+\end{itemize}
+
+\subsection{Continuare la compilazione (voce 5 -- c)}
+Permette di riprendere la compilazione di una proposta già creata nella sessione corrente, inserendo l'ID della proposta desiderata.
+
+\subsection{Pubblicazione (voce 5 -- p)}
+Elenca le proposte VALIDE in sessione e chiede quale pubblicare. La proposta passa allo stato APERTA e viene salvata su file; la proposta BOZZA o VALIDA non pubblicata viene scartata alla fine della sessione.
+
+\subsection{Eliminazione dalla sessione (voce 5 -- e)}
+Rimuove una proposta non ancora pubblicata dalla sessione corrente. L'operazione è irreversibile.
+
+\section{Visualizzazione della bacheca (voce 6)}
+Mostra le proposte in stato APERTA, organizzate per categoria. Per ogni proposta sono visibili: ID, data di pubblicazione, numero di iscritti, tutti i campi compilati.
+
+\section{Visualizzazione dell'archivio (voce 7)}
+Mostra tutte le proposte pubblicate in qualsiasi stato (APERTA, CONFERMATA, ANNULLATA, CONCLUSA, RITIRATA), raggruppate per stato. Per ogni proposta sono visibili: ID, titolo, categoria, storico degli stati con date, elenco degli aderenti.
+
+\section{Ritiro di una proposta (voce 8)}
+\label{sec:ritiro}
+
+Il ritiro è una misura eccezionale per cause di forza maggiore (es.\ chiusura improvvisa del luogo dell'evento).
+
+\begin{enumerate}
+  \item La voce 8 mostra solo le proposte ritirabili: quelle in stato APERTA o CONFERMATA la cui Data inizio è ancora futura rispetto a oggi.
+  \item Selezionare l'ID della proposta da ritirare.
+  \item Confermare con \tasto{s}.
+  \item Il sistema transita la proposta in stato RITIRATA e invia automaticamente una notifica a tutti i fruitori iscritti.
+\end{enumerate}
+
+\begin{avvisobox}
+\textbf{Attenzione.} Il ritiro è irreversibile. Non è possibile riportare una proposta dallo stato RITIRATA a qualsiasi altro stato.
+\end{avvisobox}
+
+% ============================================================
+%  CAPITOLO 4 – FRUITORE
+% ============================================================
+\chapter{Guida al front-end del fruitore}
+\label{cap:fruitore}
+
+\section{Registrazione e accesso}
+
+\subsection{Registrazione (primo accesso)}
+\begin{enumerate}
+  \item Dal menu di selezione ruolo scegliere \textbf{2. Fruitore}.
+  \item Scegliere \textbf{2. Registrazione}.
+  \item Inserire lo username desiderato (deve essere univoco in tutto il sistema).
+  \item Inserire e confermare la password.
+\end{enumerate}
+Dopo la registrazione l'accesso avviene automaticamente.
+
+\subsection{Login}
+\begin{enumerate}
+  \item Dal menu fruitore scegliere \textbf{1. Login}.
+  \item Inserire username e password. Massimo 3 tentativi.
+\end{enumerate}
+
+\section{Menu principale del fruitore}
+
+\begin{lstlisting}
+  MENU FRUITORE  [alice]
+  1. Visualizza bacheca
+  2. Aderisci a una proposta
+  3. Disdici iscrizione         [N iscrizioni attive]
+  4. Spazio personale           [N notifiche]
+  0. Logout
+\end{lstlisting}
+
+\section{Visualizzazione della bacheca (voce 1)}
+Mostra le proposte aperte, organizzate per categoria, con tutte le informazioni rilevanti: titolo, posti disponibili, termine di iscrizione, data, ora, luogo, quota, campi specifici.
+
+\section{Adesione a una proposta (voce 2)}
+
+\begin{enumerate}
+  \item Il sistema mostra le proposte aperte a cui non si è ancora iscritti, con il numero di posti rimasti.
+  \item Inserire l'ID della proposta desiderata (o \tasto{0} per annullare).
+\end{enumerate}
+
+\subsubsection{Condizioni per l'iscrizione}
+\begin{itemize}
+  \item La proposta deve essere in stato APERTA.
+  \item La data odierna deve essere $\leq$ Termine ultimo di iscrizione.
+  \item Non si è già iscritti alla stessa proposta.
+  \item Non è ancora stato raggiunto il numero massimo di partecipanti.
+\end{itemize}
+
+\section{Disdetta dell'iscrizione (voce 3)}
+
+\begin{enumerate}
+  \item Il sistema mostra le proposte aperte a cui si è iscritti.
+  \item Selezionare la proposta e confermare con \tasto{s}.
+  \item La disdetta è possibile solo entro il Termine ultimo di iscrizione.
+  \item Dopo la disdetta è possibile re-iscriversi alla stessa proposta (sempre entro il termine).
+\end{enumerate}
+
+\section{Spazio personale e notifiche (voce 4)}
+
+Lo spazio personale raccoglie tutte le notifiche automatiche generate dal sistema:
+\begin{itemize}
+  \item \textbf{Proposta confermata}: con promemoria di data, ora, luogo e quota.
+  \item \textbf{Proposta annullata}: avviso di cancellazione per iscritti insufficienti.
+  \item \textbf{Proposta ritirata}: avviso di ritiro da parte del configuratore.
+\end{itemize}
+
+Dal menu spazio personale:
+\begin{itemize}
+  \item \tasto{c} — cancellare una singola notifica (inserire l'ID).
+  \item \tasto{t} — cancellare tutte le notifiche.
+\end{itemize}
+
+Le notifiche persistono tra una sessione e l'altra; una notifica cancellata non è recuperabile.
+
+% ============================================================
+%  CAPITOLO 5 – IMPORTAZIONE BATCH (NUOVO V5)
+% ============================================================
+\chapter{Importazione batch \texorpdfstring{\textnormal{\badge{VERDE}{NUOVO V5}}}{[NUOVO V5]}}
+\label{cap:batch}
+
+\section{Panoramica}
+
+La modalità batch consente al configuratore di importare \textbf{campi comuni, categorie e proposte} leggendo uno o più file di testo strutturati, invece di inserirli manualmente tramite la CLI. È utile per:
+\begin{itemize}
+  \item Configurare rapidamente il sistema al primo utilizzo.
+  \item Importare stagionalmente un gran numero di proposte.
+  \item Automatizzare l'inserimento di dati ricorrenti.
+\end{itemize}
+
+La modalità interattiva (voci 1–8 del menu) rimane disponibile e invariata in parallelo alla modalità batch.
+
+\section{Accesso alla funzionalità}
+
+Dal menu principale del configuratore selezionare \menupunto{9. Importa da file batch}:
+
+\begin{lstlisting}
+  IMPORTAZIONE BATCH  [NUOVO V5]
+  s. Importa singolo file
+  m. Importa piu' file in sequenza
+  e. Mostra esempio del formato batch
+  0. Torna al menu principale
+\end{lstlisting}
+
+\section{Formato dei file batch}
+
+I file batch sono file di testo in codifica \textbf{UTF-8}. Il separatore tra i token di ogni riga è \textbf{« | »} (spazio-pipe-spazio).
+
+\subsection{Commenti e righe vuote}
+Le righe che iniziano con \texttt{\#} (dopo il trim degli spazi) vengono ignorate, così come le righe vuote.
+\begin{lstlisting}[style=batch]
+# Questo e' un commento -- viene completamente ignorato
+
+# Le righe vuote sopra e sotto sono anch'esse ignorate
+\end{lstlisting}
+
+\subsection{Comando CAMPO\_COMUNE}
+
+\begin{lstlisting}[style=batch]
+CAMPO_COMUNE | <nome> | <obbligatorio>
+\end{lstlisting}
+
+\begin{itemize}
+  \item \texttt{<obbligatorio>}: \cmd{si}, \cmd{sì}, \cmd{yes} o \cmd{true} per obbligatorio; qualsiasi altro valore per facoltativo.
+\end{itemize}
+
+\textbf{Esempi:}
+\begin{lstlisting}[style=batch]
+CAMPO_COMUNE | Durata | no
+CAMPO_COMUNE | Compreso nella quota | no
+CAMPO_COMUNE | Note | no
+CAMPO_COMUNE | Ora conclusiva | no
+\end{lstlisting}
+
+\subsection{Comando CATEGORIA}
+
+\begin{lstlisting}[style=batch]
+# Categoria senza campi specifici:
+CATEGORIA | <nome>
+
+# Categoria con campi specifici inline:
+CATEGORIA | <nome> | CAMPO_SPECIFICO | <nome_cs> | <obbligatorio> [| CAMPO_SPECIFICO | ...]
+\end{lstlisting}
+
+\textbf{Esempi:}
+\begin{lstlisting}[style=batch]
+CATEGORIA | Cinema
+CATEGORIA | Sport | CAMPO_SPECIFICO | Certificato medico | si
+CATEGORIA | Gite | CAMPO_SPECIFICO | Mezzo di trasporto | no | CAMPO_SPECIFICO | Guida | si
+\end{lstlisting}
+
+\subsection{Comando PROPOSTA}
+
+\begin{lstlisting}[style=batch]
+PROPOSTA | <categoria> | <campo1> = <valore1> [| <campo2> = <valore2>] ...
+\end{lstlisting}
+
+\begin{itemize}
+  \item I nomi dei campi sono confrontati senza distinzione tra maiuscole e minuscole.
+  \item Le date seguono il formato \cmd{gg/mm/aaaa}; le ore il formato \cmd{HH:MM}.
+  \item La proposta è validata con le stesse regole della modalità interattiva. Se valida, viene pubblicata in bacheca; altrimenti viene segnalata come errore e non salvata.
+\end{itemize}
+
+\textbf{Esempio:}
+\begin{lstlisting}[style=batch]
+PROPOSTA | Sport | Titolo = Torneo di Padel | Numero di partecipanti = 8 |
+  Termine ultimo di iscrizione = 30/06/2026 | Luogo = Palestra Centrale |
+  Data inizio = 10/07/2026 | Ora = 09:00 | Quota individuale = 15 |
+  Data conclusiva = 10/07/2026 | Certificato medico = Si | Durata = 6 ore
+\end{lstlisting}
+
+\begin{notabox}
+\textbf{Nota.} Nella realtà ogni riga PROPOSTA deve essere scritta su una sola riga del file (nessun a-capo all'interno). L'esempio sopra usa interruzioni di riga solo per ragioni tipografiche.
+\end{notabox}
+
+\section{Importazione di un singolo file}
+
+\begin{enumerate}
+  \item Selezionare \tasto{s} dal menu batch.
+  \item Inserire il percorso del file (assoluto o relativo alla directory di lavoro).
+  \item Il sistema elabora il file e mostra il resoconto al termine.
+\end{enumerate}
+
+\textbf{Esempio di percorso:}
+\begin{lstlisting}[style=bash]
+batch_examples/setup_completo.batch
+/home/mario/mio_batch.txt
+C:\Utenti\Mario\batch.txt
+\end{lstlisting}
+
+\section{Importazione di più file in sequenza}
+
+\begin{enumerate}
+  \item Selezionare \tasto{m} dal menu batch.
+  \item Inserire i percorsi dei file uno alla volta, premendo \tasto{INVIO} dopo ciascuno.
+  \item Premere \tasto{INVIO} senza testo per avviare l'importazione.
+  \item Il sistema elabora i file nell'ordine inserito e mostra un resoconto aggregato.
+\end{enumerate}
+
+\begin{notabox}
+\textbf{Suggerimento.} Conviene importare prima il file di campi e categorie, poi quello delle proposte: le proposte batch richiedono che le categorie esistano già nel sistema.
+\end{notabox}
+
+\section{Il resoconto di importazione}
+
+Al termine di ogni importazione il sistema mostra un resoconto strutturato:
+
+\begin{lstlisting}
+  Righe elaborate: 12
+  Successi:        9
+  Warning:         2
+  Errori:          1
+
+  --- OPERAZIONI COMPLETATE ---
+  v Campo comune aggiunto: 'Durata' [facoltativo]
+  v Categoria aggiunta: 'Fotografia' -- (senza campi specifici)
+  v Proposta pubblicata in bacheca: [ID 9] 'Uscita fotografica' -- categoria: Fotografia
+  ...
+
+  --- WARNING (operazioni saltate) ---
+  Riga 7: Campo comune 'Durata' gia' presente. Riga saltata.
+  Riga 11: Categoria 'Sport' gia' presente. Riga saltata.
+
+  --- ERRORI ---
+  Riga 15: Proposta non valida per la categoria 'Letteratura': 
+     'Termine ultimo di iscrizione' deve essere successivo alla data odierna.
+\end{lstlisting}
+
+\subsubsection{Comportamento in caso di errori}
+\begin{itemize}
+  \item Ogni riga è elaborata \textbf{indipendentemente}: un errore su una riga non blocca le successive.
+  \item Le operazioni andate a buon fine vengono salvate; quelle fallite non lasciano traccia (rollback automatico in memoria).
+  \item Al termine è possibile correggere le righe errate nel file e reimportare.
+\end{itemize}
+
+\section{File batch di esempio}
+
+Nella cartella \file{batch\_examples/} sono disponibili tre file pronti all'uso:
+
+\begin{center}
+\begin{tabular}{L{5.5cm}L{7.5cm}}
+\toprule
+\textbf{File} & \textbf{Contenuto} \\
+\midrule
+\file{campi\_e\_categorie.batch} & Aggiunge campi comuni e nuove categorie. \\
+\file{proposte.batch} & Pubblica proposte (include casi di errore intenzionali per test). \\
+\file{setup\_completo.batch} & File unico con campi, categorie e proposte. Ideale per la demo. \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ============================================================
+%  CAPITOLO 6 – PERSISTENZA
+% ============================================================
+\chapter{Formato dei dati e persistenza}
+\label{cap:persistenza}
+
+\section{File di persistenza}
+
+L'applicazione salva tutti i dati in un unico file JSON:
+\begin{center}
+\file{Versione 5/data/easyevent\_data.json}
+\end{center}
+
+Il file viene creato automaticamente al primo salvataggio. Non è necessario crearlo manualmente.
+
+\section{Cosa viene salvato}
+
+\begin{center}
+\begin{tabular}{L{5cm}L{8cm}}
+\toprule
+\textbf{Dato} & \textbf{Note} \\
+\midrule
+Configuratori & Username, password (in chiaro\footnotemark), stato primo accesso. \\
+Fruitori & Username, password (in chiaro), elenco notifiche. \\
+Campi base & Definiti una volta sola; immutabili. \\
+Campi comuni & Con nome e obbligatorietà. \\
+Categorie & Con nome e campi specifici. \\
+Archivio proposte & Tutti gli stati (Aperta, Confermata, Annullata, Conclusa, Ritirata) con storico stati, aderenti e valori dei campi. \\
+\bottomrule
+\end{tabular}
+\end{center}
+\footnotetext{La specifica non richiede requisiti di sicurezza per questo progetto didattico.}
+
+\section{Cosa \emph{non} viene salvato}
+
+\begin{itemize}
+  \item Proposte in stato BOZZA o VALIDA (esistono solo in memoria durante la sessione).
+  \item Sessioni di lavoro (ogni avvio ricomincia dal file salvato).
+\end{itemize}
+
+\section{Compatibilità retroattiva}
+
+Il formato del file JSON è compatibile con tutte le versioni precedenti:
+\begin{itemize}
+  \item File prodotti dalla V4: letti correttamente dalla V5.
+  \item File prodotti dalla V3 (campo \cmd{"archivio"}): letti correttamente.
+  \item File prodotti dalla V2 (campo \cmd{"bacheca"}): letti correttamente (le proposte vengono migrate nell'archivio V3/V4/V5).
+\end{itemize}
+
+\section{Backup e ripristino}
+
+Per eseguire un backup dei dati è sufficiente copiare il file \file{easyevent\_data.json}.
+Per ripristinare un backup, sostituire il file corrente con quello di backup prima di avviare l'applicazione.
+
+\begin{avvisobox}
+\textbf{Attenzione.} Non modificare manualmente il file JSON durante l'esecuzione dell'applicazione; le modifiche verrebbero sovrascritte al successivo salvataggio.
+\end{avvisobox}
+
+% ============================================================
+%  CAPITOLO 7 – MESSAGGI DI ERRORE
+% ============================================================
+\chapter{Messaggi di errore e risoluzione dei problemi}
+\label{cap:errori}
+
+\section{Messaggi dell'applicazione}
+
+\begin{longtable}{L{5.5cm}L{7.5cm}}
+\toprule
+\textbf{Messaggio} & \textbf{Causa e rimedio} \\
+\midrule
+\endhead
+\textit{Credenziali non valide.} & Username o password errati. Verificare le credenziali e riprovare. \\[4pt]
+\textit{Username già in uso.} & Lo username scelto è già registrato. Scegliere un username diverso. \\[4pt]
+\textit{Il nome non può essere vuoto.} & È stato premuto INVIO senza inserire testo. Inserire un valore. \\[4pt]
+\textit{Esiste già un campo base/comune con nome…} & Non è possibile creare un campo con lo stesso nome di un campo già esistente. Scegliere un nome diverso. \\[4pt]
+\textit{Esiste già una categoria con nome…} & Nome categoria già in uso. Scegliere un nome diverso. \\[4pt]
+\textit{'Termine ultimo di iscrizione' deve essere successivo alla data odierna.} & La data inserita è nel passato o è oggi. Inserire una data futura. \\[4pt]
+\textit{'Data inizio' deve essere almeno 2 giorni dopo 'Termine ultimo di iscrizione'.} & La Data inizio è troppo vicina al termine di iscrizione. Aumentare l'intervallo. \\[4pt]
+\textit{'Data conclusiva' non può essere precedente a 'Data inizio'.} & La data di fine è precedente alla data di inizio. Correggere le date. \\[4pt]
+\textit{'Numero di partecipanti' deve essere un numero intero positivo.} & Il valore inserito è 0, negativo o non numerico. Inserire un numero intero $\geq 1$. \\[4pt]
+\textit{Il termine ultimo di iscrizione è scaduto.} & Non è possibile iscriversi o disdire dopo la scadenza. \\[4pt]
+\textit{La proposta ha raggiunto il numero massimo di partecipanti.} & Non ci sono più posti disponibili per questa proposta. \\[4pt]
+\textit{Sei già iscritto a questa proposta.} & Un fruitore può avere al più un'iscrizione per proposta. \\[4pt]
+\textit{Il ritiro è consentito solo per proposte APERTE o CONFERMATE.} & Non è possibile ritirare proposte in altri stati. \\[4pt]
+\textit{Non è più possibile ritirare la proposta: la data dell'evento è già oggi o passata.} & Il ritiro deve avvenire almeno il giorno prima della Data inizio. \\[4pt]
+\textit{Notifica non trovata con ID…} & L'ID inserito non corrisponde a nessuna notifica. Verificare l'ID nel riepilogo notifiche. \\[4pt]
+\bottomrule
+\end{longtable}
+
+\section{Messaggi dell'importazione batch}
+
+\begin{longtable}{L{5.5cm}L{7.5cm}}
+\toprule
+\textbf{Messaggio} & \textbf{Causa e rimedio} \\
+\midrule
+\endhead
+\textit{File non trovato: …} & Il percorso inserito non corrisponde a nessun file. Verificare il percorso (maiuscole/minuscole su Linux sono significative). \\[4pt]
+\textit{Comando non riconosciuto: '…'} & Il primo token della riga non è CAMPO\_COMUNE, CATEGORIA o PROPOSTA. Correggere il file batch. \\[4pt]
+\textit{CAMPO\_COMUNE richiede almeno 3 token.} & La riga ha meno di 3 sezioni separate da \texttt{ | }. Verificare la sintassi. \\[4pt]
+\textit{Campo comune '…' già presente.} & Warning: il campo esiste già. L'operazione viene saltata; le successive continuano. \\[4pt]
+\textit{Categoria '…' già presente.} & Warning: la categoria esiste già. I campi specifici inline vengono ignorati. \\[4pt]
+\textit{Categoria '…' non trovata.} & Una riga PROPOSTA fa riferimento a una categoria inesistente. Aggiungere prima la categoria (interattivamente o in batch). \\[4pt]
+\textit{Proposta non valida…} & I valori inseriti non superano la validazione. Controllare date, numero di partecipanti e campi obbligatori. \\[4pt]
+\textit{Campo aggiunto in memoria ma errore nel salvataggio (rollback eseguito).} & Errore di I/O sul file di persistenza. Verificare i permessi sulla cartella \file{data/}. Il rollback garantisce la coerenza. \\[4pt]
+\bottomrule
+\end{longtable}
+
+\section{Problemi di avvio}
+
+\begin{description}
+  \item[\texttt{java: command not found}] Java non è installato o non è nel PATH. Installare il JDK (§1.1) e aggiungere la cartella \file{bin/} al PATH di sistema.
+  \item[\texttt{javac: command not found}] È installato solo il JRE, non il JDK completo. Installare il JDK.
+  \item[\texttt{Error: Could not find or load main class it.easyevent.v5.MainV5}] Il codice non è stato compilato o la compilazione è fallita. Rieseguire lo script di compilazione e verificare l'assenza di errori.
+  \item[\texttt{Attenzione: impossibile caricare i dati salvati.}] Il file \file{easyevent\_data.json} è corrotto o scritto da una versione incompatibile. L'applicazione parte con dati vuoti; il file corrotto può essere sostituito con un backup.
+\end{description}
+
+% ============================================================
+%  APPENDICI
+% ============================================================
+\appendix
+
+\chapter{Credenziali e dati demo precaricati}
+\label{app:credenziali}
+
+Il file \file{data/easyevent\_data.json} distribuito con il progetto contiene dati di esempio pronti per la demo orale.
+
+\section{Credenziali}
+
+\begin{center}
+\begin{tabular}{L{3cm}L{3cm}L{3cm}L{4cm}}
+\toprule
+\textbf{Tipo} & \textbf{Username} & \textbf{Password} & \textbf{Note} \\
+\midrule
+Configuratore & \cmd{mario}  & \cmd{mario123}  & — \\
+Configuratore & \cmd{laura}  & \cmd{laura456}  & — \\
+Fruitore      & \cmd{alice}  & \cmd{alice123}  & 2 notifiche \\
+Fruitore      & \cmd{bob}    & \cmd{bob456}    & — \\
+Fruitore      & \cmd{clara}  & \cmd{clara789}  & — \\
+Fruitore      & \cmd{marini} & \cmd{marini123} & — \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Proposte precaricate}
+
+\begin{center}
+\begin{tabular}{L{1cm}L{4cm}L{2.5cm}L{2.5cm}L{2cm}}
+\toprule
+\textbf{ID} & \textbf{Titolo} & \textbf{Categoria} & \textbf{Stato} & \textbf{Iscritti} \\
+\midrule
+1 & Gita al Lago d'Iseo       & Gite   & Aperta     & alice, clara \\
+2 & Gita a Montisola          & Gite   & Confermata & alice, bob, clara \\
+3 & Serata Jazz               & Musica & Annullata  & bob \\
+4 & Mostra Crepax             & Arte   & Ritirata   & alice \\
+5 & Visita Pinacoteca T.M.    & Arte   & Conclusa   & alice, bob \\
+6 & Torneo di Padel           & Sport  & Aperta     & — \\
+7 & Concerto Orch.\ Cherubini & Musica & Aperta     & bob, clara \\
+8 & Serata alla Specola       & Arte   & Confermata & alice, clara \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\chapter{File batch di esempio completo}
+\label{app:batch}
+
+Di seguito il contenuto completo del file \file{batch\_examples/setup\_completo.batch}, utilizzabile per la demo orale della funzionalità batch (Capitolo~\ref{cap:batch}).
+
+\begin{lstlisting}[style=batch, caption={setup\_completo.batch}, captionpos=b]
+# ============================================================
+# EasyEvent V5 - File batch di esempio 3
+# Oggetto: setup completo - campi, categorie e proposte
+# ============================================================
+
+# --- SEZIONE 1: CAMPI COMUNI ---
+
+CAMPO_COMUNE | Compreso nella quota | no
+CAMPO_COMUNE | Ora conclusiva | no
+
+# --- SEZIONE 2: CATEGORIE ---
+
+CATEGORIA | Fotografia
+CATEGORIA | Cinema
+CATEGORIA | Letteratura
+CATEGORIA | Gastronomia | CAMPO_SPECIFICO | Intolleranze alimentari | no
+CATEGORIA | Giochi | CAMPO_SPECIFICO | Esperienza richiesta | no | CAMPO_SPECIFICO | Materiale incluso | si
+CATEGORIA | Escursionismo | CAMPO_SPECIFICO | Difficolta' percorso | si | CAMPO_SPECIFICO | Equipaggiamento consigliato | no
+
+# --- SEZIONE 3: PROPOSTE ---
+
+PROPOSTA | Fotografia | Titolo = Uscita fotografica al Vittoriale | Numero di partecipanti = 12 | Termine ultimo di iscrizione = 31/05/2026 | Luogo = Gardone Riviera, Brescia | Data inizio = 07/06/2026 | Ora = 09:30 | Quota individuale = 0 | Data conclusiva = 07/06/2026 | Compreso nella quota = Ingresso al Vittoriale | Durata = 4 ore | Note = Portare macchina fotografica
+
+PROPOSTA | Cinema | Titolo = Rassegna Kubrick | Numero di partecipanti = 20 | Termine ultimo di iscrizione = 15/06/2026 | Luogo = Cinema Nuovo Eden, Brescia | Data inizio = 20/06/2026 | Ora = 20:00 | Quota individuale = 5 | Data conclusiva = 20/06/2026 | Durata = 3 ore
+
+PROPOSTA | Gastronomia | Titolo = Visita alla Franciacorta | Numero di partecipanti = 15 | Termine ultimo di iscrizione = 10/07/2026 | Luogo = Erbusco, Brescia | Data inizio = 19/07/2026 | Ora = 10:00 | Quota individuale = 35 | Data conclusiva = 19/07/2026 | Compreso nella quota = Degustazione vini e pranzo | Durata = 6 ore | Intolleranze alimentari = Comunicare entro il termine di iscrizione
+
+PROPOSTA | Giochi | Titolo = Torneo di Scacchi | Numero di partecipanti = 16 | Termine ultimo di iscrizione = 20/05/2026 | Luogo = Biblioteca Queriniana, Brescia | Data inizio = 25/05/2026 | Ora = 14:00 | Quota individuale = 0 | Data conclusiva = 25/05/2026 | Esperienza richiesta = Base | Materiale incluso = Si
+
+PROPOSTA | Letteratura | Titolo = Gruppo di lettura - Primo Levi | Numero di partecipanti = 8 | Termine ultimo di iscrizione = 05/06/2026 | Luogo = Libreria Rinascita, Brescia | Data inizio = 15/06/2026 | Ora = 17:30 | Quota individuale = 0 | Data conclusiva = 15/06/2026 | Note = Leggere preventivamente "Se questo e' un uomo"
+\end{lstlisting}
+
+% ── Fine documento ────────────────────────────────────────────
+\end{document}
