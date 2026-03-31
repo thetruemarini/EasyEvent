@@ -1,0 +1,3264 @@
+\documentclass[12pt, a4paper, oneside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[italian]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{parskip}
+\usepackage{graphicx}
+\graphicspath{{./immagini/}}
+\usepackage{hyperref}
+\usepackage{bookmark}
+\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{ltablex}
+\keepXColumns 
+\setcounter{secnumdepth}{0}
+\usepackage{titlesec}
+\titleformat{\chapter}[block]
+  {\normalfont\Huge\bfseries} 
+  {} 
+  {0pt} 
+  {} 
+\titlespacing*{\chapter}{0pt}{-20pt}{20pt}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \null \vfill
+    {\huge\bfseries Progetto di Ingegneria del Software\newline Parte A\par}
+    {\Large Raffaele Principe (749438) -- Riccardo Marini (746230)\par}
+    {\large Anno Accademico 2025/2026\par}
+    \vfill
+\end{titlepage}
+
+\tableofcontents 
+\clearpage
+
+\chapter{Versione 1}
+
+\section{Casi d'uso testuali}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC01 - Avvio e Login} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: L'applicazione è avviata. \newline
+    Trigger: L'utente seleziona "Configuratore" dal menu iniziale.\newline
+    1. Il sistema mostra la schermata di login dedicata.\newline
+    2. Il configuratore inserisce username e password.\newline
+    3. Il sistema verifica la corrispondenza delle credenziali.\newline
+    4. Il sistema autentica il configuratore.\newline
+    5. Il sistema verifica se si tratta del primissimo accesso assoluto (credenziali di default).\newline
+    6. <<include>> "UC02 - Imposta credenziali personali" (se primo accesso).\newline
+    7. Il sistema mostra il menu principale.\newline
+    Postcondizione: Il configuratore è autenticato nel back-end. \newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "esci" come username.\newline
+    Il sistema interrompe l'operazione e torna al menu di selezione ruolo. \newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: le credenziali non sono valide. \newline
+    Il sistema mostra un errore e indica i tentativi rimasti. Torna al punto 2 (se tentativi $<$ 3), altrimenti il sistema blocca l'accesso alla sessione. \newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3b. Precondizione: nessun configuratore registrato nel sistema.\newline
+    Il sistema accetta le credenziali di default (admin/admin123), crea il profilo iniziale, imposta la necessità di cambio credenziali e prosegue al punto 6. \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC02 - Imposta credenziali personali} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Login effettuato con credenziali di default (primo accesso).\newline
+    Trigger: Il sistema rileva la necessità di cambiare le credenziali.\newline
+    1. Il sistema richiede di scegliere le credenziali personali.\newline
+    2. Il configuratore inserisce il nuovo username.\newline
+    3. Il sistema verifica che lo username non coincida con la parola riservata "esci".\newline
+    4. Il configuratore inserisce la nuova password.\newline
+    5. Il configuratore inserisce la password per conferma.\newline
+    6. Il sistema verifica che le due password coincidano.\newline
+    7. Il sistema verifica l'unicità globale dello username tra Configuratori.\newline
+    8. Il sistema aggiorna le credenziali in memoria.\newline
+    9. Il sistema salva i dati in modo persistente.\newline
+    10. Il sistema mostra la conferma e accede al menu.\newline
+    Postcondizione: Le credenziali di default sono sostituite e salvate in modo permanente.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "annulla" nel campo username.\newline
+    Il sistema annulla l'operazione ed esegue il logout automatico.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: lo username inserito è "esci".\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il configuratore digita "annulla" nel campo password.\newline
+    Il sistema annulla l'operazione ed esegue il logout automatico.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: le password non coincidono.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: campi lasciati vuoti.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: username già in uso nel sistema.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema ripristina le credenziali in memoria, mostra un errore ed esegue il logout.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC03 - Logout} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Configuratore autenticato. \newline
+    Trigger: Selezione "Logout". \newline
+    1. Il configuratore seleziona Logout. \newline
+    2. Il sistema termina la sessione corrente. \newline
+    3. Il sistema chiede se accedere con un altro account. \newline
+    4. Sì: ritorna a UC01. \newline
+    5. No: termina l'applicazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Il configuratore inserisce una risposta non valida (diversa da "s" o "n").\newline
+    Il sistema mostra un messaggio di errore testuale e ripropone la domanda. \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC04 - Visualizza campi base} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. I campi base sono stati inizializzati.\newline
+    Trigger: Il configuratore seleziona "Gestione campi base" dal menu principale.\newline
+    1. Il configuratore seleziona la voce "Gestione campi base".\newline
+    2. Il sistema mostra l'elenco dei campi base con nome e tipo, evidenziando che sono tutti obbligatori (Titolo, Numero partecipanti, ecc.).\newline
+    3. Il sistema indica che i campi base sono immutabili.\newline
+    4. Il configuratore preme INVIO per tornare al menu principale.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: Campi base non inizializzati.\newline
+    Il sistema li inizializza automaticamente al primo avvio e poi mostra l'elenco.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC05 - Aggiungi campo comune} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. \newline
+    Trigger: Il configuratore seleziona "Aggiungi campo comune" nel menu "Gestione campi comuni". \newline
+    1. Il configuratore seleziona "Aggiungi campo comune". \newline
+    2. Il sistema chiede il nome del nuovo campo. \newline
+    3. Il configuratore inserisce il nome. \newline
+    4. Il sistema chiede se il campo è obbligatorio o facoltativo. \newline
+    5. Il configuratore risponde (s/n). \newline
+    6. Il sistema verifica che il nome non coincida con un campo base o comune esistente. \newline
+    7. Il sistema aggiunge il campo comune e salva in modo persistente. \newline
+    8. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Nome vuoto. \newline
+    Il sistema mostra errore e richiede nuovamente il nome. \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: Conflitto con campo base. \newline
+    Il sistema mostra errore e non aggiunge il campo. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6b. Precondizione: Conflitto con campo comune esistente. \newline
+    Il sistema mostra errore e non aggiunge il campo. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiunge il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC06 - Rimuovi campo comune} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno un campo comune. \newline
+    Trigger: Il configuratore seleziona "Rimuovi campo comune". \newline
+    1. Il configuratore seleziona "Rimuovi campo comune". \newline
+    2. Il sistema mostra l'elenco dei campi comuni esistenti. \newline
+    3. Il configuratore inserisce il nome del campo da rimuovere. \newline
+    4. Il sistema rimuove il campo comune e salva in modo persistente. \newline
+    5. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra errore e non esegue la rimozione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema rimuove il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC07 - Modifica obbligatorietà campo comune} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno un campo comune. \newline
+    Trigger: Il configuratore seleziona "Modifica obbligatorietà campo comune". \newline
+    1. Il configuratore seleziona "Modifica obbligatorietà campo comune". \newline
+    2. Il sistema mostra l'elenco dei campi comuni con l'obbligatorietà attuale. \newline
+    3. Il configuratore inserisce il nome del campo da modificare. \newline
+    4. Il configuratore indica il nuovo valore di obbligatorietà (s/n). \newline
+    5. Il sistema aggiorna il campo e salva in modo persistente. \newline
+    6. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra errore e non applica modifiche. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiorna il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC08 - Aggiungi categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. I campi base sono inizializzati. \newline
+    Trigger: Il configuratore seleziona "Aggiungi categoria". \newline
+    1. Il configuratore seleziona "Aggiungi categoria". \newline
+    2. Il sistema chiede il nome della nuova categoria. \newline
+    3. Il configuratore inserisce il nome. \newline
+    4. Il sistema verifica che il nome non sia già in uso. \newline
+    5. Il sistema crea la categoria e salva in modo persistente. \newline
+    6. Il sistema chiede se aggiungere subito campi specifici. \newline
+    7. Sì: il caso d'uso estende UC10 (aggiunta campi specifici). \newline
+    8. No: il sistema torna al menu categorie. \newline
+    9. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Nome vuoto. \newline
+    Errore e richiesta nuovo inserimento. \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Categoria duplicata. \newline
+    Errore e nessuna creazione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema crea la categoria in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC09 - Rimuovi categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una categoria. \newline
+    Trigger: Il configuratore seleziona "Rimuovi categoria". \newline
+    1. Il configuratore seleziona "Rimuovi categoria". \newline
+    2. Il sistema mostra l'elenco categorie. \newline
+    3. Il configuratore inserisce il nome della categoria da rimuovere. \newline
+    4. Il sistema chiede conferma esplicita prima della rimozione. \newline
+    5. Il configuratore conferma. \newline
+    6. Il sistema rimuove la categoria e tutti i suoi campi specifici. \newline
+    7. Il sistema salva i dati in modo persistente. \newline
+    8. Il sistema mostra conferma. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Categoria non trovata. \newline
+    Errore, nessuna rimozione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Annulla. \newline
+    Il configuratore non conferma; operazione interrotta. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema rimuove la categoria in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC10 - Aggiungi campo specifico a categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una categoria. \newline
+    Trigger: Il configuratore sceglie di aggiungere un campo specifico a una categoria. \newline
+    1. Il configuratore seleziona "Gestisci campi specifici" e indica la categoria. \newline
+    2. Il sistema verifica che la categoria esista. \newline
+    3. Il configuratore seleziona "Aggiungi campo specifico". \newline
+    4. Il sistema chiede il nome del nuovo campo. \newline
+    5. Il configuratore inserisce il nome. \newline
+    6. Il sistema chiede se il campo è obbligatorio o facoltativo. \newline
+    7. Il configuratore risponde (s/n). \newline
+    8. Il sistema verifica che il nome non coincida con un campo base, comune o specifico già presente. \newline
+    9. Il sistema aggiunge il campo specifico alla categoria e salva. \newline
+    10. Il sistema mostra conferma e permette inserimenti successivi (INVIO per terminare).\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: Categoria non esiste. \newline
+    Il sistema mostra un messaggio di errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Nome vuoto. \newline
+    Il sistema mostra un errore e richiede un nuovo inserimento. \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: Nome duplicato. \newline
+    Il sistema mostra un errore e non procede con l'aggiunta. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiunge il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC11 - Rimuovi campo specifico da categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste una categoria con almeno un campo specifico. \newline
+    Trigger: Il configuratore seleziona "Rimuovi campo specifico". \newline
+    1. Il configuratore seleziona la categoria. \newline
+    2. Il sistema mostra i campi specifici della categoria. \newline
+    3. Il configuratore inserisce il nome del campo da rimuovere. \newline
+    4. Il sistema rimuove il campo specifico e salva in modo persistente. \newline
+    5. Il sistema mostra conferma. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra un messaggio di errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema rimuove il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC12 - Modifica obbligatorietà campo specifico} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste una categoria con almeno un campo specifico. \newline
+    Trigger: Il configuratore seleziona "Modifica obbligatorietà campo specifico". \newline
+    1. Il configuratore seleziona la categoria. \newline
+    2. Il sistema mostra i campi specifici con obbligatorietà attuale. \newline
+    3. Il configuratore inserisce il nome del campo da modificare. \newline
+    4. Il configuratore indica il nuovo valore (s/n). \newline
+    5. Il sistema aggiorna il campo specifico e salva in modo persistente. \newline
+    6. Il sistema mostra conferma. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra un messaggio di errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiorna il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC13 - Visualizza categorie e campi} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. \newline
+    Trigger: Il configuratore seleziona "Visualizza riepilogo categorie e campi". \newline
+    1. Il configuratore seleziona "Visualizza riepilogo". \newline
+    2. Il sistema mostra i campi BASE. \newline
+    3. Il sistema mostra i campi COMUNI (con indicazione di obbligatorio/facoltativo). \newline
+    4. Per ogni categoria, il sistema mostra: nome categoria e campi specifici (con indicazione di obbligatorio/facoltativo). \newline
+    5. Il configuratore preme INVIO per tornare al menu. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Nessun campo comune definito. \newline
+    Il sistema mostra la dicitura "(nessuno definito)". \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Nessuna categoria definita nel sistema. \newline
+    Il sistema mostra la dicitura "(nessuna categoria definita)". \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4b. Precondizione: Una categoria non possiede campi specifici. \newline
+    Il sistema mostra la dicitura "(nessun campo specifico)" sotto il nome della categoria interessata. \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC14 - Visualizza dettaglio categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una categoria. \newline
+    Trigger: Il configuratore seleziona "Visualizza dettaglio categoria". \newline
+    1. Il configuratore seleziona "Visualizza dettaglio categoria". \newline
+    2. Il sistema richiede l'inserimento del nome della categoria. \newline
+    3. Il configuratore inserisce il nome richiesto. \newline
+    4. Il sistema mostra, per la categoria selezionata, il set completo dei dati: tutti i campi BASE, i campi COMUNI e i campi SPECIFICI della categoria stessa. \newline
+    5. Il configuratore preme INVIO per terminare la visualizzazione e tornare al menu. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: La categoria inserita non è presente nell'archivio. \newline
+    Il sistema mostra un messaggio di errore e l'operazione si interrompe. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+
+\section{Casi d'uso grafici}
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=0.8\textwidth]{immagini/casi uso grafici v1 definitivo 2.png} 
+    }
+    \label{fig:usecase1_v1}
+\end{figure}
+
+\clearpage
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v1 definitivo 1a.png} 
+    }
+    \label{fig:usecase2_v1}
+\end{figure}
+
+
+
+\section{Diagramma delle classi}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\textwidth]{immagini/UML_V1.png}
+    \label{fig:diagramma_classi_v1}
+\end{figure}
+
+
+
+\chapter{Versione 2}
+
+\section{Casi d'uso testuali modificati}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC01 - Avvio e Login} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: L'applicazione è avviata. \newline
+    Trigger: L'utente seleziona "Configuratore" dal menu iniziale.\newline
+    1. Il sistema mostra la schermata di login dedicata.\newline
+    2. Il configuratore inserisce username e password.\newline
+    3. Il sistema verifica la corrispondenza delle credenziali.\newline
+    4. Il sistema autentica il configuratore.\newline
+    5. Il sistema verifica se si tratta del primissimo accesso assoluto (credenziali di default).\newline
+    6. <<include>> "UC02 - Imposta credenziali personali" (se primo accesso).\newline
+    \textcolor{BurntOrange}{7. Il sistema mostra il menu principale con i contatori aggiornati: numero di proposte in sessione e numero di proposte aperte in bacheca.}\newline
+    Postcondizione: Il configuratore è autenticato nel back-end. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "esci" come username.\newline
+    Il sistema interrompe l'operazione e torna al menu di selezione ruolo. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: le credenziali non sono valide. \newline
+    Il sistema mostra un errore e indica i tentativi rimasti. Torna al punto 2 (se tentativi $<$ 3), altrimenti il sistema blocca l'accesso alla sessione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3b. Precondizione: nessun configuratore registrato nel sistema.\newline
+    Il sistema accetta le credenziali di default (admin/admin123), crea il profilo iniziale, imposta la necessità di cambio credenziali e prosegue al punto 6. \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC03 - Logout} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Configuratore autenticato. \newline
+    Trigger: Selezione "Logout". \newline
+    1. Il configuratore seleziona Logout. \newline
+    \textcolor{ForestGreen}{2. Il sistema scarta le proposte non pubblicate della sessione corrente (stato BOZZA o VALIDA).}\newline
+    \textcolor{ForestGreen}{3. Se erano presenti proposte non pubblicate, il sistema avvisa il configuratore.}\newline
+    4. Il sistema termina la sessione corrente. \newline
+    5. Il sistema chiede se accedere con un altro account. \newline
+    6. Sì: ritorna a UC01. \newline
+    7. No: termina l'applicazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Il configuratore inserisce una risposta non valida (diversa da "s" o "n").\newline
+    Il sistema mostra un messaggio di errore testuale e ripropone la domanda. \\ \hline
+\end{tabularx}
+
+\section{Casi d'uso testuali nuovi}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC15 - Crea proposta} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato ed esiste almeno una categoria.\newline
+    Trigger: Selezione "Nuova proposta" dal menu gestionale.\newline
+    1. Il sistema mostra l'elenco delle categorie disponibili.\newline
+    2. Il configuratore inserisce il nome della categoria desiderata.\newline
+    3. Il sistema verifica l'esistenza della categoria.\newline
+    4. Il sistema cattura lo snapshot dei campi (base, comuni e specifici) rendendoli indipendenti da future modifiche alla configurazione.\newline
+    5. Il sistema assegna un ID univoco progressivo estratto dal contatore globale.\newline
+    6. Il sistema aggiunge la proposta alla sessione corrente in stato BOZZA.\newline
+    7. <<include>> "UC16 - Compila campi proposta".\newline
+    8. Il sistema mostra il riepilogo e, se in stato VALIDA, offre la pubblicazione immediata (estende UC17).\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    1a. Precondizione: l'archivio categorie è vuoto.\newline
+    Il sistema mostra l'errore "Nessuna categoria disponibile" e impedisce la creazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: categoria non trovata in base all'input dell'utente.\newline
+    Il sistema mostra un errore e torna al menu proposte.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC16 - Compila / Modifica campi proposta} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Esiste almeno una proposta in sessione.\newline
+    Trigger: Estensione da UC15 o selezione "Continua compilazione".\newline
+    1. Il sistema presenta i campi dello snapshot uno alla volta.\newline
+    2. Per ogni campo, il sistema mostra l'etichetta [OBB/FAC], il formato richiesto e il valore attuale.\newline
+    3. Il configuratore inserisce un valore o preme INVIO per mantenere il valore attuale.\newline
+    4. Il sistema valida l'input e ricalcola automaticamente lo stato (BOZZA/VALIDA).\newline
+    5. Il sistema verifica i vincoli temporali: Termine iscrizione $>$ oggi; Data inizio $\ge$ Termine + 2gg; Data fine $\ge$ Data inizio; Formato Ora (HH:MM).\newline
+    6. Il sistema mostra il riepilogo finale e l'elenco degli errori se lo stato è BOZZA.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: formato data (gg/mm/aaaa) o ora (HH:MM) errato.\newline
+    Il sistema mostra un errore specifico e non aggiorna il valore del campo. Prosegue con il campo successivo. \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC17 - Pubblica proposta in bacheca} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato e c'è almeno una proposta VALIDA in sessione.\newline
+    Trigger: Selezione "Pubblica proposta in bacheca".\newline
+    1. Il sistema mostra l'elenco delle proposte in sessione attualmente VALIDE.\newline
+    2. Il configuratore inserisce l'ID della proposta da pubblicare.\newline
+    3. Il sistema cattura la data odierna.\newline
+    4. Il sistema imposta lo stato della proposta su APERTA e registra la data nello storico.\newline
+    5. Il sistema sposta la proposta dalla sessione all'Archivio del configuratore.\newline
+    6. Il sistema salva le modifiche in modo persistente.\newline
+    7. Il sistema mostra conferma dell'operazione.\newline
+    Postcondizione: La proposta ha stato APERTA, è salvata nell'archivio ed è visibile ai fruitori. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    1a. Precondizione: nessuna proposta in sessione è in stato VALIDA. \newline
+    Il sistema mostra un messaggio di errore e l'operazione termina.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'input non è numerico o non corrisponde a un ID presente in elenco. \newline
+    Il sistema mostra un errore e l'operazione termina.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC18 - Elimina proposta dalla sessione} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una proposta in sessione (stato BOZZA o VALIDA).\newline
+    Trigger: Il configuratore seleziona "Elimina proposta" nel menu proposte.\newline
+    1. Il sistema mostra l'elenco delle proposte in sessione.\newline
+    2. Il configuratore inserisce l'ID della proposta da eliminare.\newline
+    3. Il sistema chiede conferma esplicita prima dell'eliminazione.\newline
+    4. Il configuratore conferma.\newline
+    5. Il sistema rimuove definitivamente la proposta dalla sessione.\newline
+    6. Il sistema mostra conferma dell'avvenuta operazione.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'ID inserito non è valido o non corrisponde a una proposta presente in sessione.\newline
+    Il sistema mostra un messaggio di errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il configuratore annulla l'operazione (nega la conferma).\newline
+    Il sistema interrompe l'operazione senza apportare modifiche e torna al menu.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC19 - Visualizza bacheca} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione "Visualizza bacheca".\newline
+    1. Il configuratore richiede la visualizzazione della bacheca.\newline
+    2. Il sistema recupera tutte le proposte con stato APERTA.\newline
+    3. Il sistema raggruppa le proposte per categoria esistente.\newline
+    4. Il sistema mostra per ogni proposta: ID, Data pubblicazione, Creatore e i valori di tutti i campi compilati (omettendo i campi facoltativi lasciati vuoti).\newline
+    5. Il configuratore preme INVIO per terminare la visualizzazione.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: non ci sono proposte in stato APERTA nell'archivio.\newline
+    Il sistema mostra il messaggio "(Nessuna proposta aperta in bacheca)".\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: la categoria originaria di una proposta è stata rimossa dopo la pubblicazione.\newline
+    Il sistema visualizza la proposta raggruppandola sotto l'etichetta "(categoria rimossa)".\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\section{Casi d'uso grafici}
+\clearpage
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v2 definitivo.png} 
+    }
+    \label{fig:usecase_v2}
+\end{figure}
+\clearpage
+\section{Diagramma delle classi}
+\clearpage
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=0.84\textwidth]{immagini/diagramma_v2.png}
+    }
+    \label{fig:diagramma_classi_v2}
+\end{figure}
+
+
+\chapter{Versione 3}
+
+\section{Casi d'uso testuali modificati}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.4} 
+    \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC01 - Avvio e Login} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \textbf{Scenario principale} & 
+    Precondizione: L'applicazione è avviata. \textcolor{ForestGreen}{Transizioni automatiche (UC20) completate dal sistema}.\newline
+    Trigger: L'utente seleziona "Configuratore" dal menu iniziale.\newline
+    1. Il sistema mostra la schermata di login dedicata.\newline
+    2. Il configuratore inserisce username e password.\newline
+    3. Il sistema verifica la corrispondenza delle credenziali.\newline
+    4. Il sistema autentica il configuratore.\newline
+    5. Il sistema verifica se si tratta del primissimo accesso assoluto (credenziali di default).\newline
+    6. <<include>> "UC02 - Imposta credenziali personali" (se primo accesso).\newline
+    \textcolor{BurntOrange}{7. Il sistema mostra il menu principale aggiornato coi contatori in tempo reale}.\newline
+    Postcondizione: Il configuratore è autenticato nel back-end.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "esci" come username.\newline
+    Il sistema interrompe l'operazione e torna al menu di selezione ruolo.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: le credenziali non sono valide.\newline
+    Il sistema mostra un errore e indica i tentativi rimasti.\newline
+    Torna al punto 2 (se tentativi $< 3$), altrimenti il sistema blocca l'accesso alla sessione.\newline
+    Fine \\ \hline
+    \end{tabularx}
+    \label{tab:uc01_v3}
+\end{table}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC02 - Imposta credenziali personali} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot 
+    \textbf{Scenario principale} & 
+    Precondizione: Login effettuato con credenziali di default (primo accesso).\newline
+    Trigger: Il sistema rileva la necessità di cambiare le credenziali.\newline
+    1. Il sistema richiede di scegliere le credenziali personali.\newline
+    2. Il configuratore inserisce il nuovo username.\newline
+    3. Il sistema verifica che lo username non coincida con la parola riservata "esci".\newline
+    4. Il configuratore inserisce la nuova password.\newline
+    5. Il configuratore inserisce la password per conferma.\newline
+    6. Il sistema verifica che le due password coincidano.\newline
+    \textcolor{ForestGreen}{7. Il sistema verifica che username e password non siano stringhe vuote/blank.}\newline
+    \textcolor{BurntOrange}{8. Il sistema verifica l'unicità globale dello username (tra Configuratori e Fruitori).}\newline
+    9. Il sistema aggiorna le credenziali in memoria.\newline
+    10. Il sistema salva i dati in modo persistente.\newline
+    11. Il sistema mostra la conferma e accede al menu.\newline
+    Postcondizione: Le credenziali di default sono sostituite e salvate in modo permanente.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "annulla" nel campo username.\newline
+    Il sistema annulla l'operazione ed esegue il logout automatico.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: lo username inserito è "esci".\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il configuratore digita "annulla" nel campo password.\newline
+    Il sistema annulla l'operazione ed esegue il logout automatico.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: le password non coincidono.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: campi lasciati vuoti.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: username già in uso nel sistema.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    \textcolor{ForestGreen}{10a. Precondizione: Errore di salvataggio (I/O).}\newline
+    \textcolor{ForestGreen}{Il sistema esegue un rollback in memoria, mostra un errore ed esegue il logout.}\newline
+    \textcolor{ForestGreen}{Fine} \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC17 - Pubblica proposta in bacheca} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato e c'è almeno una proposta VALIDA in sessione.\newline
+    Trigger: Selezione "Pubblica proposta in bacheca".\newline
+    1. Il sistema mostra l'elenco delle proposte in sessione attualmente VALIDE.\newline
+    2. Il configuratore inserisce l'ID della proposta da pubblicare.\newline
+    3. Il sistema cattura la data odierna.\newline
+    \textcolor{ForestGreen}{4. Il sistema ricalcola la validità della proposta in base alla data odierna.}\newline
+    5. Il sistema imposta lo stato su APERTA e registra la data nello storico.\newline
+    \textcolor{BurntOrange}{6. Il sistema sposta la proposta dalla sessione all'Archivio globale.}\newline
+    7. Il sistema salva le modifiche in modo persistente.\newline
+    8. Il sistema mostra conferma dell'operazione.\newline
+    Postcondizione: La proposta ha stato APERTA, è salvata nell'archivio ed è visibile ai fruitori.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    1a. Precondizione: nessuna proposta in sessione è in stato VALIDA.\newline
+    Il sistema mostra un errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'input non è numerico o non corrisponde a una proposta in elenco.\newline
+    Il sistema mostra un errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    \textcolor{ForestGreen}{4a. Precondizione: la validità è scaduta a causa del cambio di data (es. superata mezzanotte).}\newline
+    \textcolor{ForestGreen}{Il sistema nega la pubblicazione e mostra l'elenco degli errori.}\newline
+    \textcolor{ForestGreen}{Fine} \\ \hline
+    \textbf{Scenario alternativo} & 
+    \textcolor{ForestGreen}{7a. Precondizione: Errore di salvataggio (I/O).}\newline
+    \textcolor{ForestGreen}{Il sistema esegue un rollback completo riportando la proposta allo stato VALIDA in sessione.}\newline
+    \textcolor{ForestGreen}{Fine} \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC19 - Visualizza bacheca Configuratore} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione "Visualizza bacheca".\newline
+    1. Il configuratore richiede la visualizzazione della bacheca.\newline
+    2. Il sistema recupera tutte le proposte con stato APERTA.\newline
+    \textcolor{BurntOrange}{3. Il sistema raggruppa dinamicamente le proposte per categoria (inclusa la voce "(categoria rimossa)" per le eventuali proposte orfane).}\newline
+    \textcolor{BurntOrange}{4. Il sistema mostra per ogni proposta: ID, dettagli, valori dei campi e il numero di iscritti attuali rispetto al massimo consentito.}\newline
+    5. Il configuratore preme INVIO per terminare.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: non ci sono proposte APERTE in archivio.\newline
+    Il sistema mostra il messaggio "(Nessuna proposta aperta in bacheca)".\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: categoria di una proposta rimossa dopo la pubblicazione.\newline
+    Il sistema visualizza la proposta sotto l'etichetta "(categoria rimossa)".\newline
+    Fine \\ \hline
+\end{tabularx}
+
+
+\section{Casi d'uso testuali nuovi}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC20 - Esecuzione transizioni automatiche di stato} \\ \hline
+    \textbf{Attore}             & Sistema \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: L'applicazione viene avviata. L'archivio contiene proposte.\newline
+    Trigger: Inizializzazione del sistema.\newline
+    1. Il sistema analizza l'archivio delle proposte.\newline
+    2. Per ogni proposta APERTA con "Termine ultimo" superato, il sistema verifica se iscritti $\ge$ minimo richiesto.\newline
+    3. Il sistema transita la proposta in stato CONFERMATA.\newline
+    4. Il sistema genera una notifica di conferma per ogni aderente iscritto.\newline
+    5. Per ogni proposta CONFERMATA con "Data conclusiva" superata, il sistema la transita in stato CONCLUSA.\newline
+    6. Il sistema salva i nuovi stati e le notifiche in modo persistente.\newline
+    7. Il sistema mostra a schermo il numero totale di transizioni effettuate.\newline
+    Postcondizione: Stati aggiornati alla data odierna e notifiche distribuite.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: la proposta APERTA è scaduta ma gli iscritti sono insufficienti (o il campo "Numero massimo" è corrotto/negativo).\newline
+    Il sistema transita la proposta in ANNULLATA e genera una notifica di annullamento per ogni aderente.\newline
+    Torna al punto 5 \\ \hline
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback ricaricando i dati precedenti dal disco per evitare la generazione di notifiche duplicate ai riavvii successivi.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC21 - Registrazione Fruitore} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: L'utente non è autenticato.\newline
+    Trigger: Selezione "Registrazione (nuovo account)" dal menu di accesso.\newline
+    1. Il sistema mostra la schermata di registrazione.\newline
+    2. Il fruitore inserisce lo username desiderato.\newline
+    3. Il fruitore inserisce la password.\newline
+    4. Il fruitore reinserisce la password per conferma.\newline
+    5. Il sistema verifica che le due password coincidano.\newline
+    6. Il sistema verifica che username e password non siano vuoti.\newline
+    7. Il sistema verifica l'unicità globale dello username.\newline
+    8. Il sistema crea il profilo Fruitore in memoria.\newline
+    9. Il sistema salva i dati in modo persistente.\newline
+    10. Il sistema autentica automaticamente il fruitore e mostra il benvenuto.\newline
+    Postcondizione: Il fruitore è registrato, autenticato e con uno spazio notifiche vuoto.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il fruitore digita "annulla" come username.\newline
+    Il sistema interrompe l'operazione e torna al menu.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: il fruitore digita "annulla" come password.\newline
+    Il sistema interrompe l'operazione e torna al menu.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: le password non coincidono.\newline
+    Il sistema mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: campi vuoti o composti da soli spazi.\newline
+    Il sistema mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: username già in uso (globale).\newline
+    Il sistema mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline 
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema rimuove il profilo dalla memoria (rollback), mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC22 - Login Fruitore} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore possiede un account e non è autenticato.\newline
+    Trigger: Selezione "Login (account esistente)".\newline
+    1. Il sistema mostra la schermata di login.\newline
+    2. Il fruitore inserisce username e password.\newline
+    3. Il sistema verifica la corrispondenza delle credenziali.\newline
+    4. Il sistema autentica il fruitore.\newline
+    5. Il sistema conteggia le notifiche presenti nello spazio personale e mostra il benvenuto con il relativo avviso.\newline
+    Postcondizione: Il fruitore è autenticato nel sistema.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il fruitore digita "annulla" nel campo username.\newline
+    Il sistema annulla l'operazione e torna al menu.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: le credenziali sono errate (incluso inserire "annulla" come password).\newline
+    Il sistema mostra l'errore e i tentativi rimasti.\newline
+    Torna al punto 2 (se tentativi $<$ 3), altrimenti il sistema blocca l'accesso.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC23 - Visualizza Bacheca (Fruitore)} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato.\newline
+    Trigger: Selezione "Visualizza bacheca".\newline
+    1. Il fruitore richiede la visualizzazione.\newline
+    2. Il sistema recupera tutte le proposte in stato APERTA.\newline
+    3. Il sistema raggruppa le proposte per categoria.\newline
+    4. Il sistema mostra dettagli, posti occupati, scadenze e tutti i campi informativi per ogni proposta.\newline
+    5. Il sistema evidenzia con l'etichetta \textcolor{red}{[ISCRITTO]} le iniziative a cui l'utente loggato ha già aderito.\newline
+    6. Il fruitore preme INVIO per terminare la consultazione.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema.\newline
+    Fine \\ \hline  
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: nessuna proposta APERTA trovata nell'archivio.\newline
+    Il sistema comunica "(Nessuna proposta aperta in bacheca)".\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC24 - Iscrizione a proposta} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato.\newline
+    Trigger: Selezione "Aderisci a una proposta".\newline
+    1. Il fruitore avvia la procedura di iscrizione.\newline
+    2. Il sistema estrae le proposte APERTE dall'archivio.\newline
+    3. Il sistema verifica che ci sia almeno una proposta APERTA nella bacheca globale.\newline
+    4. Il sistema filtra le proposte escludendo quelle a cui l'utente è già iscritto.\newline
+    5. Il sistema verifica che la lista filtrata non sia vuota.\newline
+    6. Il fruitore inserisce l'ID della proposta scelta.\newline
+    7. Il sistema verifica che l'input sia numerico e diverso da "0".\newline
+    8. Il sistema individua la proposta e verifica che sia in stato APERTA.\newline
+    9. Il sistema verifica che la data odierna sia $\le$ al "Termine ultimo di iscrizione".\newline
+    10. Il sistema verifica che ci siano posti disponibili.\newline
+    11. Il sistema aggiunge lo username del fruitore alla lista degli aderenti.\newline
+    12. Il sistema salva i dati in modo persistente.\newline
+    13. Il sistema conferma l'avvenuta iscrizione all'utente.\newline
+    Postcondizione: L'utente è iscritto e i posti disponibili scalano.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: l'archivio globale non contiene alcuna proposta in stato APERTA.\newline
+    Il sistema lo comunica all'utente e termina l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: il fruitore è già iscritto a tutte le proposte APERTE (lista filtrata vuota).\newline
+    Il sistema lo comunica all'utente e termina l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: il fruitore digita "0" per annullare l'inserimento.\newline
+    Il sistema annulla l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7b. Precondizione: l'input inserito non è un numero intero.\newline
+    Il sistema mostra il messaggio "ID non valido".\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: l'ID non corrisponde a nessuna proposta o la proposta non è più APERTA.\newline
+    Il sistema mostra un messaggio di errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: il termine di iscrizione è scaduto rispetto alla data odierna.\newline
+    Il sistema blocca l'iscrizione e mostra un messaggio di errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    10a. Precondizione: i posti sono esauriti (o il campo numero partecipanti è corrotto).\newline
+    Il sistema blocca l'iscrizione e mostra un messaggio di errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    12a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema annulla l'iscrizione in memoria (rollback) e mostra un messaggio di errore.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC25 - Gestione Spazio Personale (Notifiche)} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato.\newline
+    Trigger: Selezione "Spazio personale".\newline
+    1. Il fruitore accede allo spazio personale.\newline
+    2. Il sistema mostra l'elenco delle notifiche e le opzioni del menu ("c", "t", "0").\newline
+    3. Il fruitore inserisce l'opzione "c" (Cancella singola notifica).\newline
+    4. Il sistema verifica che la lista delle notifiche non sia vuota.\newline
+    5. Il sistema richiede l'inserimento dell'ID della notifica.\newline
+    6. Il fruitore inserisce l'ID.\newline
+    7. Il sistema individua e rimuove la notifica dalla memoria.\newline
+    8. Il sistema salva i dati in modo persistente.\newline
+    9. Il sistema conferma la cancellazione all'utente.\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: la lista delle notifiche dell'utente è vuota.\newline
+    Il sistema stampa "(Nessuna notifica)" ma mostra comunque il menu operativo.\newline
+    Prosegue al punto 3 \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: il fruitore seleziona "t" (Cancellazione totale).\newline
+    Il sistema verifica che la lista non sia vuota, chiede conferma (s/n). L'utente risponde "s". Il sistema svuota la lista in memoria.\newline
+    Salta al punto 8 \\ \hline
+    \textbf{Scenario alternativo} & 
+    3b. Precondizione: il fruitore seleziona "t", ma annulla la conferma (risponde "n").\newline
+    Il sistema annulla l'operazione.\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    3c. Precondizione: il fruitore seleziona "0. Torna al menu principale".\newline
+    Il sistema chiude lo spazio personale e torna al menu precedente.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3d. Precondizione: il fruitore inserisce un'opzione non valida (es. lettera errata).\newline
+    Il sistema mostra l'errore "Scelta non valida".\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il fruitore seleziona "c" o "t", ma la lista delle notifiche è vuota.\newline
+    Il sistema mostra l'errore "Nessuna notifica da cancellare".\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: l'ID inserito non è numerico o non corrisponde ad alcuna notifica in memoria.\newline
+    Il sistema mostra un errore.\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema ripristina in memoria la lista originale intatta (rollback) e mostra un errore.\newline
+    Torna al punto 2 \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC26 - Visualizza Archivio Proposte} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione "Visualizza archivio proposte".\newline
+    1. Il configuratore avvia la richiesta di visualizzazione.\newline
+    2. Il sistema recupera l'intero archivio (escludendo gli stati interni BOZZA e VALIDA).\newline
+    3. Il sistema raggruppa dinamicamente le proposte in base allo stato (APERTA, CONFERMATA, ANNULLATA, CONCLUSA, RITIRATA).\newline
+    4. Il sistema mostra i dettagli anagrafici, i posti occupati, la lista degli aderenti e lo storico completo dei passaggi di stato per ogni proposta.\newline
+    5. Il configuratore preme INVIO per terminare.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema.\newline
+    Fine \\ \hline 
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'archivio è vuoto.\newline
+    Il sistema segnala "(Nessuna proposta nell'archivio)" e termina l'operazione.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+
+\section{Casi d'uso grafici}
+
+\clearpage
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v3 definitivo 1.png} 
+    }
+    \label{fig:usecase_v31}
+\end{figure}
+
+\clearpage
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v3 definitivo 2.png} 
+    }
+    \label{fig:usecase_v32}
+\end{figure}
+\section{Diagramma delle classi}
+\clearpage
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{immagini/UML V3 View-Controller-Persistence.png}
+    \label{fig:diagramma_classi_v3_view_controller_persistence}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\textwidth]{immagini/UML V3 Model.png}
+    \label{fig:diagramma_classi_v3_model}
+\end{figure}
+
+
+% --- CAPITOLO 4 ---
+\chapter{Versione 4}
+\section{Casi d'uso testuali nuovi}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC27 - Ritira proposta in archivio} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. L'archivio contiene almeno una proposta in stato APERTA o CONFERMATA.\newline
+    Trigger: Selezione dell'opzione "Ritira proposta".\newline
+    1. Il sistema mostra le proposte in stato APERTA o CONFERMATA presenti nell'archivio.\newline
+    2. Il configuratore inserisce l'ID della proposta da ritirare.\newline
+    3. Il sistema estrae la proposta e verifica che il suo stato attuale consenta il ritiro.\newline
+    4. Il sistema verifica che la data odierna sia strettamente precedente alla "Data inizio" dell'evento.\newline
+    5. Il sistema transita lo stato della proposta in RITIRATA e registra il passaggio nello storico.\newline
+    6. Il sistema invia automaticamente una notifica di ritiro nello spazio personale di tutti i fruitori iscritti (aderenti).\newline
+    7. Il sistema salva le modifiche in modo persistente.\newline
+    8. Il sistema mostra la conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'ID inserito non corrisponde ad alcuna proposta o la proposta non è nell'archivio.\newline
+    Il sistema mostra un messaggio di errore e interrompe l'operazione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: la proposta si trova in uno stato diverso da APERTA o CONFERMATA (es. già CONCLUSA o ANNULLATA).\newline
+    Il sistema mostra l'errore "Il ritiro è consentito solo per proposte APERTE o CONFERMATE" e interrompe l'operazione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: la "Data inizio" dell'evento è già trascorsa o corrisponde alla data odierna (oggi $\ge$ Data inizio).\newline
+    Il sistema blocca il ritiro indicando che l'evento è imminente o passato. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback ricaricando i dati precedenti dal disco per ripristinare sia lo stato della proposta che le notifiche, poi mostra un errore. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC28 - Disdici iscrizione a proposta} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato e risulta iscritto ad almeno una proposta.\newline
+    Trigger: Selezione dell'opzione per disdire un'iscrizione.\newline
+    1. Il sistema mostra l'elenco delle proposte APERTE a cui l'utente è iscritto.\newline
+    2. Il fruitore inserisce l'ID della proposta da cui desidera disiscriversi.\newline
+    3. Il sistema verifica che la proposta sia in stato APERTA.\newline
+    4. Il sistema verifica che la data odierna sia minore o uguale al "Termine ultimo di iscrizione".\newline
+    5. Il sistema rimuove lo username del fruitore dalla lista degli aderenti della proposta.\newline
+    6. Il sistema salva le modifiche in modo persistente.\newline
+    7. Il sistema mostra la conferma dell'avvenuta disdetta. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'ID non è valido oppure il fruitore non risulta iscritto alla proposta indicata.\newline
+    Il sistema mostra un errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: la proposta ha cambiato stato (non è più APERTA).\newline
+    Il sistema mostra un errore indicando l'impossibilità di operare. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il "Termine ultimo di iscrizione" è scaduto rispetto alla data odierna.\newline
+    Il sistema blocca la disdetta informando che il termine è oltrepassato. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback reinserendo il fruitore tra gli aderenti in memoria e mostra un messaggio di errore. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\section{Casi d'uso grafici}
+
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v4 definitivo 1.png} 
+    }
+    \label{fig:usecase_v41}
+\end{figure}
+
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v4 definitivo 2.png} 
+    }
+    \label{fig:usecase_v42}
+\end{figure}
+
+\clearpage
+\section{Diagramma delle classi}
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.8\textwidth]{immagini/uml v4 2.png}
+    \label{fig:diagramma_classi_v4_view_controller_persistence}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=1.14\textwidth]{immagini/uml V4 model.png}
+    \label{fig:diagramma_classi_v4_model}
+\end{figure}
+% --- CAPITOLO 5 ---
+\chapter{Versione 5}
+\section{Casi d'uso testuali nuovi}
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome} & \textbf{UC29 – Importa singolo file batch} \\ \hline
+    \textbf{Attore} & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Il file batch esiste nel filesystem ed è leggibile.\newline
+    Trigger: Selezione dell'opzione "Importa da file batch" $\rightarrow$ "Importa singolo file".\newline
+    1. Il sistema mostra la descrizione del formato batch supportato (CAMPO\_COMUNE, CATEGORIA, PROPOSTA).\newline
+    2. Il configuratore inserisce il percorso del file (assoluto o relativo alla working directory).\newline
+    3. Il sistema legge tutte le righe del file.\newline
+    4. Il sistema scorre le righe, ignorando quelle vuote e quelle che iniziano con \#.\newline
+    5. Per ogni riga significativa, il sistema identifica il comando (primo token prima di |).\newline
+    6. Per ogni riga CAMPO\_COMUNE: il sistema crea il campo comune con nome e obbligatorietà indicati e salva su disco.\newline
+    7. Per ogni riga CATEGORIA: il sistema crea la categoria; se la riga contiene token CAMPO\_SPECIFICO, aggiunge i campi specifici inline prima del salvataggio, poi salva su disco.\newline
+    8. Per ogni riga PROPOSTA: il sistema costruisce lo snapshot dei campi (BASE $\rightarrow$ COMUNI $\rightarrow$ SPECIFICI della categoria), assegna i valori indicati con il formato campo = valore, valida la proposta con le stesse regole della modalità interattiva e, se valida, la pubblica direttamente in bacheca salvando su disco.\newline
+    9. Al termine, il sistema raccoglie il resoconto in un \textit{BatchRisultato} (numero righe elaborate, successi, warning, errori).\newline
+    10. Il sistema mostra il resoconto completo all'utente.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il percorso è vuoto o l'utente digita "annulla".\newline
+    Il sistema annulla l'operazione senza modifiche.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: il file non esiste o non è accessibile (IOException).\newline
+    Il sistema mostra un messaggio di errore con indicazione del percorso e interrompe l'operazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: il comando della riga non è riconosciuto.\newline
+    Il sistema registra un warning con numero di riga e prosegue con la riga successiva.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: il campo comune ha nome vuoto, oppure esiste già un campo con lo stesso nome.\newline
+    Il sistema registra un warning e salta la riga.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6b. Precondizione: errore di salvataggio (I/O) dopo l'aggiunta in memoria.\newline
+    Il sistema esegue il rollback in memoria, registra un errore e prosegue.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: la categoria esiste già.\newline
+    Il sistema registra un warning e salta la riga.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7b. Precondizione: un campo specifico inline non è valido.\newline
+    Il sistema registra un warning per quel campo specifico e lo salta; la categoria viene creata senza di esso.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7c. Precondizione: errore di salvataggio (I/O) della categoria.\newline
+    Il sistema esegue il rollback in memoria, registra un errore e prosegue.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: la categoria indicata nella riga PROPOSTA non esiste.\newline
+    Il sistema registra un errore e salta la riga.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8b. Precondizione: token campo = valore non validi o campo non esistente.\newline
+    Il sistema registra un warning per ogni token non riconosciuto e prosegue con i restanti campi.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8c. Precondizione: la proposta risulta non valida dopo la validazione.\newline
+    Il sistema registra un errore con i problemi rilevati. La proposta non viene pubblicata.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8d. Precondizione: errore di salvataggio (I/O) della proposta pubblicata.\newline
+    Il sistema esegue il rollback in memoria, registra un errore e prosegue.\newline
+    Fine (riga) \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome} & \textbf{UC30 – Importa più file batch in sequenza} \\ \hline
+    \textbf{Attore} & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione dell'opzione "Importa da file batch" $\rightarrow$ "Importa più file in sequenza".\newline
+    1. Il sistema chiede di inserire i percorsi dei file batch uno alla volta.\newline
+    2. Il configuratore inserisce i percorsi (uno per invio).\newline
+    3. Il configuratore preme INVIO con il campo vuoto per confermare la lista.\newline
+    4. Il sistema mostra il numero di file selezionati e avvia l'elaborazione sequenziale.\newline
+    5. Per ciascun file della lista, il sistema esegue l'elaborazione descritta in UC29 (passi 3–9).\newline
+    6. I risultati parziali di ogni file vengono aggregati in un unico \textit{BatchRisultato} complessivo tramite il metodo \textit{aggiungi(parziale)}.\newline
+    7. Al termine di tutti i file, il sistema mostra il resoconto aggregato con il numero totale di righe elaborate, successi, warning ed errori, e l'elenco dei file processati.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'utente digita "annulla" invece di un percorso.\newline
+    Il sistema annulla l'intera operazione senza apportare modifiche.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: l'utente preme INVIO senza aver inserito alcun percorso.\newline
+    Il sistema mostra un errore "Nessun file specificato" e interrompe l'operazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: uno dei file indicati non esiste o non è leggibile (IOException).\newline
+    Il sistema registra un errore nel resoconto aggregato (indicando il file) e continua con il file successivo nella lista.\newline
+    Fine (file) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5b. Precondizione: errori su singole righe di un file (comandi errati, duplicati, validazione fallita).\newline
+    Si applicano le stesse alternative di UC29 (5a–8d) con i relativi rollback per riga. L'elaborazione prosegue per le righe e i file successivi.\newline
+    Fine \\ \hline
+\end{tabularx}
+\section{Casi d'uso grafici}
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso grafici v5 definitivo mini.png} 
+    }
+    \label{fig:usecase_v5}
+\end{figure}
+
+\clearpage
+\section{Diagramma delle classi}
+\clearpage
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{immagini/uml v5.png}
+    \label{fig:diagramma_classi_v5_view_controller_persistence}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.6\textwidth]{immagini/uml v5 2.png}
+    \label{fig:diagramma_classi_v5_model}
+\end{figure}
+
+% --- CAPITOLO 6 ---
+\chapter{Versione Finale}
+\section{Casi d'uso testuali}
+
+\begin{table}[htbp]
+    \centering
+    \renewcommand{\arraystretch}{1.4} 
+    \begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC01 - Avvio e Login} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \textbf{Scenario principale} & 
+    Precondizione: L'applicazione è avviata. Transizioni automatiche (UC20) completate dal sistema.\newline
+    Trigger: L'utente seleziona "Configuratore" dal menu iniziale.\newline
+    1. Il sistema mostra la schermata di login dedicata.\newline
+    2. Il configuratore inserisce username e password.\newline
+    3. Il sistema verifica la corrispondenza delle credenziali.\newline
+    4. Il sistema autentica il configuratore.\newline
+    5. Il sistema verifica se si tratta del primissimo accesso assoluto (credenziali di default).\newline
+    6. <<include>> "UC02 - Imposta credenziali personali" (se primo accesso).\newline
+    7. Il sistema mostra il menu principale aggiornato coi contatori in tempo reale.\newline
+    Postcondizione: Il configuratore è autenticato nel back-end.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "esci" come username.\newline
+    Il sistema interrompe l'operazione e torna al menu di selezione ruolo.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: le credenziali non sono valide.\newline
+    Il sistema mostra un errore e indica i tentativi rimasti.\newline
+    Torna al punto 2 (se tentativi $< 3$), altrimenti il sistema blocca l'accesso alla sessione.\newline
+    Fine \\ \hline
+    \end{tabularx}
+    \label{tab:uc01_v3}
+\end{table}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC02 - Imposta credenziali personali} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot 
+    \textbf{Scenario principale} & 
+    Precondizione: Login effettuato con credenziali di default (primo accesso).\newline
+    Trigger: Il sistema rileva la necessità di cambiare le credenziali.\newline
+    1. Il sistema richiede di scegliere le credenziali personali.\newline
+    2. Il configuratore inserisce il nuovo username.\newline
+    3. Il sistema verifica che lo username non coincida con la parola riservata "esci".\newline
+    4. Il configuratore inserisce la nuova password.\newline
+    5. Il configuratore inserisce la password per conferma.\newline
+    6. Il sistema verifica che le due password coincidano.\newline
+    7. Il sistema verifica che username e password non siano stringhe vuote/blank.\newline
+    8. Il sistema verifica l'unicità globale dello username (tra Configuratori e Fruitori).\newline
+    9. Il sistema aggiorna le credenziali in memoria.\newline
+    10. Il sistema salva i dati in modo persistente.\newline
+    11. Il sistema mostra la conferma e accede al menu.\newline
+    Postcondizione: Le credenziali di default sono sostituite e salvate in modo permanente.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il configuratore digita "annulla" nel campo username.\newline
+    Il sistema annulla l'operazione ed esegue il logout automatico.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: lo username inserito è "esci".\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il configuratore digita "annulla" nel campo password.\newline
+    Il sistema annulla l'operazione ed esegue il logout automatico.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: le password non coincidono.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: campi lasciati vuoti.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: username già in uso nel sistema.\newline
+    Il sistema mostra un errore, annulla l'operazione ed esegue il logout.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    10a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback in memoria, mostra un errore ed esegue il logout.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC03 - Logout} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Configuratore autenticato. \newline
+    Trigger: Selezione "Logout". \newline
+    1. Il configuratore seleziona Logout. \newline
+    2. Il sistema scarta le proposte non pubblicate della sessione corrente (stato BOZZA o VALIDA).\newline
+    3. Se erano presenti proposte non pubblicate, il sistema avvisa il configuratore.\newline
+    4. Il sistema termina la sessione corrente. \newline
+    5. Il sistema chiede se accedere con un altro account. \newline
+    6. Sì: ritorna a UC01. \newline
+    7. No: termina l'applicazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Il configuratore inserisce una risposta non valida (diversa da "s" o "n").\newline
+    Il sistema mostra un messaggio di errore testuale e ripropone la domanda. \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC04 - Visualizza campi base} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. I campi base sono stati inizializzati.\newline
+    Trigger: Il configuratore seleziona "Gestione campi base" dal menu principale.\newline
+    1. Il configuratore seleziona la voce "Gestione campi base".\newline
+    2. Il sistema mostra l'elenco dei campi base con nome e tipo, evidenziando che sono tutti obbligatori (Titolo, Numero partecipanti, ecc.).\newline
+    3. Il sistema indica che i campi base sono immutabili.\newline
+    4. Il configuratore preme INVIO per tornare al menu principale.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: Campi base non inizializzati.\newline
+    Il sistema li inizializza automaticamente al primo avvio e poi mostra l'elenco.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC05 - Aggiungi campo comune} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. \newline
+    Trigger: Il configuratore seleziona "Aggiungi campo comune" nel menu "Gestione campi comuni". \newline
+    1. Il configuratore seleziona "Aggiungi campo comune". \newline
+    2. Il sistema chiede il nome del nuovo campo. \newline
+    3. Il configuratore inserisce il nome. \newline
+    4. Il sistema chiede se il campo è obbligatorio o facoltativo. \newline
+    5. Il configuratore risponde (s/n). \newline
+    6. Il sistema verifica che il nome non coincida con un campo base o comune esistente. \newline
+    7. Il sistema aggiunge il campo comune e salva in modo persistente. \newline
+    8. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Nome vuoto. \newline
+    Il sistema mostra errore e richiede nuovamente il nome. \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: Conflitto con campo base. \newline
+    Il sistema mostra errore e non aggiunge il campo. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6b. Precondizione: Conflitto con campo comune esistente. \newline
+    Il sistema mostra errore e non aggiunge il campo. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiunge il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC06 - Rimuovi campo comune} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno un campo comune. \newline
+    Trigger: Il configuratore seleziona "Rimuovi campo comune". \newline
+    1. Il configuratore seleziona "Rimuovi campo comune". \newline
+    2. Il sistema mostra l'elenco dei campi comuni esistenti. \newline
+    3. Il configuratore inserisce il nome del campo da rimuovere. \newline
+    4. Il sistema rimuove il campo comune e salva in modo persistente. \newline
+    5. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra errore e non esegue la rimozione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema rimuove il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC07 - Modifica obbligatorietà campo comune} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno un campo comune. \newline
+    Trigger: Il configuratore seleziona "Modifica obbligatorietà campo comune". \newline
+    1. Il configuratore seleziona "Modifica obbligatorietà campo comune". \newline
+    2. Il sistema mostra l'elenco dei campi comuni con l'obbligatorietà attuale. \newline
+    3. Il configuratore inserisce il nome del campo da modificare. \newline
+    4. Il configuratore indica il nuovo valore di obbligatorietà (s/n). \newline
+    5. Il sistema aggiorna il campo e salva in modo persistente. \newline
+    6. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra errore e non applica modifiche. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiorna il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC08 - Aggiungi categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. I campi base sono inizializzati. \newline
+    Trigger: Il configuratore seleziona "Aggiungi categoria". \newline
+    1. Il configuratore seleziona "Aggiungi categoria". \newline
+    2. Il sistema chiede il nome della nuova categoria. \newline
+    3. Il configuratore inserisce il nome. \newline
+    4. Il sistema verifica che il nome non sia già in uso. \newline
+    5. Il sistema crea la categoria e salva in modo persistente. \newline
+    6. Il sistema chiede se aggiungere subito campi specifici. \newline
+    7. Sì: il caso d'uso estende UC10 (aggiunta campi specifici). \newline
+    8. No: il sistema torna al menu categorie. \newline
+    9. Il sistema mostra conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Nome vuoto. \newline
+    Errore e richiesta nuovo inserimento. \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Categoria duplicata. \newline
+    Errore e nessuna creazione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema crea la categoria in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC09 - Rimuovi categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una categoria. \newline
+    Trigger: Il configuratore seleziona "Rimuovi categoria". \newline
+    1. Il configuratore seleziona "Rimuovi categoria". \newline
+    2. Il sistema mostra l'elenco categorie. \newline
+    3. Il configuratore inserisce il nome della categoria da rimuovere. \newline
+    4. Il sistema chiede conferma esplicita prima della rimozione. \newline
+    5. Il configuratore conferma. \newline
+    6. Il sistema rimuove la categoria e tutti i suoi campi specifici. \newline
+    7. Il sistema salva i dati in modo persistente. \newline
+    8. Il sistema mostra conferma. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Categoria non trovata. \newline
+    Errore, nessuna rimozione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Annulla. \newline
+    Il configuratore non conferma; operazione interrotta. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema rimuove la categoria in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC10 - Aggiungi campo specifico a categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una categoria. \newline
+    Trigger: Il configuratore sceglie di aggiungere un campo specifico a una categoria. \newline
+    1. Il configuratore seleziona "Gestisci campi specifici" e indica la categoria. \newline
+    2. Il sistema verifica che la categoria esista. \newline
+    3. Il configuratore seleziona "Aggiungi campo specifico". \newline
+    4. Il sistema chiede il nome del nuovo campo. \newline
+    5. Il configuratore inserisce il nome. \newline
+    6. Il sistema chiede se il campo è obbligatorio o facoltativo. \newline
+    7. Il configuratore risponde (s/n). \newline
+    8. Il sistema verifica che il nome non coincida con un campo base, comune o specifico già presente. \newline
+    9. Il sistema aggiunge il campo specifico alla categoria e salva. \newline
+    10. Il sistema mostra conferma e permette inserimenti successivi (INVIO per terminare).\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: Categoria non esiste. \newline
+    Il sistema mostra un messaggio di errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Nome vuoto. \newline
+    Il sistema mostra un errore e richiede un nuovo inserimento. \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: Nome duplicato. \newline
+    Il sistema mostra un errore e non procede con l'aggiunta. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiunge il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC11 - Rimuovi campo specifico da categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste una categoria con almeno un campo specifico. \newline
+    Trigger: Il configuratore seleziona "Rimuovi campo specifico". \newline
+    1. Il configuratore seleziona la categoria. \newline
+    2. Il sistema mostra i campi specifici della categoria. \newline
+    3. Il configuratore inserisce il nome del campo da rimuovere. \newline
+    4. Il sistema rimuove il campo specifico e salva in modo persistente. \newline
+    5. Il sistema mostra conferma. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra un messaggio di errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema rimuove il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC12 - Modifica obbligatorietà campo specifico} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste una categoria con almeno un campo specifico. \newline
+    Trigger: Il configuratore seleziona "Modifica obbligatorietà campo specifico". \newline
+    1. Il configuratore seleziona la categoria. \newline
+    2. Il sistema mostra i campi specifici con obbligatorietà attuale. \newline
+    3. Il configuratore inserisce il nome del campo da modificare. \newline
+    4. Il configuratore indica il nuovo valore (s/n). \newline
+    5. Il sistema aggiorna il campo specifico e salva in modo persistente. \newline
+    6. Il sistema mostra conferma. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Campo non trovato. \newline
+    Il sistema mostra un messaggio di errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: Errore di salvataggio (I/O). \newline
+    Il sistema aggiorna il campo in memoria ma avvisa dell'errore di salvataggio fisico. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC13 - Visualizza categorie e campi} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. \newline
+    Trigger: Il configuratore seleziona "Visualizza riepilogo categorie e campi". \newline
+    1. Il configuratore seleziona "Visualizza riepilogo". \newline
+    2. Il sistema mostra i campi BASE. \newline
+    3. Il sistema mostra i campi COMUNI (con indicazione di obbligatorio/facoltativo). \newline
+    4. Per ogni categoria, il sistema mostra: nome categoria e campi specifici (con indicazione di obbligatorio/facoltativo). \newline
+    5. Il configuratore preme INVIO per tornare al menu. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: Nessun campo comune definito. \newline
+    Il sistema mostra la dicitura "(nessuno definito)". \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: Nessuna categoria definita nel sistema. \newline
+    Il sistema mostra la dicitura "(nessuna categoria definita)". \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4b. Precondizione: Una categoria non possiede campi specifici. \newline
+    Il sistema mostra la dicitura "(nessun campo specifico)" sotto il nome della categoria interessata. \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC14 - Visualizza dettaglio categoria} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una categoria. \newline
+    Trigger: Il configuratore seleziona "Visualizza dettaglio categoria". \newline
+    1. Il configuratore seleziona "Visualizza dettaglio categoria". \newline
+    2. Il sistema richiede l'inserimento del nome della categoria. \newline
+    3. Il configuratore inserisce il nome richiesto. \newline
+    4. Il sistema mostra, per la categoria selezionata, il set completo dei dati: tutti i campi BASE, i campi COMUNI e i campi SPECIFICI della categoria stessa. \newline
+    5. Il configuratore preme INVIO per terminare la visualizzazione e tornare al menu. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: La categoria inserita non è presente nell'archivio. \newline
+    Il sistema mostra un messaggio di errore e l'operazione si interrompe. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC15 - Crea proposta} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato ed esiste almeno una categoria.\newline
+    Trigger: Selezione "Nuova proposta" dal menu gestionale.\newline
+    1. Il sistema mostra l'elenco delle categorie disponibili.\newline
+    2. Il configuratore inserisce il nome della categoria desiderata.\newline
+    3. Il sistema verifica l'esistenza della categoria.\newline
+    4. Il sistema cattura lo snapshot dei campi (base, comuni e specifici) rendendoli indipendenti da future modifiche alla configurazione.\newline
+    5. Il sistema assegna un ID univoco progressivo estratto dal contatore globale.\newline
+    6. Il sistema aggiunge la proposta alla sessione corrente in stato BOZZA.\newline
+    7. <<include>> "UC16 - Compila campi proposta".\newline
+    8. Il sistema mostra il riepilogo e, se in stato VALIDA, offre la pubblicazione immediata (estende UC17).\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    1a. Precondizione: l'archivio categorie è vuoto.\newline
+    Il sistema mostra l'errore "Nessuna categoria disponibile" e impedisce la creazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: categoria non trovata in base all'input dell'utente.\newline
+    Il sistema mostra un errore e torna al menu proposte.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC16 - Compila / Modifica campi proposta} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Esiste almeno una proposta in sessione.\newline
+    Trigger: Estensione da UC15 o selezione "Continua compilazione".\newline
+    1. Il sistema presenta i campi dello snapshot uno alla volta.\newline
+    2. Per ogni campo, il sistema mostra l'etichetta [OBB/FAC], il formato richiesto e il valore attuale.\newline
+    3. Il configuratore inserisce un valore o preme INVIO per mantenere il valore attuale.\newline
+    4. Il sistema valida l'input e ricalcola automaticamente lo stato (BOZZA/VALIDA).\newline
+    5. Il sistema verifica i vincoli temporali: Termine iscrizione $>$ oggi; Data inizio $\ge$ Termine + 2gg; Data fine $\ge$ Data inizio; Formato Ora (HH:MM).\newline
+    6. Il sistema mostra il riepilogo finale e l'elenco degli errori se lo stato è BOZZA.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: formato data (gg/mm/aaaa) o ora (HH:MM) errato.\newline
+    Il sistema mostra un errore specifico e non aggiorna il valore del campo. Prosegue con il campo successivo. \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC17 - Pubblica proposta in bacheca} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato e c'è almeno una proposta VALIDA in sessione.\newline
+    Trigger: Selezione "Pubblica proposta in bacheca".\newline
+    1. Il sistema mostra l'elenco delle proposte in sessione attualmente VALIDE.\newline
+    2. Il configuratore inserisce l'ID della proposta da pubblicare.\newline
+    3. Il sistema cattura la data odierna.\newline
+    4. Il sistema ricalcola la validità della proposta in base alla data odierna.\newline
+    5. Il sistema imposta lo stato su APERTA e registra la data nello storico.\newline
+    6. Il sistema sposta la proposta dalla sessione all'Archivio globale.\newline
+    7. Il sistema salva le modifiche in modo persistente.\newline
+    8. Il sistema mostra conferma dell'operazione.\newline
+    Postcondizione: La proposta ha stato APERTA, è salvata nell'archivio ed è visibile ai fruitori.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    1a. Precondizione: nessuna proposta in sessione è in stato VALIDA.\newline
+    Il sistema mostra un errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'input non è numerico o non corrisponde a una proposta in elenco.\newline
+    Il sistema mostra un errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: la validità è scaduta a causa del cambio di data (es. superata mezzanotte).\newline
+    Il sistema nega la pubblicazione e mostra l'elenco degli errori.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback completo riportando la proposta allo stato VALIDA in sessione.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC18 - Elimina proposta dalla sessione} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Esiste almeno una proposta in sessione (stato BOZZA o VALIDA).\newline
+    Trigger: Il configuratore seleziona "Elimina proposta" nel menu proposte.\newline
+    1. Il sistema mostra l'elenco delle proposte in sessione.\newline
+    2. Il configuratore inserisce l'ID della proposta da eliminare.\newline
+    3. Il sistema chiede conferma esplicita prima dell'eliminazione.\newline
+    4. Il configuratore conferma.\newline
+    5. Il sistema rimuove definitivamente la proposta dalla sessione.\newline
+    6. Il sistema mostra conferma dell'avvenuta operazione.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'ID inserito non è valido o non corrisponde a una proposta presente in sessione.\newline
+    Il sistema mostra un messaggio di errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il configuratore annulla l'operazione (nega la conferma).\newline
+    Il sistema interrompe l'operazione senza apportare modifiche e torna al menu.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC19 - Visualizza bacheca Configuratore} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione "Visualizza bacheca".\newline
+    1. Il configuratore richiede la visualizzazione della bacheca.\newline
+    2. Il sistema recupera tutte le proposte con stato APERTA.\newline
+    3. Il sistema raggruppa dinamicamente le proposte per categoria (inclusa la voce "(categoria rimossa)" per le eventuali proposte orfane).\newline
+    4. Il sistema mostra per ogni proposta: ID, dettagli, valori dei campi e il numero di iscritti attuali rispetto al massimo consentito.\newline
+    5. Il configuratore preme INVIO per terminare.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: non ci sono proposte APERTE in archivio.\newline
+    Il sistema mostra il messaggio "(Nessuna proposta aperta in bacheca)".\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: categoria di una proposta rimossa dopo la pubblicazione.\newline
+    Il sistema visualizza la proposta sotto l'etichetta "(categoria rimossa)".\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC20 - Esecuzione transizioni automatiche di stato} \\ \hline
+    \textbf{Attore}             & Sistema \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: L'applicazione viene avviata. L'archivio contiene proposte.\newline
+    Trigger: Inizializzazione del sistema.\newline
+    1. Il sistema analizza l'archivio delle proposte.\newline
+    2. Per ogni proposta APERTA con "Termine ultimo" superato, il sistema verifica se iscritti $\ge$ minimo richiesto.\newline
+    3. Il sistema transita la proposta in stato CONFERMATA.\newline
+    4. Il sistema genera una notifica di conferma per ogni aderente iscritto.\newline
+    5. Per ogni proposta CONFERMATA con "Data conclusiva" superata, il sistema la transita in stato CONCLUSA.\newline
+    6. Il sistema salva i nuovi stati e le notifiche in modo persistente.\newline
+    7. Il sistema mostra a schermo il numero totale di transizioni effettuate.\newline
+    Postcondizione: Stati aggiornati alla data odierna e notifiche distribuite.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: la proposta APERTA è scaduta ma gli iscritti sono insufficienti (o il campo "Numero massimo" è corrotto/negativo).\newline
+    Il sistema transita la proposta in ANNULLATA e genera una notifica di annullamento per ogni aderente.\newline
+    Torna al punto 5 \\ \hline
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback ricaricando i dati precedenti dal disco per evitare la generazione di notifiche duplicate ai riavvii successivi.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC21 - Registrazione Fruitore} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: L'utente non è autenticato.\newline
+    Trigger: Selezione "Registrazione (nuovo account)" dal menu di accesso.\newline
+    1. Il sistema mostra la schermata di registrazione.\newline
+    2. Il fruitore inserisce lo username desiderato.\newline
+    3. Il fruitore inserisce la password.\newline
+    4. Il fruitore reinserisce la password per conferma.\newline
+    5. Il sistema verifica che le due password coincidano.\newline
+    6. Il sistema verifica che username e password non siano vuoti.\newline
+    7. Il sistema verifica l'unicità globale dello username.\newline
+    8. Il sistema crea il profilo Fruitore in memoria.\newline
+    9. Il sistema salva i dati in modo persistente.\newline
+    10. Il sistema autentica automaticamente il fruitore e mostra il benvenuto.\newline
+    Postcondizione: Il fruitore è registrato, autenticato e con uno spazio notifiche vuoto.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il fruitore digita "annulla" come username.\newline
+    Il sistema interrompe l'operazione e torna al menu.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: il fruitore digita "annulla" come password.\newline
+    Il sistema interrompe l'operazione e torna al menu.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: le password non coincidono.\newline
+    Il sistema mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: campi vuoti o composti da soli spazi.\newline
+    Il sistema mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: username già in uso (globale).\newline
+    Il sistema mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline 
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema rimuove il profilo dalla memoria (rollback), mostra l'errore e interrompe l'operazione.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC22 - Login Fruitore} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore possiede un account e non è autenticato.\newline
+    Trigger: Selezione "Login (account esistente)".\newline
+    1. Il sistema mostra la schermata di login.\newline
+    2. Il fruitore inserisce username e password.\newline
+    3. Il sistema verifica la corrispondenza delle credenziali.\newline
+    4. Il sistema autentica il fruitore.\newline
+    5. Il sistema conteggia le notifiche presenti nello spazio personale e mostra il benvenuto con il relativo avviso.\newline
+    Postcondizione: Il fruitore è autenticato nel sistema.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il fruitore digita "annulla" nel campo username.\newline
+    Il sistema annulla l'operazione e torna al menu.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: le credenziali sono errate (incluso inserire "annulla" come password).\newline
+    Il sistema mostra l'errore e i tentativi rimasti.\newline
+    Torna al punto 2 (se tentativi $<$ 3), altrimenti il sistema blocca l'accesso.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC23 - Visualizza Bacheca (Fruitore)} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato.\newline
+    Trigger: Selezione "Visualizza bacheca".\newline
+    1. Il fruitore richiede la visualizzazione.\newline
+    2. Il sistema recupera tutte le proposte in stato APERTA.\newline
+    3. Il sistema raggruppa le proposte per categoria.\newline
+    4. Il sistema mostra dettagli, posti occupati, scadenze e tutti i campi informativi per ogni proposta.\newline
+    5. Il sistema evidenzia con l'etichetta \textcolor{red}{[ISCRITTO]} le iniziative a cui l'utente loggato ha già aderito.\newline
+    6. Il fruitore preme INVIO per terminare la consultazione.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema.\newline
+    Fine \\ \hline  
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: nessuna proposta APERTA trovata nell'archivio.\newline
+    Il sistema comunica "(Nessuna proposta aperta in bacheca)".\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC24 - Iscrizione a proposta} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato.\newline
+    Trigger: Selezione "Aderisci a una proposta".\newline
+    1. Il fruitore avvia la procedura di iscrizione.\newline
+    2. Il sistema estrae le proposte APERTE dall'archivio.\newline
+    3. Il sistema verifica che ci sia almeno una proposta APERTA nella bacheca globale.\newline
+    4. Il sistema filtra le proposte escludendo quelle a cui l'utente è già iscritto.\newline
+    5. Il sistema verifica che la lista filtrata non sia vuota.\newline
+    6. Il fruitore inserisce l'ID della proposta scelta.\newline
+    7. Il sistema verifica che l'input sia numerico e diverso da "0".\newline
+    8. Il sistema individua la proposta e verifica che sia in stato APERTA.\newline
+    9. Il sistema verifica che la data odierna sia $\le$ al "Termine ultimo di iscrizione".\newline
+    10. Il sistema verifica che ci siano posti disponibili.\newline
+    11. Il sistema aggiunge lo username del fruitore alla lista degli aderenti.\newline
+    12. Il sistema salva i dati in modo persistente.\newline
+    13. Il sistema conferma l'avvenuta iscrizione all'utente.\newline
+    Postcondizione: L'utente è iscritto e i posti disponibili scalano.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: l'archivio globale non contiene alcuna proposta in stato APERTA.\newline
+    Il sistema lo comunica all'utente e termina l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: il fruitore è già iscritto a tutte le proposte APERTE (lista filtrata vuota).\newline
+    Il sistema lo comunica all'utente e termina l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: il fruitore digita "0" per annullare l'inserimento.\newline
+    Il sistema annulla l'operazione.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    7b. Precondizione: l'input inserito non è un numero intero.\newline
+    Il sistema mostra il messaggio "ID non valido".\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: l'ID non corrisponde a nessuna proposta o la proposta non è più APERTA.\newline
+    Il sistema mostra un messaggio di errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    9a. Precondizione: il termine di iscrizione è scaduto rispetto alla data odierna.\newline
+    Il sistema blocca l'iscrizione e mostra un messaggio di errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    10a. Precondizione: i posti sono esauriti (o il campo numero partecipanti è corrotto).\newline
+    Il sistema blocca l'iscrizione e mostra un messaggio di errore.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    12a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema annulla l'iscrizione in memoria (rollback) e mostra un messaggio di errore.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC25 - Gestione Spazio Personale (Notifiche)} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato.\newline
+    Trigger: Selezione "Spazio personale".\newline
+    1. Il fruitore accede allo spazio personale.\newline
+    2. Il sistema mostra l'elenco delle notifiche e le opzioni del menu ("c", "t", "0").\newline
+    3. Il fruitore inserisce l'opzione "c" (Cancella singola notifica).\newline
+    4. Il sistema verifica che la lista delle notifiche non sia vuota.\newline
+    5. Il sistema richiede l'inserimento dell'ID della notifica.\newline
+    6. Il fruitore inserisce l'ID.\newline
+    7. Il sistema individua e rimuove la notifica dalla memoria.\newline
+    8. Il sistema salva i dati in modo persistente.\newline
+    9. Il sistema conferma la cancellazione all'utente.\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: la lista delle notifiche dell'utente è vuota.\newline
+    Il sistema stampa "(Nessuna notifica)" ma mostra comunque il menu operativo.\newline
+    Prosegue al punto 3 \\ \hline
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: il fruitore seleziona "t" (Cancellazione totale).\newline
+    Il sistema verifica che la lista non sia vuota, chiede conferma (s/n). L'utente risponde "s". Il sistema svuota la lista in memoria.\newline
+    Salta al punto 8 \\ \hline
+    \textbf{Scenario alternativo} & 
+    3b. Precondizione: il fruitore seleziona "t", ma annulla la conferma (risponde "n").\newline
+    Il sistema annulla l'operazione.\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    3c. Precondizione: il fruitore seleziona "0. Torna al menu principale".\newline
+    Il sistema chiude lo spazio personale e torna al menu precedente.\newline
+    Fine \\ \hline
+    \textbf{Scenario alternativo} & 
+    3d. Precondizione: il fruitore inserisce un'opzione non valida (es. lettera errata).\newline
+    Il sistema mostra l'errore "Scelta non valida".\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il fruitore seleziona "c" o "t", ma la lista delle notifiche è vuota.\newline
+    Il sistema mostra l'errore "Nessuna notifica da cancellare".\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: l'ID inserito non è numerico o non corrisponde ad alcuna notifica in memoria.\newline
+    Il sistema mostra un errore.\newline
+    Torna al punto 2 \\ \hline
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema ripristina in memoria la lista originale intatta (rollback) e mostra un errore.\newline
+    Torna al punto 2 \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC26 - Visualizza Archivio Proposte} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+    \hline
+    \endlastfoot
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione "Visualizza archivio proposte".\newline
+    1. Il configuratore avvia la richiesta di visualizzazione.\newline
+    2. Il sistema recupera l'intero archivio (escludendo gli stati interni BOZZA e VALIDA).\newline
+    3. Il sistema raggruppa dinamicamente le proposte in base allo stato (APERTA, CONFERMATA, ANNULLATA, CONCLUSA, RITIRATA).\newline
+    4. Il sistema mostra i dettagli anagrafici, i posti occupati, la lista degli aderenti e lo storico completo dei passaggi di stato per ogni proposta.\newline
+    5. Il configuratore preme INVIO per terminare.\newline
+    Postcondizione: Nessuna modifica allo stato del sistema.\newline
+    Fine \\ \hline 
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'archivio è vuoto.\newline
+    Il sistema segnala "(Nessuna proposta nell'archivio)" e termina l'operazione.\newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC27 - Ritira proposta in archivio} \\ \hline
+    \textbf{Attore}             & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. L'archivio contiene almeno una proposta in stato APERTA o CONFERMATA.\newline
+    Trigger: Selezione dell'opzione "Ritira proposta".\newline
+    1. Il sistema mostra le proposte in stato APERTA o CONFERMATA presenti nell'archivio.\newline
+    2. Il configuratore inserisce l'ID della proposta da ritirare.\newline
+    3. Il sistema estrae la proposta e verifica che il suo stato attuale consenta il ritiro.\newline
+    4. Il sistema verifica che la data odierna sia strettamente precedente alla "Data inizio" dell'evento.\newline
+    5. Il sistema transita lo stato della proposta in RITIRATA e registra il passaggio nello storico.\newline
+    6. Il sistema invia automaticamente una notifica di ritiro nello spazio personale di tutti i fruitori iscritti (aderenti).\newline
+    7. Il sistema salva le modifiche in modo persistente.\newline
+    8. Il sistema mostra la conferma dell'operazione. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'ID inserito non corrisponde ad alcuna proposta o la proposta non è nell'archivio.\newline
+    Il sistema mostra un messaggio di errore e interrompe l'operazione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: la proposta si trova in uno stato diverso da APERTA o CONFERMATA (es. già CONCLUSA o ANNULLATA).\newline
+    Il sistema mostra l'errore "Il ritiro è consentito solo per proposte APERTE o CONFERMATE" e interrompe l'operazione. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: la "Data inizio" dell'evento è già trascorsa o corrisponde alla data odierna (oggi $\ge$ Data inizio).\newline
+    Il sistema blocca il ritiro indicando che l'evento è imminente o passato. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback ricaricando i dati precedenti dal disco per ripristinare sia lo stato della proposta che le notifiche, poi mostra un errore. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome}               & \textbf{UC28 - Disdici iscrizione a proposta} \\ \hline
+    \textbf{Attore}             & Fruitore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il fruitore è autenticato e risulta iscritto ad almeno una proposta.\newline
+    Trigger: Selezione dell'opzione per disdire un'iscrizione.\newline
+    1. Il sistema mostra l'elenco delle proposte APERTE a cui l'utente è iscritto.\newline
+    2. Il fruitore inserisce l'ID della proposta da cui desidera disiscriversi.\newline
+    3. Il sistema verifica che la proposta sia in stato APERTA.\newline
+    4. Il sistema verifica che la data odierna sia minore o uguale al "Termine ultimo di iscrizione".\newline
+    5. Il sistema rimuove lo username del fruitore dalla lista degli aderenti della proposta.\newline
+    6. Il sistema salva le modifiche in modo persistente.\newline
+    7. Il sistema mostra la conferma dell'avvenuta disdetta. \newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'ID non è valido oppure il fruitore non risulta iscritto alla proposta indicata.\newline
+    Il sistema mostra un errore. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: la proposta ha cambiato stato (non è più APERTA).\newline
+    Il sistema mostra un errore indicando l'impossibilità di operare. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    4a. Precondizione: il "Termine ultimo di iscrizione" è scaduto rispetto alla data odierna.\newline
+    Il sistema blocca la disdetta informando che il termine è oltrepassato. \newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: Errore di salvataggio (I/O).\newline
+    Il sistema esegue un rollback reinserendo il fruitore tra gli aderenti in memoria e mostra un messaggio di errore. \newline
+    Fine \\ \hline
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome} & \textbf{UC29 – Importa singolo file batch} \\ \hline
+    \textbf{Attore} & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato. Il file batch esiste nel filesystem ed è leggibile.\newline
+    Trigger: Selezione dell'opzione "Importa da file batch" $\rightarrow$ "Importa singolo file".\newline
+    1. Il sistema mostra la descrizione del formato batch supportato (CAMPO\_COMUNE, CATEGORIA, PROPOSTA).\newline
+    2. Il configuratore inserisce il percorso del file (assoluto o relativo alla working directory).\newline
+    3. Il sistema legge tutte le righe del file.\newline
+    4. Il sistema scorre le righe, ignorando quelle vuote e quelle che iniziano con \#.\newline
+    5. Per ogni riga significativa, il sistema identifica il comando (primo token prima di |).\newline
+    6. Per ogni riga CAMPO\_COMUNE: il sistema crea il campo comune con nome e obbligatorietà indicati e salva su disco.\newline
+    7. Per ogni riga CATEGORIA: il sistema crea la categoria; se la riga contiene token CAMPO\_SPECIFICO, aggiunge i campi specifici inline prima del salvataggio, poi salva su disco.\newline
+    8. Per ogni riga PROPOSTA: il sistema costruisce lo snapshot dei campi (BASE $\rightarrow$ COMUNI $\rightarrow$ SPECIFICI della categoria), assegna i valori indicati con il formato campo = valore, valida la proposta con le stesse regole della modalità interattiva e, se valida, la pubblica direttamente in bacheca salvando su disco.\newline
+    9. Al termine, il sistema raccoglie il resoconto in un \textit{BatchRisultato} (numero righe elaborate, successi, warning, errori).\newline
+    10. Il sistema mostra il resoconto completo all'utente.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: il percorso è vuoto o l'utente digita "annulla".\newline
+    Il sistema annulla l'operazione senza modifiche.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: il file non esiste o non è accessibile (IOException).\newline
+    Il sistema mostra un messaggio di errore con indicazione del percorso e interrompe l'operazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: il comando della riga non è riconosciuto.\newline
+    Il sistema registra un warning con numero di riga e prosegue con la riga successiva.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6a. Precondizione: il campo comune ha nome vuoto, oppure esiste già un campo con lo stesso nome.\newline
+    Il sistema registra un warning e salta la riga.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    6b. Precondizione: errore di salvataggio (I/O) dopo l'aggiunta in memoria.\newline
+    Il sistema esegue il rollback in memoria, registra un errore e prosegue.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7a. Precondizione: la categoria esiste già.\newline
+    Il sistema registra un warning e salta la riga.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7b. Precondizione: un campo specifico inline non è valido.\newline
+    Il sistema registra un warning per quel campo specifico e lo salta; la categoria viene creata senza di esso.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    7c. Precondizione: errore di salvataggio (I/O) della categoria.\newline
+    Il sistema esegue il rollback in memoria, registra un errore e prosegue.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8a. Precondizione: la categoria indicata nella riga PROPOSTA non esiste.\newline
+    Il sistema registra un errore e salta la riga.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8b. Precondizione: token campo = valore non validi o campo non esistente.\newline
+    Il sistema registra un warning per ogni token non riconosciuto e prosegue con i restanti campi.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8c. Precondizione: la proposta risulta non valida dopo la validazione.\newline
+    Il sistema registra un errore con i problemi rilevati. La proposta non viene pubblicata.\newline
+    Fine (riga) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    8d. Precondizione: errore di salvataggio (I/O) della proposta pubblicata.\newline
+    Il sistema esegue il rollback in memoria, registra un errore e prosegue.\newline
+    Fine (riga) \\ \hline
+\end{tabularx}
+
+\renewcommand{\arraystretch}{1.4} 
+
+\begin{tabularx}{\textwidth}{|l|X|}
+    \hline
+    \textbf{Nome} & \textbf{UC30 – Importa più file batch in sequenza} \\ \hline
+    \textbf{Attore} & Configuratore \\ \hline
+    \endfirsthead 
+
+    \hline
+    \multicolumn{2}{|l|}{\textit{Continua dalla pagina precedente...}} \\ \hline
+    \endhead 
+
+    \hline
+    \multicolumn{2}{|r|}{\textit{Continua nella pagina successiva...}} \\ \hline
+    \endfoot 
+
+    \hline
+    \endlastfoot
+
+    \textbf{Scenario principale} & 
+    Precondizione: Il configuratore è autenticato.\newline
+    Trigger: Selezione dell'opzione "Importa da file batch" $\rightarrow$ "Importa più file in sequenza".\newline
+    1. Il sistema chiede di inserire i percorsi dei file batch uno alla volta.\newline
+    2. Il configuratore inserisce i percorsi (uno per invio).\newline
+    3. Il configuratore preme INVIO con il campo vuoto per confermare la lista.\newline
+    4. Il sistema mostra il numero di file selezionati e avvia l'elaborazione sequenziale.\newline
+    5. Per ciascun file della lista, il sistema esegue l'elaborazione descritta in UC29 (passi 3–9).\newline
+    6. I risultati parziali di ogni file vengono aggregati in un unico \textit{BatchRisultato} complessivo tramite il metodo \textit{aggiungi(parziale)}.\newline
+    7. Al termine di tutti i file, il sistema mostra il resoconto aggregato con il numero totale di righe elaborate, successi, warning ed errori, e l'elenco dei file processati.\newline
+    Fine \\ \hline
+    
+    \textbf{Scenario alternativo} & 
+    2a. Precondizione: l'utente digita "annulla" invece di un percorso.\newline
+    Il sistema annulla l'intera operazione senza apportare modifiche.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    3a. Precondizione: l'utente preme INVIO senza aver inserito alcun percorso.\newline
+    Il sistema mostra un errore "Nessun file specificato" e interrompe l'operazione.\newline
+    Fine \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5a. Precondizione: uno dei file indicati non esiste o non è leggibile (IOException).\newline
+    Il sistema registra un errore nel resoconto aggregato (indicando il file) e continua con il file successivo nella lista.\newline
+    Fine (file) \\ \hline
+
+    \textbf{Scenario alternativo} & 
+    5b. Precondizione: errori su singole righe di un file (comandi errati, duplicati, validazione fallita).\newline
+    Si applicano le stesse alternative di UC29 (5a–8d) con i relativi rollback per riga. L'elaborazione prosegue per le righe e i file successivi.\newline
+    Fine \\ \hline
+\end{tabularx}
+\clearpage
+\section{Casi d'uso grafici}
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+    \centering
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso finale 1.png} 
+    }
+    \label{fig:usecase_vfinal1}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso finale 2.png} 
+    }
+    \label{fig:usecase_vfinal2}
+\end{figure}
+
+\begin{figure}[htbp]
+    \centering
+    \makebox[\textwidth][c]{
+        \includegraphics[width=1.3\textwidth]{immagini/casi uso finale 3.png} 
+    }
+    \label{fig:usecase_vfinal3}
+\end{figure}
+\clearpage
+\section{Diagramma delle classi}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=\textwidth]{immagini/uml finale model.png}
+    \label{fig:diagramma_classi_vfinal_model}
+\end{figure}
+
+\begin{figure}[p]
+    \centering
+    \includegraphics[width=0.9\textwidth]{immagini/uml finale view controller persistence.png}
+    \label{fig:diagramma_classi_vfinal_view_controller_persistence}
+\end{figure}
+\clearpage
+\section{Manuale di installazione e uso}
+
+\end{document}
