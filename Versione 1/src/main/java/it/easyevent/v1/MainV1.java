@@ -7,7 +7,7 @@ import it.easyevent.v1.view.ConfiguratoreView;
 import java.io.IOException;
 
 /**
- * Punto di ingresso principale dell'applicazione EasyEvent – Versione 1.
+ *   Punto di ingresso principale dell'applicazione EasyEvent – Versione 1.
  *
  * Avvia il back-end per i configuratori. Carica i dati persistenti (se
  * presenti) e lancia la view testuale.
