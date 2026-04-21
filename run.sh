@@ -6,7 +6,7 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SRC_DIR="$SCRIPT_DIR/src/main/java"
+SRC_DIR="$SCRIPT_DIR/src"
 OUT_DIR="$SCRIPT_DIR/out"
 DATA_DIR="$SCRIPT_DIR/data"
 
@@ -17,7 +17,7 @@ mkdir -p "$DATA_DIR"
 mkdir -p "$SCRIPT_DIR/batch_examples"
 
 echo "[1/3] Ricerca sorgenti Java..."
-find "$SRC_DIR" -name "*.java" > "$SCRIPT_DIR/sources.txt"
+find "$SRC_DIR" -name "*.java" > sources.txt
 COUNT=$(wc -l < "$SCRIPT_DIR/sources.txt")
 echo "      Trovati $COUNT file .java"
 
@@ -28,4 +28,4 @@ echo "      Compilazione completata."
 echo "[3/3] Avvio applicazione..."
 echo ""
 cd "$SCRIPT_DIR"
-java -ea -cp "$OUT_DIR" it.easyevent.v5.MainV5
+java -ea -cp "$OUT_DIR" easyevent.MainV5

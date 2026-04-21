@@ -2,6 +2,7 @@
   "prossimoIdProposta": 1,
   "prossimoIdNotifica": 1,
   "configuratori": [
+    {"username": "prins", "password": "prins123", "primoAccesso": false}
   ],
   "fruitori": [
   ],

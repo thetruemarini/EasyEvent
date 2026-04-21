@@ -5,7 +5,7 @@ REM Windows  |  Richiede: JDK 17+ nel PATH
 REM ================================================
 chcp 65001 > nul
 
-set SRC_DIR=src\main\java
+set SRC_DIR=src
 set OUT_DIR=out
 
 echo === EasyEvent V5 - Build e Run ===
@@ -28,5 +28,5 @@ echo Compilazione completata.
 
 echo [3/3] Avvio applicazione...
 echo.
-java -ea -cp "%OUT_DIR%" it.easyevent.v5.MainV5
+java -ea -cp "%OUT_DIR%" easyevent.MainV5
 pause
