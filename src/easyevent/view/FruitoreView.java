@@ -3,12 +3,14 @@ package easyevent.view;
 import easyevent.controller.FruitoreController;
 import easyevent.model.Notifica;
 import easyevent.model.Proposta;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
 /**
- * Interfaccia testuale (CLI) per il fruitore - Versione 5.
- * Identica alla V4; la V5 non aggiunge funzionalita' lato fruitore.
+ * Interfaccia testuale (CLI) per il fruitore - Versione 5. Identica alla V4; la
+ * V5 non aggiunge funzionalita' lato fruitore.
  *
  * Invariante di classe: controller != null, scanner != null
  */
@@ -337,6 +339,48 @@ public class FruitoreView {
         premInvio();
     }
 
+    private String costruisciTestoNotifica(Notifica n) {
+        String titolo = n.getTitoloProposta().isBlank()
+                ? "(senza titolo)"
+                : n.getTitoloProposta();
+        int id = n.getIdProposta();
+
+        return switch (n.getTipo()) {
+
+            case PROPOSTA_CONFERMATA -> {
+                StringBuilder sb = new StringBuilder();
+                sb.append("La proposta \"").append(titolo)
+                        .append("\" (ID ").append(id).append(") è stata CONFERMATA!");
+                sb.append(" L'evento si terrà:");
+                if (!n.getDataEvento().isBlank()) {
+                    sb.append("  Data: ").append(n.getDataEvento());
+                }
+                if (!n.getOraEvento().isBlank()) {
+                    sb.append("  Ora: ").append(n.getOraEvento());
+                }
+                if (!n.getLuogoEvento().isBlank()) {
+                    sb.append("  Luogo: ").append(n.getLuogoEvento());
+                }
+                if (!n.getQuotaIndividuale().isBlank()) {
+                    sb.append("  Quota: ").append(n.getQuotaIndividuale());
+                }
+                yield sb.toString();
+            }
+
+            case PROPOSTA_ANNULLATA ->
+                "La proposta \"" + titolo + "\" (ID " + id + ") è stata ANNULLATA: "
+                + "il numero minimo di iscritti non è stato raggiunto.";
+
+            case PROPOSTA_RITIRATA -> {
+                String base = "La proposta \"" + titolo + "\" (ID " + id
+                        + ") è stata RITIRATA dal configuratore.";
+                yield n.getDataEvento().isBlank()
+                ? base
+                : base + " L'evento era previsto per il " + n.getDataEvento() + ".";
+            }
+        };
+    }
+
     // ================================================================
     // SPAZIO PERSONALE (notifiche)
     // ================================================================
@@ -353,7 +397,11 @@ public class FruitoreView {
             } else {
                 System.out.println("\n  Notifiche (" + notifiche.size() + "):");
                 notifiche.forEach(n
-                        -> System.out.println("\n  [ID " + n.getId() + "]  " + n));
+                        -> // la View costruisce il testo; Notifica porta solo i dati
+                        System.out.println("\n  [ID " + n.getId() + "]  ["
+                                + n.getDataCreazione().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                + "]  " + costruisciTestoNotifica(n))
+                );
             }
 
             System.out.println("\n  c. Cancella una  t. Cancella tutte  0. Torna");
@@ -382,8 +430,8 @@ public class FruitoreView {
             int id = Integer.parseInt(scanner.nextLine().trim());
             String err = controller.cancellaNotifica(id);
             if (err.isEmpty()) {
-                System.out.println("  Notifica [ID " + id + "] cancellata."); 
-            }else {
+                System.out.println("  Notifica [ID " + id + "] cancellata.");
+            } else {
                 stampaErrore(err);
             }
         } catch (NumberFormatException e) {
@@ -403,8 +451,8 @@ public class FruitoreView {
         }
         String err = controller.cancellaAllNotifiche();
         if (err.isEmpty()) {
-            System.out.println("  Tutte le notifiche cancellate."); 
-        }else {
+            System.out.println("  Tutte le notifiche cancellate.");
+        } else {
             stampaErrore(err);
         }
     }

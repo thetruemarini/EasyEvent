@@ -8,6 +8,7 @@ import easyevent.model.Fruitore;
 import easyevent.model.Notifica;
 import easyevent.model.Proposta;
 import easyevent.model.StatoProposta;
+import easyevent.model.TipoNotifica;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
@@ -15,10 +16,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
- * Gestore della persistenza su file JSON (Versione 5).
- * Identico alla V4 nel formato; piena compatibilità con file V4/V3/V2/V1.
- * La V5 non introduce nuovi campi nel file di persistenza.
+ * Gestore della persistenza su file JSON (Versione 5). Identico alla V4 nel
+ * formato; piena compatibilità con file V4/V3/V2/V1. La V5 non introduce nuovi
+ * campi nel file di persistenza.
  *
  * Invariante: dataFilePath != null && !dataFilePath.isBlank()
  */
@@ -208,11 +210,18 @@ public class PersistenceManager {
         List<Notifica> notifiche = f.getNotifiche();
         for (int i = 0; i < notifiche.size(); i++) {
             Notifica n = notifiche.get(i);
-            sb.append(indent).append("    {");
-            sb.append("\"id\": ").append(n.getId()).append(", ");
-            sb.append("\"testo\": ").append(jsonStr(n.getTesto())).append(", ");
-            sb.append("\"dataCreazione\": ").append(jsonStr(n.getDataCreazione().format(Notifica.DATE_FORMAT)));
-            sb.append("}");
+            sb.append(indent).append("    {\n");
+            sb.append(indent).append("      \"id\": ").append(n.getId()).append(",\n");
+            sb.append(indent).append("      \"tipo\": ").append(jsonStr(n.getTipo().name())).append(",\n");
+            sb.append(indent).append("      \"idProposta\": ").append(n.getIdProposta()).append(",\n");
+            sb.append(indent).append("      \"titoloProposta\": ").append(jsonStr(n.getTitoloProposta())).append(",\n");
+            sb.append(indent).append("      \"dataEvento\": ").append(jsonStr(n.getDataEvento())).append(",\n");
+            sb.append(indent).append("      \"oraEvento\": ").append(jsonStr(n.getOraEvento())).append(",\n");
+            sb.append(indent).append("      \"luogoEvento\": ").append(jsonStr(n.getLuogoEvento())).append(",\n");
+            sb.append(indent).append("      \"quotaIndividuale\": ").append(jsonStr(n.getQuotaIndividuale())).append(",\n");
+            sb.append(indent).append("      \"dataCreazione\": ")
+                    .append(jsonStr(n.getDataCreazione().format(Notifica.DATE_FORMAT))).append("\n");
+            sb.append(indent).append("    }");
             if (i < notifiche.size() - 1) {
                 sb.append(",");
             }
@@ -333,16 +342,40 @@ public class PersistenceManager {
         if (section == null || section.isBlank()) {
             return result;
         }
+
         for (String obj : splitJsonObjects(section)) {
             int id = extractIntValue(obj, "id");
-            String testo = extractStringValue(obj, "testo");
-            String dataStr = extractStringValue(obj, "dataCreazione");
-            if (id < 0 || testo == null || dataStr == null) {
+            String tipoStr = extractStringValue(obj, "tipo");
+            int idProposta = extractIntValue(obj, "idProposta");
+            String titoloProposta = extractStringValue(obj, "titoloProposta");
+            String dataEvento = extractStringValue(obj, "dataEvento");
+            String oraEvento = extractStringValue(obj, "oraEvento");
+            String luogoEvento = extractStringValue(obj, "luogoEvento");
+            String quotaIndividuale = extractStringValue(obj, "quotaIndividuale");
+            String dataCreazStr = extractStringValue(obj, "dataCreazione");
+
+            if (id < 0 || tipoStr == null || dataCreazStr == null) {
                 continue;
             }
+
             try {
-                result.add(new Notifica(id, testo, LocalDate.parse(dataStr.trim(), Notifica.DATE_FORMAT)));
+                TipoNotifica tipo = TipoNotifica.valueOf(tipoStr);
+                LocalDate dataCreazione = LocalDate.parse(
+                        dataCreazStr.trim(), Notifica.DATE_FORMAT);
+
+                result.add(new Notifica(
+                        id,
+                        tipo,
+                        idProposta,
+                        titoloProposta != null ? titoloProposta : "",
+                        dataEvento != null ? dataEvento : "",
+                        oraEvento != null ? oraEvento : "",
+                        luogoEvento != null ? luogoEvento : "",
+                        quotaIndividuale != null ? quotaIndividuale : "",
+                        dataCreazione
+                ));
             } catch (Exception ignored) {
+                // notifica malformata: saltata
             }
         }
         return result;

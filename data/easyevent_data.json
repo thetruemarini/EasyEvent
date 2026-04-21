@@ -1,10 +1,27 @@
 {
-  "prossimoIdProposta": 1,
-  "prossimoIdNotifica": 1,
+  "prossimoIdProposta": 2,
+  "prossimoIdNotifica": 4,
   "configuratori": [
     {"username": "prins", "password": "prins123", "primoAccesso": false}
   ],
   "fruitori": [
+    {
+      "username": "mario",
+      "password": "mario123",
+      "notifiche": [
+        {
+          "id": 3,
+          "tipo": "PROPOSTA_RITIRATA",
+          "idProposta": 1,
+          "titoloProposta": "Calcio",
+          "dataEvento": "30/04/2026",
+          "oraEvento": "15:00",
+          "luogoEvento": "Brescia",
+          "quotaIndividuale": "10",
+          "dataCreazione": "21/04/2026"
+        }
+      ]
+    }
   ],
   "campiBase": [
     {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
@@ -19,7 +36,39 @@
   "campiComuni": [
   ],
   "categorie": [
+    {
+      "nome": "Sport",
+      "campiSpecifici": [
+      ]
+    },
+    {
+      "nome": "Cultura",
+      "campiSpecifici": [
+      ]
+    }
   ],
   "archivio": [
+    {
+      "id": 1,
+      "nomeCategoria": "Sport",
+      "usernameCreatore": "prins",
+      "stato": "RITIRATA",
+      "dataPubblicazione": "21/04/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "21/04/2026"},
+        {"stato": "RITIRATA", "data": "21/04/2026"}
+      ],
+      "aderenti": ["mario"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Calcio"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "10"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "25/04/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Brescia"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "30/04/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "15:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "10"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "30/04/2026"}
+      ]
+    }
   ]
 }

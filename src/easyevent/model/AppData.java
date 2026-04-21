@@ -5,19 +5,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 /**
  * Contenitore centrale dello stato dell'applicazione (Versione 5).
  *
- * Identico alla V4; la V5 non aggiunge nuovi stati o strutture dati.
- * Le nuove funzionalità batch operano sulle stesse strutture dati di V4.
+ * Identico alla V4; la V5 non aggiunge nuovi stati o strutture dati. Le nuove
+ * funzionalità batch operano sulle stesse strutture dati di V4.
  *
  * Pattern Singleton.
  *
- * Invariante di classe:
- *   - tutti i campi != null
- *   - prossimoIdProposta >= 1, prossimoIdNotifica >= 1
- *   - username globalmente univoci
- *   - archivio: nessuna proposta con stato BOZZA o VALIDA
+ * Invariante di classe: - tutti i campi != null - prossimoIdProposta >= 1,
+ * prossimoIdNotifica >= 1 - username globalmente univoci - archivio: nessuna
+ * proposta con stato BOZZA o VALIDA
  */
 public class AppData {
 
@@ -339,14 +338,12 @@ public class AppData {
                 if (termine != null && oggi.isAfter(termine)) {
                     int numMax = p.getNumeroMaxPartecipanti();
                     int numAd = p.getAderenti().size();
-                    String titolo = p.getValore("Titolo");
                     if (numMax >= 0 && numAd >= numMax) {
                         p.transitaStato(StatoProposta.CONFERMATA, oggi);
-                        notificaAderenti(p, costruisciNotificaConferma(p), oggi);
+                        notificaAderenti(p, TipoNotifica.PROPOSTA_CONFERMATA, oggi);
                     } else {
                         p.transitaStato(StatoProposta.ANNULLATA, oggi);
-                        notificaAderenti(p, "La proposta \"" + titolo + "\" (ID " + p.getId()
-                                + ") e' stata ANNULLATA: il numero minimo di iscritti non e' stato raggiunto.", oggi);
+                        notificaAderenti(p, TipoNotifica.PROPOSTA_ANNULLATA, oggi);
                     }
                     modificate++;
                 }
@@ -372,47 +369,29 @@ public class AppData {
             throw new IllegalArgumentException("La proposta non puo' essere null.");
         }
         proposta.transitaStato(StatoProposta.RITIRATA, oggi);
-        String titolo = proposta.getValore("Titolo");
-        String data = proposta.getValore(Proposta.CAMPO_DATA);
-        String testo = "La proposta \"" + titolo + "\" (ID " + proposta.getId()
-                + ") e' stata RITIRATA dal configuratore."
-                + (data.isBlank() ? "" : " L'evento era previsto per il " + data + ".");
-        notificaAderenti(proposta, testo, oggi);
+        notificaAderenti(proposta, TipoNotifica.PROPOSTA_RITIRATA, oggi);
         assert proposta.getStato() == StatoProposta.RITIRATA : "Postcondizione violata: stato non RITIRATA dopo ritirareProposta";
     }
 
     // ================================================================
     // HELPERS PRIVATI
     // ================================================================
-    private String costruisciNotificaConferma(Proposta p) {
-        String titolo = p.getValore("Titolo");
-        String data = p.getValore(Proposta.CAMPO_DATA);
-        String ora = p.getValore("Ora");
-        String luogo = p.getValore("Luogo");
-        String quota = p.getValore("Quota individuale");
-        StringBuilder sb = new StringBuilder();
-        sb.append("La proposta \"").append(titolo).append("\" (ID ").append(p.getId())
-                .append(") e' stata CONFERMATA! L'evento si terra':");
-        if (!data.isBlank()) {
-            sb.append("  Data: ").append(data);
-        }
-        if (!ora.isBlank()) {
-            sb.append("  Ora: ").append(ora);
-        }
-        if (!luogo.isBlank()) {
-            sb.append("  Luogo: ").append(luogo);
-        }
-        if (!quota.isBlank()) {
-            sb.append("  Quota individuale: ").append(quota);
-        }
-        return sb.toString();
-    }
-
-    private void notificaAderenti(Proposta p, String testo, LocalDate oggi) {
+    private void notificaAderenti(Proposta p, TipoNotifica tipo, LocalDate oggi) {
         for (String usernameF : p.getAderenti()) {
             Fruitore f = getFruitore(usernameF);
             if (f != null) {
-                f.aggiungiNotifica(new Notifica(getNuovoIdNotifica(), testo, oggi));
+                Notifica n = new Notifica(
+                getNuovoIdNotifica(),
+                tipo,                                   // COSA è successo
+                p.getId(),                              // dati grezzi
+                p.getValore("Titolo"),
+                p.getValore(Proposta.CAMPO_DATA),
+                p.getValore("Ora"),
+                p.getValore("Luogo"),
+                p.getValore("Quota individuale"),
+                oggi
+                );
+                f.aggiungiNotifica(n);
             }
         }
     }
