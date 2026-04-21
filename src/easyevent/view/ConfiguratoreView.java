@@ -13,15 +13,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
+
 /**
  * Interfaccia testuale (CLI) per il configuratore - Versione 5.
  *
- * Novita' rispetto alla V4:
- *   - " Importa da file batch":
- *       consente al configuratore di importare categorie, campi e proposte
- *       da uno o piu' file di testo con sintassi batch, invece di inserirli
- *       manualmente riga per riga.
- *     La modalita' interattiva resta invariata.
+ * Novita' rispetto alla V4: - " Importa da file batch": consente al
+ * configuratore di importare categorie, campi e proposte da uno o piu' file di
+ * testo con sintassi batch, invece di inserirli manualmente riga per riga. La
+ * modalita' interattiva resta invariata.
  *
  * Invariante di classe: controller != null, scanner != null
  */
@@ -456,7 +455,7 @@ public class ConfiguratoreView {
             System.out.println("  (nessun campo base definito)");
         } else {
             for (int i = 0; i < cb.size(); i++) {
-                System.out.printf("  %d. %s%n", i + 1, cb.get(i));
+                System.out.printf("  %d. %s%n", i + 1, formattaCampoPerMenu(cb.get(i)));
             }
         }
         System.out.println("\n  I campi base sono fissati al primo avvio e non modificabili.");
@@ -474,7 +473,7 @@ public class ConfiguratoreView {
                 System.out.println("  (nessun campo comune)");
             } else {
                 for (int i = 0; i < cc.size(); i++) {
-                    System.out.printf("  %d. %s%n", i + 1, cc.get(i));
+                    System.out.printf("  %d. %s%n", i + 1, formattaCampoPerMenu(cc.get(i)));
                 }
             }
             System.out.println("\n  a. Aggiungi  r. Rimuovi  m. Modifica obbligatorieta'  0. Torna");
@@ -634,7 +633,7 @@ public class ConfiguratoreView {
                 System.out.println("  (nessuno)");
             } else {
                 for (int i = 0; i < cat.getCampiSpecifici().size(); i++) {
-                    System.out.printf("  %d. %s%n", i + 1, cat.getCampiSpecifici().get(i));
+                    System.out.printf("  %d. %s%n", i + 1, formattaCampoPerMenu(cat.getCampiSpecifici().get(i)));
                 }
             }
             System.out.println("\n  a. Aggiungi  r. Rimuovi  m. Modifica obbligatorieta'  0. Torna");
@@ -1017,5 +1016,20 @@ public class ConfiguratoreView {
         System.out.println("  Sistema di gestione iniziative ricreative");
         System.out.println("  Ingegneria del Software  -  A.A. 2025-2026");
         System.out.println(SEP);
+    }
+
+    // Metodo helper privato.
+    // Costruisce la stringa leggibile per l'utente usando i getter di Campo.
+    private String formattaCampoPerMenu(Campo c) {
+        String tipoLabel = switch (c.getTipo()) {
+            case BASE ->
+                "BASE";
+            case COMUNE ->
+                "COMUNE";
+            case SPECIFICO ->
+                "SPECIFICO";
+        };
+        String obbLabel = c.isObbligatorio() ? "obbligatorio" : "facoltativo";
+        return "[" + tipoLabel + "] " + c.getNome() + " (" + obbLabel + ")";
     }
 }

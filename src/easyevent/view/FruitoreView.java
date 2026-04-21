@@ -397,8 +397,7 @@ public class FruitoreView {
             } else {
                 System.out.println("\n  Notifiche (" + notifiche.size() + "):");
                 notifiche.forEach(n
-                        -> // la View costruisce il testo; Notifica porta solo i dati
-                        System.out.println("\n  [ID " + n.getId() + "]  ["
+                        -> System.out.println("\n  [ID " + n.getId() + "]  ["
                                 + n.getDataCreazione().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
                                 + "]  " + costruisciTestoNotifica(n))
                 );

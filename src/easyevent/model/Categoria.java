@@ -3,13 +3,13 @@ package easyevent.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
 /**
  * Rappresenta una categoria di iniziative.
  *
- * Invariante di classe:
- * - nome != null && !nome.isBlank()
- * - campiSpecifici != null
- * - nessun campo in campiSpecifici ha lo stesso nome di un altro (case-insensitive)
+ * Invariante di classe: - nome != null && !nome.isBlank() - campiSpecifici !=
+ * null - nessun campo in campiSpecifici ha lo stesso nome di un altro
+ * (case-insensitive)
  */
 public class Categoria {
 
@@ -91,9 +91,11 @@ public class Categoria {
         return distinti == campiSpecifici.size();
     }
 
+    // solo per debug
     @Override
     public String toString() {
-        return "Categoria: " + nome + " (" + campiSpecifici.size() + " campi specifici)";
+        return "Categoria{nome='" + nome
+                + "', campiSpecifici=" + campiSpecifici.size() + "}";
     }
 
     @Override

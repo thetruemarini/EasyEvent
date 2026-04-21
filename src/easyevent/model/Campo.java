@@ -1,10 +1,9 @@
 package easyevent.model;
+
 /**
  * Rappresenta un campo generico che descrive un'iniziativa.
  *
- * Invariante di classe:
- * - nome != null && !nome.isBlank()
- * - tipo != null
+ * Invariante di classe: - nome != null && !nome.isBlank() - tipo != null
  */
 public class Campo {
 
@@ -52,9 +51,10 @@ public class Campo {
         return nome != null && !nome.isBlank() && tipo != null;
     }
 
+    // solo per debug e log  
     @Override
     public String toString() {
-        return String.format("[%s] %s (%s)", tipo, nome, obbligatorio ? "obbligatorio" : "facoltativo");
+        return "Campo{tipo=" + tipo + ", nome='" + nome + "', obbligatorio=" + obbligatorio + "}";
     }
 
     @Override

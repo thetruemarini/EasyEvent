@@ -8,20 +8,19 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Rappresenta una proposta di iniziativa (Versione 5).
  *
- * Ciclo di vita (invariato da V4):
- *   BOZZA -> VALIDA -> APERTA (pubblicazione interattiva o batch)
- *   APERTA -> CONFERMATA / ANNULLATA (automatico, alla scadenza)
- *   CONFERMATA -> CONCLUSA (automatico, dopo dataConclusiva)
- *   APERTA / CONFERMATA -> RITIRATA (configuratore, V4)
+ * Ciclo di vita (invariato da V4): BOZZA -> VALIDA -> APERTA (pubblicazione
+ * interattiva o batch) APERTA -> CONFERMATA / ANNULLATA (automatico, alla
+ * scadenza) CONFERMATA -> CONCLUSA (automatico, dopo dataConclusiva) APERTA /
+ * CONFERMATA -> RITIRATA (configuratore, V4)
  *
- * Invariante di classe:
- *   - id >= 0
- *   - nomeCategoria, usernameCreatore != null e non blank
- *   - campiSnapshot, valori, stato, aderenti, storicoStati != null
- *   - dataPubblicazione != null <-> stato in {APERTA, CONFERMATA, ANNULLATA, CONCLUSA, RITIRATA}
+ * Invariante di classe: - id >= 0 - nomeCategoria, usernameCreatore != null e
+ * non blank - campiSnapshot, valori, stato, aderenti, storicoStati != null -
+ * dataPubblicazione != null <-> stato in {APERTA, CONFERMATA, ANNULLATA,
+ * CONCLUSA, RITIRATA}
  */
 public class Proposta {
 
@@ -519,10 +518,11 @@ public class Proposta {
         }
     }
 
+    // solo per debug
     @Override
     public String toString() {
-        String titolo = getValore("Titolo");
-        String display = titolo.isBlank() ? "(senza titolo)" : titolo;
-        return String.format("[ID %d] cat:%s \"%s\" (%s)", id, nomeCategoria, display, stato);
+        return "Proposta{id=" + id
+                + ", categoria='" + nomeCategoria + "'"
+                + ", stato=" + stato + "}";
     }
 }
