@@ -1,5 +1,8 @@
 package easyevent.model;
 
+import easyevent.model.exception.IscrizioneException;
+import easyevent.model.exception.ModificaNonConsentitaException;
+import easyevent.model.exception.RitiroNonConsensitoException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -157,12 +160,18 @@ public class Proposta {
     // ================================================================
     public void setValore(String nomeCampo, String valore) {
         if (!campiSnapshot.containsKey(nomeCampo)) {
-            throw new IllegalArgumentException("Campo non presente nella proposta: '" + nomeCampo + "'");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.CAMPO_NON_PRESENTE,
+                    nomeCampo
+            );
         }
         if (stato == StatoProposta.APERTA || stato == StatoProposta.CONFERMATA
                 || stato == StatoProposta.ANNULLATA || stato == StatoProposta.CONCLUSA
                 || stato == StatoProposta.RITIRATA) {
-            throw new IllegalStateException("Non e' possibile modificare una proposta gia' pubblicata.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.PROPOSTA_GIA_PUBBLICATA,
+                    stato.name()
+            );
         }
         valori.put(nomeCampo, (valore == null) ? "" : valore.trim());
     }
@@ -342,60 +351,67 @@ public class Proposta {
     // ================================================================
     // GESTIONE ADERENTI
     // ================================================================
-    public String aggiungiAderente(String usernameF, LocalDate oggi) {
+    public void aggiungiAderente(String usernameF, LocalDate oggi) {
         if (usernameF == null || usernameF.isBlank()) {
-            return "Username non valido.";
+            throw new IllegalArgumentException("usernameF non può essere null o vuoto");
         }
         if (stato != StatoProposta.APERTA) {
-            return "La proposta non e' in stato APERTA.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.PROPOSTA_NON_APERTA);
         }
         if (!isIscrizioneAperta(oggi)) {
-            return "Il termine ultimo di iscrizione e' scaduto.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.ISCRIZIONI_CHIUSE);
         }
         if (isAderito(usernameF)) {
-            return "Sei gia' iscritto a questa proposta.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.GIA_ISCRITTO);
         }
         int numMax = getNumeroMaxPartecipanti();
         if (numMax < 0) {
-            return "Numero di partecipanti non valido.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.NUM_PARTECIPANTI_NON_VALIDO);
         }
         if (aderenti.size() >= numMax) {
-            return "La proposta ha raggiunto il numero massimo di partecipanti.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.POSTI_ESAURITI);
         }
         aderenti.add(usernameF);
         assert repOk() : "Invariante violato dopo aggiungiAderente";
-        return "";
     }
 
-    public String rimuoviAderente(String usernameF, LocalDate oggi) {
+    public void rimuoviAderente(String usernameF, LocalDate oggi) {
         if (stato != StatoProposta.APERTA) {
-            return "Non e' possibile disdire un'iscrizione a una proposta non aperta.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.PROPOSTA_NON_APERTA);
         }
         if (!isIscrizioneAperta(oggi)) {
-            return "Il termine ultimo di iscrizione e' scaduto.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.ISCRIZIONI_CHIUSE);
         }
         if (!isAderito(usernameF)) {
-            return "Non risulti iscritto a questa proposta.";
+            throw new IscrizioneException(IscrizioneException.TipoErrore.NON_ISCRITTO);
         }
         aderenti.removeIf(u -> u.equalsIgnoreCase(usernameF));
-        return "";
+        assert repOk() : "Invariante violato dopo rimuoviAderente";
     }
 
     // ================================================================
     // HELPER V4: ritiro proposta
     // ================================================================
-    public String verificaRitiroConsentito(LocalDate oggi) {
+    public void verificaRitiroConsentito(LocalDate oggi) {
         if (stato != StatoProposta.APERTA && stato != StatoProposta.CONFERMATA) {
-            return "Il ritiro e' consentito solo per proposte APERTE o CONFERMATE (stato: " + stato + ").";
+            throw new RitiroNonConsensitoException(
+                    RitiroNonConsensitoException.TipoErrore.STATO_NON_RITIRABILE,
+                    stato.name()
+            );
         }
         LocalDate dataInizio = parseDateSafe(getValore(CAMPO_DATA));
         if (dataInizio == null) {
-            return "Il campo '" + CAMPO_DATA + "' non e' valorizzato o ha formato non valido.";
+            throw new RitiroNonConsensitoException(
+                    RitiroNonConsensitoException.TipoErrore.DATA_EVENTO_NON_VALORIZZATA,
+                    null
+            );
         }
         if (!oggi.isBefore(dataInizio)) {
-            return "Non e' piu' possibile ritirare la proposta: la data dell'evento e' gia' oggi o passata.";
+            throw new RitiroNonConsensitoException(
+                    RitiroNonConsensitoException.TipoErrore.DATA_EVENTO_PASSATA,
+                    null
+            );
         }
-        return "";
     }
 
     // ================================================================

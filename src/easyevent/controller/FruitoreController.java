@@ -4,20 +4,20 @@ import easyevent.model.AppData;
 import easyevent.model.Fruitore;
 import easyevent.model.Notifica;
 import easyevent.model.Proposta;
+import easyevent.model.exception.ElementoNonTrovatoException;
 import easyevent.persistence.PersistenceManager;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 /**
- * Controller per tutte le operazioni del fruitore (Versione 5).
- * Identico alla V4; la V5 non aggiunge funzionalità lato fruitore.
+ * Controller per tutte le operazioni del fruitore (Versione 5). Identico alla
+ * V4; la V5 non aggiunge funzionalità lato fruitore.
  *
- * Invariante di classe:
- *   - appData != null
- *   - persistenceManager != null
- *   - fruitoreCorrente puo' essere null
+ * Invariante di classe: - appData != null - persistenceManager != null -
+ * fruitoreCorrente puo' essere null
  */
 public class FruitoreController {
 
@@ -49,27 +49,21 @@ public class FruitoreController {
         return false;
     }
 
-    public String registra(String username, String password) {
+    public void registra(String username, String password) {
         if (username == null || username.isBlank()) {
-            return "Lo username non puo' essere vuoto.";
+            throw new IllegalArgumentException("Lo username non può essere vuoto.");
         }
         if (password == null || password.isBlank()) {
-            return "La password non puo' essere vuota.";
+            throw new IllegalArgumentException("La password non può essere vuota.");
         }
-        if (appData.esisteUsernameGlobale(username)) {
-            return "Username gia' in uso: " + username + ". Scegliere uno username diverso.";
-        }
+        Fruitore f = new Fruitore(username.trim(), password);
+        appData.aggiungiFruitore(f);
         try {
-            Fruitore f = new Fruitore(username.trim(), password);
-            appData.aggiungiFruitore(f);
             salva();
             fruitoreCorrente = f;
-            return "";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
         } catch (IOException e) {
-            appData.rimuoviFruitore(username.trim());
-            return "Errore nel salvataggio; la registrazione non e' stata completata: " + e.getMessage();
+            appData.rimuoviFruitore(username.trim()); // rollback
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
@@ -106,49 +100,47 @@ public class FruitoreController {
         return appData.getBacheca().stream().filter(p -> p.getId() == id).findFirst().orElse(null);
     }
 
-    public String aderisci(int idProposta) {
+    public void aderisci(int idProposta) {
         if (!isLoggato()) {
-            return "Nessun fruitore loggato.";
+            throw new IllegalStateException("Nessun fruitore loggato.");
         }
         Proposta p = getPropostaAperta(idProposta);
         if (p == null) {
-            return "Proposta non trovata o non piu' aperta (ID: " + idProposta + ").";
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.PROPOSTA,
+                    String.valueOf(idProposta)
+            );
         }
         String username = fruitoreCorrente.getUsername();
         LocalDate oggi = LocalDate.now();
-        String err = p.aggiungiAderente(username, oggi);
-        if (!err.isEmpty()) {
-            return err;
-        }
+        p.aggiungiAderente(username, oggi);
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            p.rimuoviAderente(username, oggi);
-            return "Errore nel salvataggio; l'iscrizione non e' stata registrata: " + e.getMessage();
+            p.rimuoviAderente(username, oggi); // rollback
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String disdiciIscrizione(int idProposta) {
+    public void disdiciIscrizione(int idProposta) {
         if (!isLoggato()) {
-            return "Nessun fruitore loggato.";
+            throw new IllegalStateException("Nessun fruitore loggato.");
         }
         Proposta p = getPropostaAperta(idProposta);
         if (p == null) {
-            return "Proposta non trovata o non piu' aperta (ID: " + idProposta + ").";
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.PROPOSTA,
+                    String.valueOf(idProposta)
+            );
         }
         String username = fruitoreCorrente.getUsername();
         LocalDate oggi = LocalDate.now();
-        String err = p.rimuoviAderente(username, oggi);
-        if (!err.isEmpty()) {
-            return err;
-        }
+        p.rimuoviAderente(username, oggi);
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            p.aggiungiAderente(username, oggi);
-            return "Errore nel salvataggio; la disdetta non e' stata registrata: " + e.getMessage();
+            p.aggiungiAderente(username, oggi); // rollback
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 

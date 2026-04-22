@@ -1,5 +1,5 @@
 {
-  "prossimoIdProposta": 2,
+  "prossimoIdProposta": 3,
   "prossimoIdNotifica": 4,
   "configuratori": [
     {"username": "prins", "password": "prins123", "primoAccesso": false}
@@ -34,7 +34,8 @@
     {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
   ],
   "campiComuni": [
-    {"nome": "Note", "obbligatorio": false, "tipo": "COMUNE"}
+    {"nome": "Note", "obbligatorio": false, "tipo": "COMUNE"},
+    {"nome": "Durata", "obbligatorio": true, "tipo": "COMUNE"}
   ],
   "categorie": [
     {
@@ -71,6 +72,29 @@
         {"nome": "Ora", "obbligatorio": true, "valore": "15:00"},
         {"nome": "Quota individuale", "obbligatorio": true, "valore": "10"},
         {"nome": "Data conclusiva", "obbligatorio": true, "valore": "30/04/2026"}
+      ]
+    },
+    {
+      "id": 2,
+      "nomeCategoria": "Cultura",
+      "usernameCreatore": "prins",
+      "stato": "APERTA",
+      "dataPubblicazione": "22/04/2026",
+      "storicoStati": [
+        {"stato": "APERTA", "data": "22/04/2026"}
+      ],
+      "aderenti": ["mario"],
+      "campi": [
+        {"nome": "Titolo", "obbligatorio": true, "valore": "Lettura"},
+        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "2"},
+        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/04/2026"},
+        {"nome": "Luogo", "obbligatorio": true, "valore": "Biblioteca"},
+        {"nome": "Data inizio", "obbligatorio": true, "valore": "05/05/2026"},
+        {"nome": "Ora", "obbligatorio": true, "valore": "15:00"},
+        {"nome": "Quota individuale", "obbligatorio": true, "valore": "0"},
+        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "05/05/2026"},
+        {"nome": "Note", "obbligatorio": false, "valore": ""},
+        {"nome": "Durata", "obbligatorio": true, "valore": "3 ore"}
       ]
     }
   ]

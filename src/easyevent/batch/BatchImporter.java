@@ -5,6 +5,8 @@ import easyevent.model.Campo;
 import easyevent.model.Categoria;
 import easyevent.model.Proposta;
 import easyevent.model.StatoProposta;
+import easyevent.model.exception.ElementoGiaEsistenteException;
+import easyevent.model.exception.ModificaNonConsentitaException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -14,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 /**
  * Motore di importazione batch per EasyEvent – Versione 5.
  *
@@ -22,18 +25,15 @@ import java.util.List;
  *
  * Formato supportato (separatore: " | "):
  *
- *   # Commento
- *   CAMPO_COMUNE | <nome> | <obbligatorio: si/no>
- *   CATEGORIA    | <nome> [| CAMPO_SPECIFICO | <nome> | <si/no>]*
- *   PROPOSTA     | <categoria> | <campo> = <valore> [| <campo> = <valore>]*
+ * # Commento CAMPO_COMUNE | <nome> | <obbligatorio: si/no>
+ * CATEGORIA | <nome> [| CAMPO_SPECIFICO | <nome> | <si/no>]* PROPOSTA |
+ * <categoria> | <campo> = <valore> [| <campo> = <valore>]*
  *
  * Ogni riga viene elaborata indipendentemente: un errore su una riga non
  * interrompe l'elaborazione delle righe successive.
  *
- * Invariante di classe:
- *   - appData != null
- *   - usernameCreatore != null && !usernameCreatore.isBlank()
- *   - salvaCallback != null
+ * Invariante di classe: - appData != null - usernameCreatore != null &&
+ * !usernameCreatore.isBlank() - salvaCallback != null
  */
 public class BatchImporter {
 
@@ -223,9 +223,7 @@ public class BatchImporter {
      *
      * Formato: CAMPO_COMUNE | <nome> | <si/no>
      *
-     * Precondizioni: 
-     * - token[0] == "CAMPO_COMUNE" 
-     * - token.length >= 3
+     * Precondizioni: - token[0] == "CAMPO_COMUNE" - token.length >= 3
      *
      * @param token array di token estratti dalla riga
      * @param numeroRiga numero di riga nel file (per i messaggi)
@@ -269,10 +267,23 @@ public class BatchImporter {
             risultato.aggiungiSuccesso(
                     "Campo comune aggiunto: '" + nomeCampo
                     + "' [" + (obbligatorio ? "obbligatorio" : "facoltativo") + "]");
+        } catch (ElementoGiaEsistenteException e) {
+            String tipoConflitto = switch (e.getTipoElemento()) {
+                case CAMPO_BASE ->
+                    "campo BASE";
+                case CAMPO_COMUNE ->
+                    "campo COMUNE";
+                default ->
+                    "campo";
+            };
+            risultato.aggiungiWarning(numeroRiga,
+                    "Esiste già un " + tipoConflitto
+                    + " con nome '" + e.getNomeElemento() + "'. Riga saltata.");
         } catch (IllegalArgumentException e) {
+            // Cattura errori di programmazione (nome null/vuoto, tipo errato)
+            // che restano come IllegalArgumentException nel Model.
             risultato.aggiungiErrore(numeroRiga, "Errore creazione campo comune: " + e.getMessage());
         } catch (IOException e) {
-            // Rollback in memoria: rimuove il campo appena aggiunto
             appData.rimuoviCampoComune(nomeCampo);
             risultato.aggiungiErrore(numeroRiga,
                     "Campo aggiunto in memoria ma errore nel salvataggio (rollback eseguito): "
@@ -287,7 +298,8 @@ public class BatchImporter {
      * Elabora una riga CATEGORIA (con eventuali campi specifici inline).
      *
      * Formato: CATEGORIA | <nome>
-     * CATEGORIA | <nome> | CAMPO_SPECIFICO | <nome_campo> | <si/no> [| CAMPO_SPECIFICO | ...]
+     * CATEGORIA | <nome> | CAMPO_SPECIFICO | <nome_campo> | <si/no> [|
+     * CAMPO_SPECIFICO | ...]
      *
      * I campi specifici vengono aggiunti solo se la categoria è nuova. Se la
      * categoria già esiste, i campi specifici sono ignorati (con warning).
@@ -376,6 +388,10 @@ public class BatchImporter {
                 categoria.aggiungiCampoSpecifico(
                         new Campo(nomeCS, ob, Campo.TipoCampo.SPECIFICO));
                 campiAggiuntiOk.add(nomeCS);
+            } catch (ElementoGiaEsistenteException e) {
+                risultato.aggiungiWarning(numeroRiga,
+                        "Campo specifico '" + e.getNomeElemento()
+                        + "' già presente nella categoria. Ignorato.");
             } catch (IllegalArgumentException e) {
                 risultato.aggiungiWarning(numeroRiga,
                         "Campo specifico '" + nomeCS + "' non aggiunto: " + e.getMessage());
@@ -391,11 +407,14 @@ public class BatchImporter {
                     : "campi specifici: " + String.join(", ", campiAggiuntiOk);
             risultato.aggiungiSuccesso(
                     "Categoria aggiunta: '" + nomeCategoria + "' — " + dettaglio);
+        } catch (ElementoGiaEsistenteException e) {
+            risultato.aggiungiWarning(numeroRiga,
+                    "Categoria '" + e.getNomeElemento()
+                    + "' già presente. Riga saltata.");
         } catch (IllegalArgumentException e) {
             risultato.aggiungiErrore(numeroRiga,
                     "Errore creazione categoria: " + e.getMessage());
         } catch (IOException e) {
-            // Rollback: rimuove la categoria appena aggiunta
             appData.rimuoviCategoria(nomeCategoria);
             risultato.aggiungiErrore(numeroRiga,
                     "Categoria aggiunta in memoria ma errore nel salvataggio (rollback eseguito): "
@@ -409,7 +428,8 @@ public class BatchImporter {
     /**
      * Elabora una riga PROPOSTA.
      *
-     * Formato: PROPOSTA | <categoria> | <campo1> = <valore1> | <campo2> = <valore2> | ...
+     * Formato: PROPOSTA | <categoria> | <campo1> = <valore1> | <campo2> =
+     * <valore2> | ...
      *
      * La proposta è validata con le stesse regole della modalità interattiva.
      * Se valida, viene pubblicata direttamente in bacheca (persistita). Se non
@@ -487,9 +507,17 @@ public class BatchImporter {
 
             try {
                 proposta.setValore(nomeCampo, valore);
-            } catch (IllegalArgumentException | IllegalStateException e) {
+            } catch (ModificaNonConsentitaException e) {
+                String motivazione = switch (e.getTipoModifica()) {
+                    case CAMPO_NON_PRESENTE ->
+                        "il campo '" + e.getDettaglio() + "' non esiste nella proposta";
+                    case PROPOSTA_GIA_PUBBLICATA ->
+                        "la proposta è già pubblicata (stato: " + e.getDettaglio() + ")";
+                    case CAMPO_BASE_IMMUTABILE ->
+                        "il campo '" + e.getDettaglio() + "' è immutabile";
+                };
                 risultato.aggiungiWarning(numeroRiga,
-                        "Impossibile impostare '" + nomeCampo + "': " + e.getMessage());
+                        "Impossibile impostare '" + nomeCampo + "': " + motivazione + ".");
             }
         }
 

@@ -6,6 +6,10 @@ import easyevent.model.Campo;
 import easyevent.model.Categoria;
 import easyevent.model.Proposta;
 import easyevent.model.StatoProposta;
+import easyevent.model.exception.ElementoGiaEsistenteException;
+import easyevent.model.exception.ElementoNonTrovatoException;
+import easyevent.model.exception.ModificaNonConsentitaException;
+import easyevent.model.exception.RitiroNonConsensitoException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -132,9 +136,16 @@ public class ConfiguratoreView {
             stampaErrore("Le password non coincidono.");
             return false;
         }
-        String err = controller.impostaCredenzialiPersonali(nu, np);
-        if (!err.isEmpty()) {
-            stampaErrore(err);
+        try {
+            controller.impostaCredenzialiPersonali(nu, np);
+        } catch (ElementoGiaEsistenteException e) {
+            stampaErrore(messaggioElementoGiaEsistente(e));
+            return false;
+        } catch (IllegalStateException | IllegalArgumentException e) {
+            stampaErrore(e.getMessage());
+            return false;
+        } catch (RuntimeException e) {
+            stampaErrore("Errore di sistema: " + e.getMessage());
             return false;
         }
         System.out.println("\n  Credenziali impostate correttamente.");
@@ -398,9 +409,18 @@ public class ConfiguratoreView {
         System.out.println(SEP);
         LocalDate oggi = LocalDate.now();
         List<Proposta> ritirabili = controller.getArchivio().stream()
-                .filter(p -> (p.getStato() == StatoProposta.APERTA
-                || p.getStato() == StatoProposta.CONFERMATA)
-                && p.verificaRitiroConsentito(oggi).isEmpty())
+                .filter(p -> {
+                    if (p.getStato() != StatoProposta.APERTA
+                            && p.getStato() != StatoProposta.CONFERMATA) {
+                        return false;
+                    }
+                    try {
+                        p.verificaRitiroConsentito(oggi);
+                        return true;
+                    } catch (RitiroNonConsensitoException e) {
+                        return false;
+                    }
+                })
                 .collect(Collectors.toList());
         if (ritirabili.isEmpty()) {
             System.out.println("\n  Nessuna proposta ritirabile al momento.");
@@ -436,11 +456,16 @@ public class ConfiguratoreView {
             System.out.println("  Annullato.");
             return;
         }
-        String err = controller.ritirareProposta(id);
-        if (err.isEmpty()) {
-            System.out.println("\n  Proposta [ID " + id + "] ritirata. Tutti gli iscritti sono stati notificati.");
-        } else {
-            stampaErrore(err);
+        try {
+            controller.ritirareProposta(id);
+            System.out.println("\n  Proposta [ID " + id + "] ritirata. "
+                    + "Tutti gli iscritti sono stati notificati.");
+        } catch (RitiroNonConsensitoException ex) {
+            stampaErrore(messaggioRitiroNonConsentito(ex));
+        } catch (ElementoNonTrovatoException ex) {
+            stampaErrore(messaggioElementoNonTrovato(ex));
+        } catch (RuntimeException ex) {
+            stampaErrore("Errore: " + ex.getMessage());
         }
         premInvio();
     }
@@ -482,34 +507,46 @@ public class ConfiguratoreView {
                 case "a" -> {
                     System.out.print("  Nome: ");
                     String n = scanner.nextLine().trim();
-                    String e = controller.aggiungiCampoComune(n, chiediObbligatorio());
-                    if (e.isEmpty()) {
+                    try {
+                        controller.aggiungiCampoComune(n, chiediObbligatorio());
                         System.out.println("  Campo '" + n + "' aggiunto.");
-                    } else {
-                        stampaErrore(e);
-
+                    } catch (ElementoGiaEsistenteException ex) {
+                        stampaErrore(messaggioElementoGiaEsistente(ex));
+                    } catch (RuntimeException ex) {
+                        stampaErrore("Errore: " + ex.getMessage());
                     }
                 }
                 case "r" -> {
                     System.out.print("  Nome: ");
                     String n = scanner.nextLine().trim();
-                    String e = controller.rimuoviCampoComune(n);
-                    if (e.isEmpty()) {
+                    try {
+                        controller.rimuoviCampoComune(n);
                         System.out.println("  Campo rimosso.");
-                    } else {
-                        stampaErrore(e);
-
+                    } catch (ElementoNonTrovatoException ex) {
+                        stampaErrore(messaggioElementoNonTrovato(ex));
+                    } catch (IllegalStateException ex) {
+                        String msg = ex.getMessage();
+                        if (msg != null && msg.startsWith("campoInSessione:")) {
+                            String nomeCampo = msg.substring("campoInSessione:".length());
+                            stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
+                                    + "che contengono il campo '" + nomeCampo + "'.");
+                        } else {
+                            stampaErrore("Operazione non consentita: " + msg);
+                        }
+                    } catch (RuntimeException ex) {
+                        stampaErrore("Errore: " + ex.getMessage());
                     }
                 }
                 case "m" -> {
                     System.out.print("  Nome: ");
                     String n = scanner.nextLine().trim();
-                    String e = controller.modificaObbligatorietaCampoComune(n, chiediObbligatorio());
-                    if (e.isEmpty()) {
+                    try {
+                        controller.modificaObbligatorietaCampoComune(n, chiediObbligatorio());
                         System.out.println("  Aggiornato.");
-                    } else {
-                        stampaErrore(e);
-
+                    } catch (ElementoNonTrovatoException ex) {
+                        stampaErrore(messaggioElementoNonTrovato(ex));
+                    } catch (RuntimeException ex) {
+                        stampaErrore("Errore: " + ex.getMessage());
                     }
                 }
                 case "0" -> {
@@ -562,15 +599,17 @@ public class ConfiguratoreView {
             stampaErrore("Nome vuoto.");
             return;
         }
-        String err = controller.aggiungiCategoria(nome);
-        if (err.isEmpty()) {
+        try {
+            controller.aggiungiCategoria(nome);
             System.out.println("  Categoria '" + nome + "' aggiunta.");
             System.out.print("  Aggiungere subito campi specifici? (s/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 aggiungiCampiSpecificiInterattivo(nome);
             }
-        } else {
-            stampaErrore(err);
+        } catch (ElementoGiaEsistenteException ex) {
+            stampaErrore(messaggioElementoGiaEsistente(ex));
+        } catch (RuntimeException ex) {
+            stampaErrore("Errore: " + ex.getMessage());
         }
     }
 
@@ -582,11 +621,15 @@ public class ConfiguratoreView {
                 stampaErrore("Nome vuoto.");
                 continue;
             }
-            String err = controller.aggiungiCampoSpecifico(nomeCategoria, nome, chiediObbligatorio());
-            if (err.isEmpty()) {
+            try {
+                controller.aggiungiCampoSpecifico(nomeCategoria, nome, chiediObbligatorio());
                 System.out.println("  Campo '" + nome + "' aggiunto.");
-            } else {
-                stampaErrore(err);
+            } catch (ElementoGiaEsistenteException ex) {
+                stampaErrore(messaggioElementoGiaEsistente(ex));
+            } catch (ElementoNonTrovatoException ex) {
+                stampaErrore(messaggioElementoNonTrovato(ex));
+            } catch (RuntimeException ex) {
+                stampaErrore("Errore: " + ex.getMessage());
             }
             System.out.print("  Aggiungere un altro? (s/n): ");
             if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
@@ -607,11 +650,22 @@ public class ConfiguratoreView {
             System.out.println("  Annullato.");
             return;
         }
-        String err = controller.rimuoviCategoria(nome);
-        if (err.isEmpty()) {
+        try {
+            controller.rimuoviCategoria(nome);
             System.out.println("  Categoria '" + nome + "' rimossa.");
-        } else {
-            stampaErrore(err);
+        } catch (ElementoNonTrovatoException ex) {
+            stampaErrore(messaggioElementoNonTrovato(ex));
+        } catch (IllegalStateException ex) {
+            String msg = ex.getMessage();
+            if (msg != null && msg.startsWith("categoriaInSessione:")) {
+                String nomeC = msg.substring("categoriaInSessione:".length());
+                stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
+                        + "per la categoria '" + nomeC + "'.");
+            } else {
+                stampaErrore("Operazione non consentita: " + msg);
+            }
+        } catch (RuntimeException ex) {
+            stampaErrore("Errore: " + ex.getMessage());
         }
     }
 
@@ -646,34 +700,39 @@ public class ConfiguratoreView {
                         stampaErrore("Nome vuoto.");
                         break;
                     }
-                    String e = controller.aggiungiCampoSpecifico(nomeCategoria, n, chiediObbligatorio());
-                    if (e.isEmpty()) {
+                    try {
+                        controller.aggiungiCampoSpecifico(nomeCategoria, n, chiediObbligatorio());
                         System.out.println("  Campo aggiunto.");
-                    } else {
-                        stampaErrore(e);
-
+                    } catch (ElementoGiaEsistenteException ex) {
+                        stampaErrore(messaggioElementoGiaEsistente(ex));
+                    } catch (ElementoNonTrovatoException ex) {
+                        stampaErrore(messaggioElementoNonTrovato(ex));
+                    } catch (RuntimeException ex) {
+                        stampaErrore("Errore: " + ex.getMessage());
                     }
                 }
                 case "r" -> {
                     System.out.print("  Nome: ");
                     String n = scanner.nextLine().trim();
-                    String e = controller.rimuoviCampoSpecifico(nomeCategoria, n);
-                    if (e.isEmpty()) {
+                    try {
+                        controller.rimuoviCampoSpecifico(nomeCategoria, n);
                         System.out.println("  Campo rimosso.");
-                    } else {
-                        stampaErrore(e);
-
+                    } catch (ElementoNonTrovatoException ex) {
+                        stampaErrore(messaggioElementoNonTrovato(ex));
+                    } catch (RuntimeException ex) {
+                        stampaErrore("Errore: " + ex.getMessage());
                     }
                 }
                 case "m" -> {
                     System.out.print("  Nome: ");
                     String n = scanner.nextLine().trim();
-                    String e = controller.modificaObbligatorietaCampoSpecifico(nomeCategoria, n, chiediObbligatorio());
-                    if (e.isEmpty()) {
+                    try {
+                        controller.modificaObbligatorietaCampoSpecifico(nomeCategoria, n, chiediObbligatorio());
                         System.out.println("  Aggiornato.");
-                    } else {
-                        stampaErrore(e);
-
+                    } catch (ElementoNonTrovatoException ex) {
+                        stampaErrore(messaggioElementoNonTrovato(ex));
+                    } catch (RuntimeException ex) {
+                        stampaErrore("Errore: " + ex.getMessage());
                     }
                 }
                 case "0" -> {
@@ -826,10 +885,12 @@ public class ConfiguratoreView {
             System.out.print(": ");
             String input = scanner.nextLine().trim();
             if (!input.isEmpty()) {
-                String err = controller.setValoreCampo(p, nome, input);
-                if (!err.isEmpty()) {
-                    stampaErrore(err);
-
+                try {
+                    controller.setValoreCampo(p, nome, input);
+                } catch (ModificaNonConsentitaException ex) {
+                    stampaErrore("Modifica non consentita per il campo '" + ex.getDettaglio() + "'.");
+                } catch (RuntimeException ex) {
+                    stampaErrore("Errore: " + ex.getMessage());
                 }
             }
         }
@@ -855,11 +916,16 @@ public class ConfiguratoreView {
         if (p.getStato() == StatoProposta.VALIDA) {
             System.out.print("\n  Proposta VALIDA. Pubblicarla ora? (s/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
-                String err = controller.pubblicaProposta(p);
-                if (err.isEmpty()) {
-                    System.out.println("  Proposta [ID " + p.getId() + "] pubblicata.");
-                } else {
-                    stampaErrore(err);
+                try {
+                    List<String> erroriValidazione = controller.pubblicaProposta(p);
+                    if (erroriValidazione.isEmpty()) {
+                        System.out.println("  Proposta [ID " + p.getId() + "] pubblicata.");
+                    } else {
+                        System.out.println("\n  Proposta non valida. Problemi:");
+                        erroriValidazione.forEach(e -> System.out.println("    * " + e));
+                    }
+                } catch (RuntimeException ex) {
+                    stampaErrore("Errore: " + ex.getMessage());
                 }
             } else {
                 System.out.println("  Conservata in sessione.");
@@ -885,11 +951,16 @@ public class ConfiguratoreView {
                 stampaErrore("ID non trovato.");
                 return;
             }
-            String err = controller.pubblicaProposta(p);
-            if (err.isEmpty()) {
-                System.out.println("  Proposta [ID " + id + "] pubblicata.");
-            } else {
-                stampaErrore(err);
+            try {
+                List<String> erroriValidazione = controller.pubblicaProposta(p);
+                if (erroriValidazione.isEmpty()) {
+                    System.out.println("  Proposta [ID " + p.getId() + "] pubblicata.");
+                } else {
+                    System.out.println("\n  Proposta non valida. Problemi:");
+                    erroriValidazione.forEach(e -> System.out.println("    * " + e));
+                }
+            } catch (RuntimeException ex) {
+                stampaErrore("Errore: " + ex.getMessage());
             }
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido.");
@@ -1018,8 +1089,51 @@ public class ConfiguratoreView {
         System.out.println(SEP);
     }
 
-    // Metodo helper privato.
-    // Costruisce la stringa leggibile per l'utente usando i getter di Campo.
+    // ================================================================
+    // METODI HELPER — costruiscono testo italiano da eccezioni strutturate
+    // ================================================================
+    private String messaggioElementoGiaEsistente(ElementoGiaEsistenteException e) {
+        return switch (e.getTipoElemento()) {
+            case CAMPO_BASE ->
+                "Esiste già un campo BASE con nome '" + e.getNomeElemento() + "'.";
+            case CAMPO_COMUNE ->
+                "Esiste già un campo COMUNE con nome '" + e.getNomeElemento() + "'.";
+            case CAMPO_SPECIFICO ->
+                "Esiste già un campo SPECIFICO con nome '" + e.getNomeElemento() + "'.";
+            case CATEGORIA ->
+                "Esiste già una categoria con nome '" + e.getNomeElemento() + "'.";
+            case USERNAME ->
+                "Username già in uso: '" + e.getNomeElemento() + "'.";
+        };
+    }
+
+    private String messaggioElementoNonTrovato(ElementoNonTrovatoException e) {
+        return switch (e.getTipoElemento()) {
+            case CAMPO_COMUNE ->
+                "Nessun campo comune trovato con nome '" + e.getNomeElemento() + "'.";
+            case CAMPO_SPECIFICO ->
+                "Nessun campo specifico trovato con nome '" + e.getNomeElemento() + "'.";
+            case CATEGORIA ->
+                "Nessuna categoria trovata con nome '" + e.getNomeElemento() + "'.";
+            case PROPOSTA ->
+                "Nessuna proposta trovata con ID " + e.getNomeElemento() + ".";
+        };
+    }
+
+    private String messaggioRitiroNonConsentito(RitiroNonConsensitoException e) {
+        return switch (e.getTipoErrore()) {
+            case STATO_NON_RITIRABILE ->
+                "Il ritiro è consentito solo per proposte APERTE o CONFERMATE. "
+                + "Stato attuale: " + e.getStatoAttuale() + ".";
+            case DATA_EVENTO_PASSATA ->
+                "Non è più possibile ritirare la proposta: "
+                + "la data dell'evento è già oggi o passata.";
+            case DATA_EVENTO_NON_VALORIZZATA ->
+                "Impossibile verificare il ritiro: "
+                + "il campo 'Data inizio' non è valorizzato o ha formato non valido.";
+        };
+    }
+
     private String formattaCampoPerMenu(Campo c) {
         String tipoLabel = switch (c.getTipo()) {
             case BASE ->

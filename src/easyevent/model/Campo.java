@@ -1,5 +1,7 @@
 package easyevent.model;
 
+import easyevent.model.exception.ModificaNonConsentitaException;
+
 /**
  * Rappresenta un campo generico che descrive un'iniziativa.
  *
@@ -42,7 +44,10 @@ public class Campo {
 
     public void setObbligatorio(boolean obbligatorio) {
         if (this.tipo == TipoCampo.BASE) {
-            throw new UnsupportedOperationException("I campi BASE sono immutabili.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.CAMPO_BASE_IMMUTABILE,
+                    this.nome
+            );
         }
         this.obbligatorio = obbligatorio;
     }

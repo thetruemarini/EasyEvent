@@ -1,5 +1,6 @@
 package easyevent.model;
 
+import easyevent.model.exception.ElementoGiaEsistenteException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -77,7 +78,10 @@ public class AppData {
             throw new IllegalArgumentException("Configuratore non puo' essere null.");
         }
         if (esisteUsernameGlobale(conf.getUsername())) {
-            throw new IllegalArgumentException("Username gia' in uso: " + conf.getUsername());
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.USERNAME,
+                    conf.getUsername()
+            );
         }
         configuratori.add(conf);
         assert repOk() : "Invariante violato dopo aggiungiConfiguratore";
@@ -104,7 +108,10 @@ public class AppData {
             throw new IllegalArgumentException("Fruitore non puo' essere null.");
         }
         if (esisteUsernameGlobale(fruitore.getUsername())) {
-            throw new IllegalArgumentException("Username gia' in uso: " + fruitore.getUsername());
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.USERNAME,
+                    fruitore.getUsername()
+            );
         }
         fruitori.add(fruitore);
         assert repOk() : "Invariante violato dopo aggiungiFruitore";
@@ -186,10 +193,16 @@ public class AppData {
             throw new IllegalArgumentException("Il campo deve essere di tipo COMUNE.");
         }
         if (esisteCampoBase(campo.getNome())) {
-            throw new IllegalArgumentException("Esiste gia' un campo base con nome: " + campo.getNome());
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.CAMPO_BASE,
+                    campo.getNome()
+            );
         }
         if (esisteCampoComune(campo.getNome())) {
-            throw new IllegalArgumentException("Esiste gia' un campo comune con nome: " + campo.getNome());
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.CAMPO_COMUNE,
+                    campo.getNome()
+            );
         }
         campiComuni.add(campo);
         assert repOk() : "Invariante violato dopo aggiungiCampoComune";
@@ -238,7 +251,10 @@ public class AppData {
             throw new IllegalArgumentException("La categoria non puo' essere null.");
         }
         if (esisteCategoria(categoria.getNome())) {
-            throw new IllegalArgumentException("Esiste gia' una categoria con nome: " + categoria.getNome());
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.CATEGORIA,
+                    categoria.getNome()
+            );
         }
         categorie.add(categoria);
         assert repOk() : "Invariante violato dopo aggiungiCategoria";
@@ -381,15 +397,15 @@ public class AppData {
             Fruitore f = getFruitore(usernameF);
             if (f != null) {
                 Notifica n = new Notifica(
-                getNuovoIdNotifica(),
-                tipo,                                   // COSA è successo
-                p.getId(),                              // dati grezzi
-                p.getValore("Titolo"),
-                p.getValore(Proposta.CAMPO_DATA),
-                p.getValore("Ora"),
-                p.getValore("Luogo"),
-                p.getValore("Quota individuale"),
-                oggi
+                        getNuovoIdNotifica(),
+                        tipo, // COSA è successo
+                        p.getId(), // dati grezzi
+                        p.getValore("Titolo"),
+                        p.getValore(Proposta.CAMPO_DATA),
+                        p.getValore("Ora"),
+                        p.getValore("Luogo"),
+                        p.getValore("Quota individuale"),
+                        oggi
                 );
                 f.aggiungiNotifica(n);
             }

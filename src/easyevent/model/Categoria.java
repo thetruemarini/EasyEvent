@@ -1,5 +1,6 @@
 package easyevent.model;
 
+import easyevent.model.exception.ElementoGiaEsistenteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +34,10 @@ public class Categoria {
             throw new IllegalArgumentException("Il campo deve essere di tipo SPECIFICO.");
         }
         if (contieneCampo(campo.getNome())) {
-            throw new IllegalArgumentException("Esiste gia' un campo specifico con nome: " + campo.getNome());
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.CAMPO_SPECIFICO,
+                    campo.getNome()
+            );
         }
         campiSpecifici.add(campo);
         assert repOk() : "Invariante violato dopo aggiungiCampoSpecifico";

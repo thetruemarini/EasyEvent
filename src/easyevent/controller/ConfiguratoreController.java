@@ -8,6 +8,8 @@ import easyevent.model.Categoria;
 import easyevent.model.Configuratore;
 import easyevent.model.Proposta;
 import easyevent.model.StatoProposta;
+import easyevent.model.exception.ElementoGiaEsistenteException;
+import easyevent.model.exception.ElementoNonTrovatoException;
 import easyevent.persistence.PersistenceManager;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -15,24 +17,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+
 /**
  * Controller per tutte le operazioni del configuratore (Versione 5).
  *
- * Estende la V4 aggiungendo:
- *   - importaBatch(percorso): importa categorie, campi e proposte da un file batch
- *   - importaBatch(lista): importa più file batch in sequenza
+ * Estende la V4 aggiungendo: - importaBatch(percorso): importa categorie, campi
+ * e proposte da un file batch - importaBatch(lista): importa più file batch in
+ * sequenza
  *
  * La modalità interattiva resta invariata.
  *
  * Il configuratore può fornire uno o più file di testo contenenti comandi
- * CAMPO_COMUNE, CATEGORIA e PROPOSTA, che vengono eseguiti in sequenza.
- * Il risultato dell'importazione è restituito come BatchRisultato e
- * visualizzato dalla view.
+ * CAMPO_COMUNE, CATEGORIA e PROPOSTA, che vengono eseguiti in sequenza. Il
+ * risultato dell'importazione è restituito come BatchRisultato e visualizzato
+ * dalla view.
  *
- * Invariante di classe:
- *   - appData != null
- *   - persistenceManager != null
- *   - proposteSessione != null
+ * Invariante di classe: - appData != null - persistenceManager != null -
+ * proposteSessione != null
  */
 public class ConfiguratoreController {
 
@@ -95,24 +96,25 @@ public class ConfiguratoreController {
         return configuratoreCorrente != null && configuratoreCorrente.isPrimoAccesso();
     }
 
-    public String impostaCredenzialiPersonali(String nuovoUsername, String nuovaPassword) {
+    public void impostaCredenzialiPersonali(String nuovoUsername, String nuovaPassword) {
         if (!isLoggato()) {
-            return "Nessun configuratore loggato.";
+            throw new IllegalStateException("Nessun configuratore loggato.");
         }
         if (!richiedeCambioCredenziali()) {
-            return "Le credenziali personali sono gia' state impostate.";
+            throw new IllegalStateException("Le credenziali personali sono gia' state impostate.");
         }
         if (nuovoUsername == null || nuovoUsername.isBlank()) {
-            return "Lo username non puo' essere vuoto.";
+            throw new IllegalArgumentException("nuovoUsername non può essere vuoto");
         }
         if (nuovaPassword == null || nuovaPassword.isBlank()) {
-            return "La password non puo' essere vuota.";
+            throw new IllegalArgumentException("nuovaPassword non può essere vuota");
         }
 
         String vecchioUsername = configuratoreCorrente.getUsername();
         String vecchiaPassword = configuratoreCorrente.getPassword();
         if (!nuovoUsername.equalsIgnoreCase(vecchioUsername) && appData.esisteUsernameGlobale(nuovoUsername)) {
-            return "Username gia' in uso: " + nuovoUsername;
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.USERNAME, nuovoUsername);
         }
 
         configuratoreCorrente.impostaCredenzialiPersonali(nuovoUsername, nuovaPassword);
@@ -120,9 +122,8 @@ public class ConfiguratoreController {
             salva();
         } catch (IOException e) {
             configuratoreCorrente.revertCredenziali(vecchioUsername, vecchiaPassword);
-            return "Errore nel salvataggio; le credenziali non sono state aggiornate: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio delle credenziali.", e);
         }
-        return "";
     }
 
     // ================================================================
@@ -148,59 +149,57 @@ public class ConfiguratoreController {
     // ================================================================
     // CAMPI COMUNI
     // ================================================================
-    public String aggiungiCampoComune(String nome, boolean obbligatorio) {
+    public void aggiungiCampoComune(String nome, boolean obbligatorio) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         if (nome == null || nome.isBlank()) {
-            return "Il nome del campo non puo' essere vuoto.";
+            throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
         }
+        appData.aggiungiCampoComune(new Campo(nome.trim(), obbligatorio, Campo.TipoCampo.COMUNE));
         try {
-            appData.aggiungiCampoComune(new Campo(nome.trim(), obbligatorio, Campo.TipoCampo.COMUNE));
             salva();
-            return "";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
         } catch (IOException e) {
-            return "Campo aggiunto ma errore nel salvataggio: " + e.getMessage();
+            appData.rimuoviCampoComune(nome.trim()); // rollback
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String rimuoviCampoComune(String nomeCampo) {
+    public void rimuoviCampoComune(String nomeCampo) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         if (nomeCampo == null || nomeCampo.isBlank()) {
-            return "Il nome non puo' essere vuoto.";
+            throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
         }
         boolean inSessione = proposteSessione.stream()
                 .anyMatch(p -> p.getCampiSnapshot().containsKey(nomeCampo));
         if (inSessione) {
-            return "Impossibile rimuovere: esistono proposte in sessione che contengono il campo '" + nomeCampo + "'.";
+            throw new IllegalStateException("campoInSessione:" + nomeCampo);
         }
         if (!appData.rimuoviCampoComune(nomeCampo)) {
-            return "Nessun campo comune trovato con nome: " + nomeCampo;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            return "Campo rimosso ma errore nel salvataggio: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String modificaObbligatorietaCampoComune(String nomeCampo, boolean obbligatorio) {
+    public void modificaObbligatorietaCampoComune(String nomeCampo, boolean obbligatorio) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         if (!appData.modificaObbligatorietaCampoComune(nomeCampo, obbligatorio)) {
-            return "Nessun campo comune trovato con nome: " + nomeCampo;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            return "Modifica effettuata ma errore nel salvataggio: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
@@ -211,113 +210,115 @@ public class ConfiguratoreController {
     // ================================================================
     // CATEGORIE
     // ================================================================
-    public String aggiungiCategoria(String nomeCategoria) {
+    public void aggiungiCategoria(String nomeCategoria) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
-            return "Il nome non puo' essere vuoto.";
+            throw new IllegalArgumentException("Il nome non può essere vuoto.");
         }
+        appData.aggiungiCategoria(new Categoria(nomeCategoria.trim()));
         try {
-            appData.aggiungiCategoria(new Categoria(nomeCategoria.trim()));
             salva();
-            return "";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
         } catch (IOException e) {
-            return "Categoria aggiunta ma errore nel salvataggio: " + e.getMessage();
+            appData.rimuoviCategoria(nomeCategoria.trim()); // rollback
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String rimuoviCategoria(String nomeCategoria) {
+    public void rimuoviCategoria(String nomeCategoria) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
-            return "Il nome non puo' essere vuoto.";
+            throw new IllegalArgumentException("Il nome non può essere vuoto.");
         }
         boolean inSessione = proposteSessione.stream()
                 .anyMatch(p -> p.getNomeCategoria().equalsIgnoreCase(nomeCategoria));
         if (inSessione) {
-            return "Impossibile rimuovere: esistono proposte in sessione per la categoria '" + nomeCategoria + "'.";
+            throw new IllegalStateException("categoriaInSessione:" + nomeCategoria);
         }
         if (!appData.rimuoviCategoria(nomeCategoria)) {
-            return "Nessuna categoria trovata con nome: " + nomeCategoria;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CATEGORIA, nomeCategoria);
         }
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            return "Categoria rimossa ma errore nel salvataggio: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String aggiungiCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
+    public void aggiungiCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
-            return "Nome categoria vuoto.";
+            throw new IllegalArgumentException("Nome categoria non può essere vuoto.");
         }
         if (nomeCampo == null || nomeCampo.isBlank()) {
-            return "Nome campo vuoto.";
+            throw new IllegalArgumentException("Nome campo non può essere vuoto.");
         }
         Categoria cat = appData.getCategoria(nomeCategoria);
         if (cat == null) {
-            return "Categoria non trovata: " + nomeCategoria;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CATEGORIA, nomeCategoria);
         }
         if (appData.esisteCampoBase(nomeCampo)) {
-            return "Esiste gia' un campo base con nome: " + nomeCampo;
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.CAMPO_BASE, nomeCampo);
         }
         if (appData.esisteCampoComune(nomeCampo)) {
-            return "Esiste gia' un campo comune con nome: " + nomeCampo;
+            throw new ElementoGiaEsistenteException(
+                    ElementoGiaEsistenteException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
+        cat.aggiungiCampoSpecifico(new Campo(nomeCampo.trim(), obbligatorio, Campo.TipoCampo.SPECIFICO));
         try {
-            cat.aggiungiCampoSpecifico(new Campo(nomeCampo.trim(), obbligatorio, Campo.TipoCampo.SPECIFICO));
             salva();
-            return "";
-        } catch (IllegalArgumentException e) {
-            return e.getMessage();
         } catch (IOException e) {
-            return "Campo aggiunto ma errore nel salvataggio: " + e.getMessage();
+            cat.rimuoviCampoSpecifico(nomeCampo.trim()); // rollback
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String rimuoviCampoSpecifico(String nomeCategoria, String nomeCampo) {
+    public void rimuoviCampoSpecifico(String nomeCategoria, String nomeCampo) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         Categoria cat = appData.getCategoria(nomeCategoria);
         if (cat == null) {
-            return "Categoria non trovata: " + nomeCategoria;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CATEGORIA, nomeCategoria);
         }
         if (!cat.rimuoviCampoSpecifico(nomeCampo)) {
-            return "Nessun campo specifico trovato con nome: " + nomeCampo;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CAMPO_SPECIFICO, nomeCampo);
         }
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            return "Campo rimosso ma errore nel salvataggio: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
-    public String modificaObbligatorietaCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
+    public void modificaObbligatorietaCampoSpecifico(
+            String nomeCategoria, String nomeCampo, boolean obbligatorio) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         Categoria cat = appData.getCategoria(nomeCategoria);
         if (cat == null) {
-            return "Categoria non trovata: " + nomeCategoria;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CATEGORIA, nomeCategoria);
         }
         if (!cat.modificaObbligatorietaCampoSpecifico(nomeCampo, obbligatorio)) {
-            return "Nessun campo specifico trovato con nome: " + nomeCampo;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.CAMPO_SPECIFICO, nomeCampo);
         }
         try {
             salva();
-            return "";
         } catch (IOException e) {
-            return "Modifica effettuata ma errore nel salvataggio: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
@@ -356,45 +357,40 @@ public class ConfiguratoreController {
         return p;
     }
 
-    public String setValoreCampo(Proposta proposta, String nomeCampo, String valore) {
+    public void setValoreCampo(Proposta proposta, String nomeCampo, String valore) {
         if (proposta == null) {
-            return "Proposta non valida.";
+            throw new IllegalArgumentException("proposta non può essere null");
         }
-        try {
-            proposta.setValore(nomeCampo, valore);
-            proposta.aggiornaStato(LocalDate.now());
-            return "";
-        } catch (IllegalArgumentException | IllegalStateException e) {
-            return e.getMessage();
-        }
+        proposta.setValore(nomeCampo, valore);
+        proposta.aggiornaStato(LocalDate.now());
     }
 
-    public String pubblicaProposta(Proposta proposta) {
+    // Nota: restituisce List<String> errori se la proposta non è valida,
+    // perché gli errori di validazione sono multipli e strutturati.
+    public List<String> pubblicaProposta(Proposta proposta) {
         if (proposta == null) {
-            return "Proposta non valida.";
+            throw new IllegalArgumentException("proposta non può essere null");
         }
         if (!proposteSessione.contains(proposta)) {
-            return "La proposta non appartiene alla sessione corrente.";
+            throw new IllegalStateException("La proposta non appartiene alla sessione corrente.");
         }
         LocalDate oggi = LocalDate.now();
         proposta.aggiornaStato(oggi);
         if (proposta.getStato() != StatoProposta.VALIDA) {
-            List<String> errori = proposta.validazioneErrori(oggi);
-            return "Proposta non valida. Problemi:\n" + String.join("\n",
-                    errori.stream().map(e -> "    * " + e).toArray(String[]::new));
+            return proposta.validazioneErrori(oggi);
         }
         proposta.pubblicaInBacheca(oggi);
         appData.aggiungiPropostaAperta(proposta);
         proposteSessione.remove(proposta);
         try {
             salva();
-            return "";
         } catch (IOException e) {
             appData.rimuoviPropostaDaArchivio(proposta.getId());
             proposta.revertToValida();
             proposteSessione.add(proposta);
-            return "Errore nel salvataggio; la proposta non e' stata pubblicata: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
+        return Collections.emptyList(); // lista vuota = successo
     }
 
     public boolean eliminaPropostaSessione(Proposta proposta) {
@@ -419,10 +415,10 @@ public class ConfiguratoreController {
      * Precondizioni: - Il configuratore deve essere loggato. - Il file deve
      * esistere e deve essere leggibile.
      *
-     * Postcondizioni: 
-     * - Lo stato dell'applicazione è aggiornato con le operazioni andate a buon fine. 
-     * - Il file di persistenza è aggiornato. 
-     * - Il BatchRisultato contiene il resoconto completo (successi, warning, errori).
+     * Postcondizioni: - Lo stato dell'applicazione è aggiornato con le
+     * operazioni andate a buon fine. - Il file di persistenza è aggiornato. -
+     * Il BatchRisultato contiene il resoconto completo (successi, warning,
+     * errori).
      *
      * @param percorsoFile path del file batch, non null e non blank
      * @return resoconto dell'importazione
@@ -479,36 +475,29 @@ public class ConfiguratoreController {
     // ================================================================
     // RITIRO PROPOSTA (V4 – invariato)
     // ================================================================
-    public String ritirareProposta(int idProposta) {
+    public void ritirareProposta(int idProposta) {
         if (!isLoggato()) {
-            return "Accesso negato.";
+            throw new IllegalStateException("Accesso negato.");
         }
         Proposta p = appData.getPropostaDaArchivio(idProposta);
         if (p == null) {
-            return "Proposta non trovata nell'archivio (ID: " + idProposta + ").";
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.PROPOSTA,
+                    String.valueOf(idProposta)
+            );
         }
         LocalDate oggi = LocalDate.now();
-        String erroreRitiro = p.verificaRitiroConsentito(oggi);
-        if (!erroreRitiro.isEmpty()) {
-            return erroreRitiro;
-        }
-
-        try {
-            appData.ritirareProposta(p, oggi);
-        } catch (IllegalStateException e) {
-            return "Errore nella transizione di stato: " + e.getMessage();
-        }
+        p.verificaRitiroConsentito(oggi);
+        appData.ritirareProposta(p, oggi);
         try {
             salva();
-            return "";
         } catch (IOException e) {
             try {
                 persistenceManager.carica(appData);
-                System.err.println("[Sistema] Rollback ritiro completato.");
-            } catch (IOException rollbackEx) {
-                System.err.println("[Sistema] Rollback fallito: " + rollbackEx.getMessage());
+            } catch (IOException re) {
+                System.err.println("[Sistema] Rollback fallito: " + re.getMessage());
             }
-            return "Errore nel salvataggio; il ritiro non e' stato registrato: " + e.getMessage();
+            throw new RuntimeException("Errore nel salvataggio.", e);
         }
     }
 
