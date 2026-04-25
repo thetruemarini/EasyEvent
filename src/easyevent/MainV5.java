@@ -26,7 +26,7 @@ public class MainV5 {
     public static void main(String[] args) {
 
         // 1. Stato centrale (Singleton)
-        AppData appData = AppData.getInstance();
+        AppData appData = new AppData();
 
         // 2. Persistenza
         PersistenceManager persistenceManager = new PersistenceManager(DATA_FILE);

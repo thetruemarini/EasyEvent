@@ -45,9 +45,7 @@ public class AppData {
     private List<Fruitore> fruitori;
     private int prossimoIdNotifica;
 
-    private static AppData instance;
-
-    private AppData() {
+    public AppData() {
         configuratori = new ArrayList<>();
         campiBase = new ArrayList<>();
         campiBaseInizialized = false;
@@ -57,17 +55,6 @@ public class AppData {
         prossimoIdProposta = 1;
         fruitori = new ArrayList<>();
         prossimoIdNotifica = 1;
-    }
-
-    public static AppData getInstance() {
-        if (instance == null) {
-            instance = new AppData();
-        }
-        return instance;
-    }
-
-    public static void resetInstance() {
-        instance = null;
     }
 
     // ================================================================
