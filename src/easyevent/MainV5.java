@@ -8,16 +8,16 @@ import easyevent.view.ConfiguratoreView;
 import easyevent.view.FruitoreView;
 import java.io.IOException;
 import java.util.Scanner;
+
 /**
  * Punto di ingresso principale dell'applicazione EasyEvent - Versione 5.
  *
- * Novita' rispetto alla V4:
- *   - Il configuratore puo' importare categorie, campi e proposte in modalita'
- *     batch (da uno o piu' file di testo), oltre a operare in modo interattivo
- *     come nelle versioni precedenti.
+ * Novita' rispetto alla V4: - Il configuratore puo' importare categorie, campi
+ * e proposte in modalita' batch (da uno o piu' file di testo), oltre a operare
+ * in modo interattivo come nelle versioni precedenti.
  *
- * Compatibilita': legge file di dati V4/V3/V2/V1 senza modifiche.
- * Il formato del file JSON di persistenza e' invariato rispetto alla V4.
+ * Compatibilita': legge file di dati V4/V3/V2/V1 senza modifiche. Il formato
+ * del file JSON di persistenza e' invariato rispetto alla V4.
  */
 public class MainV5 {
 
@@ -49,9 +49,10 @@ public class MainV5 {
                 = new ConfiguratoreController(appData, persistenceManager);
 
         // Inizializza campi base se necessario
-        String errInit = confController.inizializzaCampiBase();
-        if (!errInit.isEmpty()) {
-            System.err.println("[Sistema] " + errInit);
+        try {
+            confController.inizializzaCampiBase();
+        } catch (IOException e) {
+            System.err.println("[Sistema] Campi base creati ma errore nel salvataggio: " + e.getMessage());
         }
 
         // 5. Transizioni automatiche di stato (da invocare ad ogni avvio)

@@ -129,17 +129,12 @@ public class ConfiguratoreController {
     // ================================================================
     // CAMPI BASE
     // ================================================================
-    public String inizializzaCampiBase() {
+    public void inizializzaCampiBase() throws IOException {
         if (appData.isCampiBaseInitialized()) {
-            return "";
+            return;
         }
         appData.inizializzaCampiBase();
-        try {
-            salva();
-        } catch (IOException e) {
-            return "Campi base creati ma errore nel salvataggio: " + e.getMessage();
-        }
-        return "";
+        salva(); 
     }
 
     public List<Campo> getCampiBase() {
