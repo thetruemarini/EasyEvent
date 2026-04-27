@@ -168,7 +168,7 @@ public class ConfiguratoreController {
             throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
         }
         boolean inSessione = proposteSessione.stream()
-                .anyMatch(p -> p.getCampiSnapshot().containsKey(nomeCampo));
+                .anyMatch(p -> p.usaCampo(nomeCampo));
         if (inSessione) {
             throw new IllegalStateException("campoInSessione:" + nomeCampo);
         }

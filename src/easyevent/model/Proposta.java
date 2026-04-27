@@ -181,6 +181,34 @@ public class Proposta {
     }
 
     // ================================================================
+    // INTERROGAZIONE STRUTTURA CAMPI (Risoluzione Legge di Demetra)
+    // ================================================================
+    /**
+     * Verifica se la proposta utilizza un determinato campo. Nasconde
+     * l'implementazione interna (LinkedHashMap) all'esterno.
+     */
+    public boolean usaCampo(String nomeCampo) {
+        if (nomeCampo == null) {
+            return false;
+        }
+        return campiSnapshot.containsKey(nomeCampo);
+    }
+
+    /**
+     * Verifica se un campo utilizzato dalla proposta è obbligatorio.
+     */
+    public boolean isCampoObbligatorio(String nomeCampo) {
+        return campiSnapshot.getOrDefault(nomeCampo, false);
+    }
+
+    /**
+     * Restituisce solo i nomi dei campi, proteggendo la mappa interna.
+     */
+    public List<String> getNomiCampi() {
+        return new ArrayList<>(campiSnapshot.keySet());
+    }
+
+    // ================================================================
     // VALIDAZIONE E STATO
     // ================================================================
     public void aggiornaStato(LocalDate dataOggi) {

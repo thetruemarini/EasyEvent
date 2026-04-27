@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
@@ -870,9 +869,8 @@ public class ConfiguratoreView {
     }
 
     private void compilaCampiProposta(Proposta p) {
-        for (Map.Entry<String, Boolean> entry : p.getCampiSnapshot().entrySet()) {
-            String nome = entry.getKey();
-            boolean ob = entry.getValue();
+        for (String nome : p.getNomiCampi()) {
+            boolean ob = p.isCampoObbligatorio(nome);
             String val = p.getValore(nome);
             boolean isData = controller.isCampoData(p.getNomeCategoria(), nome);
             boolean isOra = controller.isCampoOra(p.getNomeCategoria(), nome);
@@ -902,10 +900,11 @@ public class ConfiguratoreView {
 
     private void mostraRiepilogoProposta(Proposta p) {
         System.out.println("\n" + SEP2 + "\n  Riepilogo [ID " + p.getId() + "]  Stato: " + p.getStato() + "\n" + SEP2);
-        p.getCampiSnapshot().forEach((nome, ob) -> {
+        for (String nome : p.getNomiCampi()) {
+            boolean ob = p.isCampoObbligatorio(nome);
             String val = p.getValore(nome);
             System.out.println("  " + (ob ? "[OBB]" : "[FAC]") + " " + nome + ": " + (val.isBlank() ? "(non compilato)" : val));
-        });
+        }
         if (p.getStato() == StatoProposta.BOZZA) {
             System.out.println("\n  Problemi:");
             p.validazioneErrori(LocalDate.now()).forEach(e -> System.out.println("    * " + e));

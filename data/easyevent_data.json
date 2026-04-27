@@ -23,10 +23,16 @@
     {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
   ],
   "campiComuni": [
+    {"nome": "Wifi", "obbligatorio": true, "tipo": "COMUNE"}
   ],
   "categorie": [
     {
       "nome": "Sport",
+      "campiSpecifici": [
+      ]
+    },
+    {
+      "nome": "Meeting",
       "campiSpecifici": [
       ]
     }
