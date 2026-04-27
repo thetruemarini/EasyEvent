@@ -134,7 +134,7 @@ public class ConfiguratoreController {
             return;
         }
         appData.inizializzaCampiBase();
-        salva(); 
+        salva();
     }
 
     public List<Campo> getCampiBase() {
@@ -550,5 +550,18 @@ public class ConfiguratoreController {
 
     public AppData getAppData() {
         return appData;
+    }
+
+    // ================================================================
+    // METODI PRESENTAZIONALI PER LA VIEW (Refactoring Problema 6)
+    // ================================================================
+    public boolean isCampoData(String nomeCategoria, String nomeCampo) {
+        Campo c = appData.getCampo(nomeCategoria, nomeCampo);
+        return c != null && c.isData();
+    }
+
+    public boolean isCampoOra(String nomeCategoria, String nomeCampo) {
+        Campo c = appData.getCampo(nomeCategoria, nomeCampo);
+        return c != null && c.isOra();
     }
 }

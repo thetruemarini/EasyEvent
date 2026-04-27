@@ -1,6 +1,7 @@
 package easyevent.controller;
 
 import easyevent.model.AppData;
+import easyevent.model.Campo;
 import easyevent.model.Fruitore;
 import easyevent.model.Notifica;
 import easyevent.model.Proposta;
@@ -197,5 +198,13 @@ public class FruitoreController {
 
     private void salva() throws IOException {
         persistenceManager.salva(appData);
+    }
+
+    // ================================================================
+    // METODI PRESENTAZIONALI PER LA VIEW (Refactoring Problema 6)
+    // ================================================================
+    public boolean isCampoInEvidenza(String nomeCategoria, String nomeCampo) {
+        Campo c = appData.getCampo(nomeCategoria, nomeCampo);
+        return c != null && c.isInEvidenza();
     }
 }

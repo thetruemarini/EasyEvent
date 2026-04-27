@@ -78,4 +78,37 @@ public class Campo {
     public int hashCode() {
         return nome.toLowerCase().hashCode() + tipo.hashCode();
     }
+
+    /**
+     * Determina se il campo rappresenta una data.
+     */
+    public boolean isData() {
+        String lower = this.nome.toLowerCase();
+        return lower.contains("data")
+                || lower.equals("termine ultimo di iscrizione");
+    }
+
+    /**
+     * Determina se il campo rappresenta un orario.
+     */
+    public boolean isOra() {
+        return this.nome.equalsIgnoreCase("ora");
+    }
+
+    /**
+     * Determina se il campo fa parte delle informazioni base "in evidenza" che
+     * la bacheca del Fruitore deve mostrare per prime.
+     */
+    public boolean isInEvidenza() {
+        String[] inEvidenza = {
+            "data inizio", "ora", "luogo", "quota individuale",
+            "data conclusiva", "durata", "note", "compreso nella quota"
+        };
+        for (String s : inEvidenza) {
+            if (s.equalsIgnoreCase(this.nome)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

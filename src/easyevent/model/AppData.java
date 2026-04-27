@@ -231,6 +231,38 @@ public class AppData {
     }
 
     // ================================================================
+    // RICERCA GLOBALE CAMPI (Aggiunta per Refactoring Problema 6)
+    // ================================================================
+    public Campo getCampo(String nomeCategoria, String nomeCampo) {
+        if (nomeCampo == null) {
+            return null;
+        }
+
+        // 1. Cerca nei campi base
+        for (Campo c : campiBase) {
+            if (c.getNome().equalsIgnoreCase(nomeCampo)) {
+                return c;
+            }
+        }
+        // 2. Cerca nei campi comuni
+        for (Campo c : campiComuni) {
+            if (c.getNome().equalsIgnoreCase(nomeCampo)) {
+                return c;
+            }
+        }
+        // 3. Cerca nei campi specifici della categoria
+        Categoria cat = getCategoria(nomeCategoria);
+        if (cat != null) {
+            for (Campo c : cat.getCampiSpecifici()) {
+                if (c.getNome().equalsIgnoreCase(nomeCampo)) {
+                    return c;
+                }
+            }
+        }
+        return null;
+    }
+
+    // ================================================================
     // CATEGORIE
     // ================================================================
     public void aggiungiCategoria(Categoria categoria) {

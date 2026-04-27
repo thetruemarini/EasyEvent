@@ -874,10 +874,14 @@ public class ConfiguratoreView {
             String nome = entry.getKey();
             boolean ob = entry.getValue();
             String val = p.getValore(nome);
-            boolean isData = nome.contains("Data") || nome.equals(Proposta.CAMPO_TERMINE_ISCRIZIONE);
+            boolean isData = controller.isCampoData(p.getNomeCategoria(), nome);
+            boolean isOra = controller.isCampoOra(p.getNomeCategoria(), nome);
+
             System.out.print("  " + (ob ? "[OBB]" : "[FAC]") + " " + nome);
             if (isData) {
                 System.out.print("  (gg/mm/aaaa)");
+            } else if (isOra) {
+                System.out.print("  (HH:mm)");
             }
             if (!val.isBlank()) {
                 System.out.print("  [attuale: " + val + "]");
