@@ -45,8 +45,13 @@ public class MainV5 {
         }
 
         // 4. Controller
+        // DEFINIZIONE DELLE CREDENZIALI DI CONFIGURAZIONE
+        String defaultAdminUser = "admin";
+        String defaultAdminPass = "admin123";
+
+        // PASSAGGIO DELLE CREDENZIALI AL CONTROLLER
         ConfiguratoreController confController
-                = new ConfiguratoreController(appData, persistenceManager);
+                = new ConfiguratoreController(appData, persistenceManager, defaultAdminUser, defaultAdminPass);
 
         // Inizializza campi base se necessario
         try {

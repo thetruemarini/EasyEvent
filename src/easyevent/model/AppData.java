@@ -21,9 +21,6 @@ import java.util.stream.Collectors;
  */
 public class AppData {
 
-    public static final String DEFAULT_USERNAME = "admin";
-    public static final String DEFAULT_PASSWORD = "admin123";
-
     public static final String[] NOMI_CAMPI_BASE = {
         "Titolo",
         "Numero di partecipanti",

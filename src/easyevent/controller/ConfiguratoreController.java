@@ -41,8 +41,11 @@ public class ConfiguratoreController {
     private final PersistenceManager persistenceManager;
     private Configuratore configuratoreCorrente;
     private List<Proposta> proposteSessione;
+    private final String defaultAdminUsername;
+    private final String defaultAdminPassword;
 
-    public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager) {
+    public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager,
+            String defaultAdminUsername, String defaultAdminPassword) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
@@ -53,6 +56,8 @@ public class ConfiguratoreController {
         this.persistenceManager = persistenceManager;
         this.configuratoreCorrente = null;
         this.proposteSessione = new ArrayList<>();
+        this.defaultAdminUsername = defaultAdminUsername;
+        this.defaultAdminPassword = defaultAdminPassword;
     }
 
     // ================================================================
@@ -63,7 +68,7 @@ public class ConfiguratoreController {
             return false;
         }
         if (appData.getConfiguratori().isEmpty()) {
-            if (username.equals(AppData.DEFAULT_USERNAME) && password.equals(AppData.DEFAULT_PASSWORD)) {
+            if (username.equals(this.defaultAdminUsername) && password.equals(this.defaultAdminPassword)) {
                 Configuratore nuovo = new Configuratore(username, password, true);
                 appData.aggiungiConfiguratore(nuovo);
                 try {

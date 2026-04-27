@@ -1,16 +1,9 @@
 {
-  "prossimoIdProposta": 3,
+  "prossimoIdProposta": 1,
   "prossimoIdNotifica": 1,
   "configuratori": [
-    {"username": "prins", "password": "prins123", "primoAccesso": false}
   ],
   "fruitori": [
-    {
-      "username": "mario",
-      "password": "mario123",
-      "notifiche": [
-      ]
-    }
   ],
   "campiBase": [
     {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
@@ -23,62 +16,9 @@
     {"nome": "Data conclusiva", "obbligatorio": true, "tipo": "BASE"}
   ],
   "campiComuni": [
-    {"nome": "Wifi", "obbligatorio": true, "tipo": "COMUNE"}
   ],
   "categorie": [
-    {
-      "nome": "Sport",
-      "campiSpecifici": [
-      ]
-    },
-    {
-      "nome": "Meeting",
-      "campiSpecifici": [
-      ]
-    }
   ],
   "archivio": [
-    {
-      "id": 1,
-      "nomeCategoria": "Sport",
-      "usernameCreatore": "prins",
-      "stato": "APERTA",
-      "dataPubblicazione": "27/04/2026",
-      "storicoStati": [
-        {"stato": "APERTA", "data": "27/04/2026"}
-      ],
-      "aderenti": ["mario"],
-      "campi": [
-        {"nome": "Titolo", "obbligatorio": true, "valore": "Calcio"},
-        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "10"},
-        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "26/09/2026"},
-        {"nome": "Luogo", "obbligatorio": true, "valore": "Brescia"},
-        {"nome": "Data inizio", "obbligatorio": true, "valore": "30/09/2026"},
-        {"nome": "Ora", "obbligatorio": true, "valore": "15:00"},
-        {"nome": "Quota individuale", "obbligatorio": true, "valore": "10"},
-        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "02/10/2026"}
-      ]
-    },
-    {
-      "id": 2,
-      "nomeCategoria": "Sport",
-      "usernameCreatore": "prins",
-      "stato": "APERTA",
-      "dataPubblicazione": "27/04/2026",
-      "storicoStati": [
-        {"stato": "APERTA", "data": "27/04/2026"}
-      ],
-      "aderenti": [],
-      "campi": [
-        {"nome": "Titolo", "obbligatorio": true, "valore": "Tennis"},
-        {"nome": "Numero di partecipanti", "obbligatorio": true, "valore": "2"},
-        {"nome": "Termine ultimo di iscrizione", "obbligatorio": true, "valore": "30/04/2026"},
-        {"nome": "Luogo", "obbligatorio": true, "valore": "Brescia"},
-        {"nome": "Data inizio", "obbligatorio": true, "valore": "05/05/2026"},
-        {"nome": "Ora", "obbligatorio": true, "valore": "16:00"},
-        {"nome": "Quota individuale", "obbligatorio": true, "valore": "10"},
-        {"nome": "Data conclusiva", "obbligatorio": true, "valore": "05/05/2026"}
-      ]
-    }
   ]
 }
