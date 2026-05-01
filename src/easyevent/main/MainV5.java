@@ -1,4 +1,4 @@
-package easyevent;
+package easyevent.main;
 
 import easyevent.controller.ConfiguratoreController;
 import easyevent.controller.FruitoreController;

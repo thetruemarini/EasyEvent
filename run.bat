@@ -28,5 +28,5 @@ echo Compilazione completata.
 
 echo [3/3] Avvio applicazione...
 echo.
-java -ea -cp "%OUT_DIR%" easyevent.MainV5
+java -ea -cp "%OUT_DIR%" easyevent.main.MainV5
 pause

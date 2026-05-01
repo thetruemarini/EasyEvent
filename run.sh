@@ -28,4 +28,4 @@ echo "      Compilazione completata."
 echo "[3/3] Avvio applicazione..."
 echo ""
 cd "$SCRIPT_DIR"
-java -ea -cp "$OUT_DIR" easyevent.MainV5
+java -ea -cp "$OUT_DIR" easyevent.main.MainV5

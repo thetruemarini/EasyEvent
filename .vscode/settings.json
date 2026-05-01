@@ -2,7 +2,6 @@
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "out",
     "files.exclude": {
-        "out/": true,
         "sources.txt": true
     }
 }
