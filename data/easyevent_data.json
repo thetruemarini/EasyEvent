@@ -2,8 +2,15 @@
   "prossimoIdProposta": 1,
   "prossimoIdNotifica": 1,
   "configuratori": [
+    {"username": "prins", "password": "prins123", "primoAccesso": false}
   ],
   "fruitori": [
+    {
+      "username": "mario",
+      "password": "mario123",
+      "notifiche": [
+      ]
+    }
   ],
   "campiBase": [
     {"nome": "Titolo", "obbligatorio": true, "tipo": "BASE"},
@@ -18,6 +25,11 @@
   "campiComuni": [
   ],
   "categorie": [
+    {
+      "nome": "Sport",
+      "campiSpecifici": [
+      ]
+    }
   ],
   "archivio": [
   ]

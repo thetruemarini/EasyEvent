@@ -1,11 +1,11 @@
 package easyevent.main;
 
-import easyevent.controller.ConfiguratoreController;
-import easyevent.controller.FruitoreController;
-import easyevent.model.AppData;
+import easyevent.core.AppData;
 import easyevent.persistence.PersistenceManager;
-import easyevent.view.ConfiguratoreView;
-import easyevent.view.FruitoreView;
+import easyevent.utente.ConfiguratoreController;
+import easyevent.utente.ConfiguratoreView;
+import easyevent.utente.FruitoreController;
+import easyevent.utente.FruitoreView;
 import java.io.IOException;
 import java.util.Scanner;
 

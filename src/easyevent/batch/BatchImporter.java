@@ -1,12 +1,12 @@
 package easyevent.batch;
 
-import easyevent.model.AppData;
-import easyevent.model.Campo;
-import easyevent.model.Categoria;
-import easyevent.model.Proposta;
-import easyevent.model.StatoProposta;
-import easyevent.model.exception.ElementoGiaEsistenteException;
-import easyevent.model.exception.ModificaNonConsentitaException;
+import easyevent.core.AppData;
+import easyevent.categoria.Campo;
+import easyevent.categoria.Categoria;
+import easyevent.proposta.Proposta;
+import easyevent.proposta.StatoProposta;
+import easyevent.exception.ElementoGiaEsistenteException;
+import easyevent.exception.ModificaNonConsentitaException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

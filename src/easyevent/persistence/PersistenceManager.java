@@ -1,14 +1,14 @@
 package easyevent.persistence;
 
-import easyevent.model.AppData;
-import easyevent.model.Campo;
-import easyevent.model.Categoria;
-import easyevent.model.Configuratore;
-import easyevent.model.Fruitore;
-import easyevent.model.Notifica;
-import easyevent.model.Proposta;
-import easyevent.model.StatoProposta;
-import easyevent.model.TipoNotifica;
+import easyevent.core.AppData;
+import easyevent.categoria.Campo;
+import easyevent.categoria.Categoria;
+import easyevent.utente.Configuratore;
+import easyevent.utente.Fruitore;
+import easyevent.notifica.Notifica;
+import easyevent.proposta.Proposta;
+import easyevent.proposta.StatoProposta;
+import easyevent.notifica.TipoNotifica;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
