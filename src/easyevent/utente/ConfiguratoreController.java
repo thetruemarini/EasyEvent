@@ -43,6 +43,13 @@ public class ConfiguratoreController {
     private final String defaultAdminUsername;
     private final String defaultAdminPassword;
 
+    /**
+     * Le dipendenze (AppData, PersistenceManager) sono ricevute tramite
+     * costruttore (Dependency Injection). Non si usa getInstance() né variabili
+     * globali: chi istanzia questo controller dichiara esplicitamente da cosa
+     * dipende, rendendo la dipendenza visibile a compile-time e sostituibile
+     * nei test.
+     */
     public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager,
             String defaultAdminUsername, String defaultAdminPassword) {
         if (appData == null) {

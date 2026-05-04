@@ -21,7 +21,11 @@ import java.util.stream.Collectors;
  * Identico alla V4; la V5 non aggiunge nuovi stati o strutture dati. Le nuove
  * funzionalità batch operano sulle stesse strutture dati di V4.
  *
- * Pattern Singleton.
+ * AppData viene creata una sola volta in MainV5 e passata esplicitamente a
+ * tutti i componenti che ne hanno bisogno tramite costruttore (Dependency
+ * Injection). Non si usa il pattern Singleton: le dipendenze sono dichiarate
+ * esplicitamente nei costruttori, il che rende l'architettura visibile,
+ * testabile e sostituibile.
  *
  * Invariante di classe: - tutti i campi != null - prossimoIdProposta >= 1,
  * prossimoIdNotifica >= 1 - username globalmente univoci - archivio: nessuna

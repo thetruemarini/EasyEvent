@@ -25,7 +25,8 @@ public class MainV5 {
 
     public static void main(String[] args) {
 
-        // 1. Stato centrale (Singleton)
+        // 1. Stato centrale — creato una sola volta e iniettato tramite costruttore
+        // nei controller (Dependency Injection, non Singleton).
         AppData appData = new AppData();
 
         // 2. Persistenza
@@ -45,14 +46,16 @@ public class MainV5 {
         }
 
         // 4. Controller
-        // DEFINIZIONE DELLE CREDENZIALI DI CONFIGURAZIONE
+        // Le dipendenze (appData, persistenceManager) vengono passate esplicitamente
+        // ai controller tramite costruttore: questo rende le dipendenze visibili
+        // (non implicite come nel Singleton), facilita il testing e il riuso.
         String defaultAdminUser = "admin";
         String defaultAdminPass = "admin123";
 
-        // PASSAGGIO DELLE CREDENZIALI AL CONTROLLER
         ConfiguratoreController confController
                 = new ConfiguratoreController(appData, persistenceManager, defaultAdminUser, defaultAdminPass);
 
+        FruitoreController fruitController = new FruitoreController(appData, persistenceManager);
         // Inizializza campi base se necessario
         try {
             confController.inizializzaCampiBase();
@@ -71,8 +74,6 @@ public class MainV5 {
         System.out.println("[Sistema] Proposte aperte in bacheca: " + appData.getBacheca().size());
         System.out.println("[Sistema] Proposte nell'archivio:     " + appData.getArchivio().size());
 
-        // 6. Menu di selezione ruolo
-        FruitoreController fruitController = new FruitoreController(appData, persistenceManager);
         Scanner scanner = new Scanner(System.in);
 
         menuSelezioneRuolo(confController, fruitController, scanner);

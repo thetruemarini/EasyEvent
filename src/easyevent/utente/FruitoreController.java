@@ -25,6 +25,12 @@ public class FruitoreController {
     private final PersistenceManager persistenceManager;
     private Fruitore fruitoreCorrente;
 
+    /**
+     * Le dipendenze sono iniettate tramite costruttore (Dependency Injection).
+     * AppData e PersistenceManager sono condivisi con ConfiguratoreController:
+     * entrambi operano sullo stesso stato centrale, passato esplicitamente
+     * anziché recuperato tramite un registro globale o Singleton.
+     */
     public FruitoreController(AppData appData, PersistenceManager persistenceManager) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
