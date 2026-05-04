@@ -370,7 +370,14 @@ public class ConfiguratoreView {
         System.out.println("  " + SEP);
         System.out.println("  RESOCONTO IMPORTAZIONE: " + percorso);
         System.out.println("  " + SEP);
-        System.out.println(risultato.toResocontoTestuale());
+
+        System.out.println("  Righe elaborate: " + risultato.getRigheTotali());
+        System.out.println("  Successi:        " + risultato.getNumSuccessi());
+        System.out.println("  Warning:         " + risultato.getNumWarnings());
+        System.out.println("  Errori:          " + risultato.getNumErrori());
+
+        stampaVociResoconto(risultato);
+
         if (risultato.isCompletamenteOk()) {
             System.out.println("  Importazione completata senza errori ne' warning.");
         } else if (risultato.isSenzaErrori()) {
@@ -391,11 +398,53 @@ public class ConfiguratoreView {
         System.out.println("  File elaborati:");
         percorsi.forEach(p -> System.out.println("    - " + p));
         System.out.println("  " + SEP);
-        System.out.println(risultato.toResocontoTestuale());
+
+        System.out.println("  Righe elaborate: " + risultato.getRigheTotali());
+        System.out.println("  Successi:        " + risultato.getNumSuccessi());
+        System.out.println("  Warning:         " + risultato.getNumWarnings());
+        System.out.println("  Errori:          " + risultato.getNumErrori());
+
+        stampaVociResoconto(risultato);
+
         System.out.println("  Totale: " + risultato.getNumSuccessi() + " successi, "
                 + risultato.getNumWarnings() + " warning, "
                 + risultato.getNumErrori() + " errori su "
                 + risultato.getRigheTotali() + " righe elaborate.");
+    }
+
+    /**
+     * Costruisce e stampa le righe di dettaglio del resoconto. Tutta la
+     * formattazione (simboli, etichette, italiano) vive qui nella View.
+     */
+    private void stampaVociResoconto(BatchRisultato risultato) {
+        List<BatchRisultato.Voce> successi = risultato.getVoci().stream()
+                .filter(v -> v.getTipo() == BatchRisultato.TipoVoce.SUCCESSO)
+                .collect(java.util.stream.Collectors.toList());
+        List<BatchRisultato.Voce> warnings = risultato.getVoci().stream()
+                .filter(v -> v.getTipo() == BatchRisultato.TipoVoce.WARNING)
+                .collect(java.util.stream.Collectors.toList());
+        List<BatchRisultato.Voce> errori = risultato.getVoci().stream()
+                .filter(v -> v.getTipo() == BatchRisultato.TipoVoce.ERRORE)
+                .collect(java.util.stream.Collectors.toList());
+
+        if (!successi.isEmpty()) {
+            System.out.println("\n  --- OPERAZIONI COMPLETATE ---");
+            successi.forEach(v -> System.out.println("  \u2713 " + v.getMessaggio()));
+        }
+        if (!warnings.isEmpty()) {
+            System.out.println("\n  --- WARNING (operazioni saltate) ---");
+            warnings.forEach(v -> {
+                String prefisso = v.getNumeroRiga() > 0 ? "Riga " + v.getNumeroRiga() + ": " : "";
+                System.out.println("  \u26A0 " + prefisso + v.getMessaggio());
+            });
+        }
+        if (!errori.isEmpty()) {
+            System.out.println("\n  --- ERRORI ---");
+            errori.forEach(v -> {
+                String prefisso = v.getNumeroRiga() > 0 ? "Riga " + v.getNumeroRiga() + ": " : "";
+                System.out.println("  \u2717 " + prefisso + v.getMessaggio());
+            });
+        }
     }
 
     // ================================================================
