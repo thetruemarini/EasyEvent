@@ -340,6 +340,18 @@ public class ConfiguratoreController {
         return appData.getCategoria(nome);
     }
 
+    /**
+     * Restituisce i campi specifici di una categoria, in sola lettura. La View
+     * usa questo metodo invece di ottenere il riferimento alla Categoria.
+     */
+    public List<Campo> getCampiSpecificiCategoria(String nomeCategoria) {
+        Categoria cat = appData.getCategoria(nomeCategoria);
+        if (cat == null) {
+            return Collections.emptyList();
+        }
+        return cat.getCampiSpecifici(); // già unmodifiable in Categoria
+    }
+
     // ================================================================
     // PROPOSTE – SESSIONE
     // ================================================================

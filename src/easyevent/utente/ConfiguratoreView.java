@@ -724,11 +724,12 @@ public class ConfiguratoreView {
         }
         while (true) {
             System.out.println("\n" + SEP + "\n  CAMPI SPECIFICI di '" + cat.getNome() + "'\n" + SEP);
-            if (cat.getCampiSpecifici().isEmpty()) {
+            List<Campo> campiSpec = controller.getCampiSpecificiCategoria(nomeCategoria);
+            if (campiSpec.isEmpty()) {
                 System.out.println("  (nessuno)");
             } else {
-                for (int i = 0; i < cat.getCampiSpecifici().size(); i++) {
-                    System.out.printf("  %d. %s%n", i + 1, formattaCampoPerMenu(cat.getCampiSpecifici().get(i)));
+                for (int i = 0; i < campiSpec.size(); i++) {
+                    System.out.printf("  %d. %s%n", i + 1, formattaCampoPerMenu(campiSpec.get(i)));
                 }
             }
             System.out.println("\n  a. Aggiungi  r. Rimuovi  m. Modifica obbligatorieta'  0. Torna");
