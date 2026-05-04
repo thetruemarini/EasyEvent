@@ -6,7 +6,9 @@ import easyevent.categoria.Campo;
 import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoGiaEsistenteException;
+import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
+import easyevent.exception.ErroreValidazione;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
@@ -181,7 +183,8 @@ public class ConfiguratoreController {
         boolean inSessione = proposteSessione.stream()
                 .anyMatch(p -> p.usaCampo(nomeCampo));
         if (inSessione) {
-            throw new IllegalStateException("campoInSessione:" + nomeCampo);
+            throw new ElementoInSessioneException(
+                    ElementoInSessioneException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
         if (!appData.rimuoviCampoComune(nomeCampo)) {
             throw new ElementoNonTrovatoException(
@@ -242,7 +245,8 @@ public class ConfiguratoreController {
         boolean inSessione = proposteSessione.stream()
                 .anyMatch(p -> p.getNomeCategoria().equalsIgnoreCase(nomeCategoria));
         if (inSessione) {
-            throw new IllegalStateException("categoriaInSessione:" + nomeCategoria);
+            throw new ElementoInSessioneException(
+                    ElementoInSessioneException.TipoElemento.CATEGORIA, nomeCategoria);
         }
         if (!appData.rimuoviCategoria(nomeCategoria)) {
             throw new ElementoNonTrovatoException(
@@ -371,9 +375,9 @@ public class ConfiguratoreController {
         proposta.aggiornaStato(LocalDate.now());
     }
 
-    // Nota: restituisce List<String> errori se la proposta non è valida,
+    // Nota: restituisce List<ErroreValidazione> errori se la proposta non è valida,
     // perché gli errori di validazione sono multipli e strutturati.
-    public List<String> pubblicaProposta(Proposta proposta) {
+    public List<ErroreValidazione> pubblicaProposta(Proposta proposta) {
         if (proposta == null) {
             throw new IllegalArgumentException("proposta non può essere null");
         }

@@ -1,12 +1,13 @@
 package easyevent.batch;
 
-import easyevent.core.AppData;
 import easyevent.categoria.Campo;
 import easyevent.categoria.Categoria;
+import easyevent.core.AppData;
+import easyevent.exception.ElementoGiaEsistenteException;
+import easyevent.exception.ErroreValidazione;
+import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import easyevent.exception.ElementoGiaEsistenteException;
-import easyevent.exception.ModificaNonConsentitaException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -534,15 +535,16 @@ public class BatchImporter {
 
         if (proposta.getStato() != StatoProposta.VALIDA) {
             // La proposta non è pubblicabile: segnala gli errori di validazione
-            List<String> erroriValidazione = proposta.validazioneErrori(oggi);
-            // L'ID consumato va "restituito" resettando il contatore: non è possibile
-            // in modo sicuro senza un metodo dedicato. Gli ID sono progrediti anche per proposte scartate
-            // (il contatore non viene decrementato per garantire l'unicità degli ID
-            // anche in caso di race condition su file batch multipli).
+            List<ErroreValidazione> erroriValidazione = proposta.validazioneErrori(oggi);
+            List<String> messaggiErrori = erroriValidazione.stream()
+                    .map(e -> e.getNomeCampo() != null
+                    ? e.getTipo().name() + " [" + e.getNomeCampo() + "]"
+                    : e.getTipo().name())
+                    .collect(java.util.stream.Collectors.toList());
             risultato.aggiungiErrore(numeroRiga,
                     "Proposta non valida per la categoria '"
                     + nomeCategoria + "' (non pubblicata). Problemi: "
-                    + String.join("; ", erroriValidazione));
+                    + String.join("; ", messaggiErrori));
             return;
         }
 

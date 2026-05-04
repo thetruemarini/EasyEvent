@@ -4,7 +4,9 @@ import easyevent.batch.BatchRisultato;
 import easyevent.categoria.Campo;
 import easyevent.categoria.Categoria;
 import easyevent.exception.ElementoGiaEsistenteException;
+import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
+import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.RitiroNonConsensitoException;
 import easyevent.proposta.Proposta;
@@ -571,15 +573,11 @@ public class ConfiguratoreView {
                         System.out.println("  Campo rimosso.");
                     } catch (ElementoNonTrovatoException ex) {
                         stampaErrore(messaggioElementoNonTrovato(ex));
+                    } catch (ElementoInSessioneException ex) {
+                        stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
+                                + "che contengono il campo '" + ex.getNomeElemento() + "'.");
                     } catch (IllegalStateException ex) {
-                        String msg = ex.getMessage();
-                        if (msg != null && msg.startsWith("campoInSessione:")) {
-                            String nomeCampo = msg.substring("campoInSessione:".length());
-                            stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
-                                    + "che contengono il campo '" + nomeCampo + "'.");
-                        } else {
-                            stampaErrore("Operazione non consentita: " + msg);
-                        }
+                        stampaErrore("Operazione non consentita: " + ex.getMessage());
                     } catch (RuntimeException ex) {
                         stampaErrore("Errore: " + ex.getMessage());
                     }
@@ -702,15 +700,11 @@ public class ConfiguratoreView {
             System.out.println("  Categoria '" + nome + "' rimossa.");
         } catch (ElementoNonTrovatoException ex) {
             stampaErrore(messaggioElementoNonTrovato(ex));
+        } catch (ElementoInSessioneException ex) {
+            stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
+                    + "per la categoria '" + ex.getNomeElemento() + "'.");
         } catch (IllegalStateException ex) {
-            String msg = ex.getMessage();
-            if (msg != null && msg.startsWith("categoriaInSessione:")) {
-                String nomeC = msg.substring("categoriaInSessione:".length());
-                stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
-                        + "per la categoria '" + nomeC + "'.");
-            } else {
-                stampaErrore("Operazione non consentita: " + msg);
-            }
+            stampaErrore("Operazione non consentita: " + ex.getMessage());
         } catch (RuntimeException ex) {
             stampaErrore("Errore: " + ex.getMessage());
         }
@@ -955,7 +949,8 @@ public class ConfiguratoreView {
         }
         if (p.getStato() == StatoProposta.BOZZA) {
             System.out.println("\n  Problemi:");
-            p.validazioneErrori(LocalDate.now()).forEach(e -> System.out.println("    * " + e));
+            p.validazioneErrori(LocalDate.now())
+                    .forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
         }
         System.out.println(SEP2);
     }
@@ -968,12 +963,12 @@ public class ConfiguratoreView {
             System.out.print("\n  Proposta VALIDA. Pubblicarla ora? (s/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 try {
-                    List<String> erroriValidazione = controller.pubblicaProposta(p);
+                    List<ErroreValidazione> erroriValidazione = controller.pubblicaProposta(p);
                     if (erroriValidazione.isEmpty()) {
                         System.out.println("  Proposta [ID " + p.getId() + "] pubblicata.");
                     } else {
                         System.out.println("\n  Proposta non valida. Problemi:");
-                        erroriValidazione.forEach(e -> System.out.println("    * " + e));
+                        erroriValidazione.forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
                     }
                 } catch (RuntimeException ex) {
                     stampaErrore("Errore: " + ex.getMessage());
@@ -1003,12 +998,12 @@ public class ConfiguratoreView {
                 return;
             }
             try {
-                List<String> erroriValidazione = controller.pubblicaProposta(p);
+                List<ErroreValidazione> erroriValidazione = controller.pubblicaProposta(p);
                 if (erroriValidazione.isEmpty()) {
                     System.out.println("  Proposta [ID " + p.getId() + "] pubblicata.");
                 } else {
                     System.out.println("\n  Proposta non valida. Problemi:");
-                    erroriValidazione.forEach(e -> System.out.println("    * " + e));
+                    erroriValidazione.forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
                 }
             } catch (RuntimeException ex) {
                 stampaErrore("Errore: " + ex.getMessage());
@@ -1196,5 +1191,28 @@ public class ConfiguratoreView {
         };
         String obbLabel = c.isObbligatorio() ? "obbligatorio" : "facoltativo";
         return "[" + tipoLabel + "] " + c.getNome() + " (" + obbLabel + ")";
+    }
+
+    private String messaggioErroreValidazione(ErroreValidazione e) {
+        return switch (e.getTipo()) {
+            case CAMPO_OBBLIGATORIO_VUOTO ->
+                "Campo obbligatorio non compilato: '" + e.getNomeCampo() + "'";
+            case DATA_FORMATO_NON_VALIDO ->
+                "'" + e.getNomeCampo() + "': formato data non valido (usare gg/mm/aaaa).";
+            case ORA_FORMATO_NON_VALIDO ->
+                "'" + e.getNomeCampo() + "': formato non valido (usare HH:MM, es. 09:30).";
+            case TERMINE_NON_FUTURO ->
+                "'" + e.getNomeCampo() + "' deve essere successivo alla data odierna ("
+                + e.getDettaglio() + ").";
+            case DATA_INIZIO_TROPPO_VICINA ->
+                "'" + e.getNomeCampo() + "' deve essere almeno 2 giorni dopo '"
+                + Proposta.CAMPO_TERMINE_ISCRIZIONE + "' (minimo: " + e.getDettaglio() + ").";
+            case DATA_CONCLUSIVA_PRECEDENTE ->
+                "'" + e.getNomeCampo() + "' non può essere precedente a '" + Proposta.CAMPO_DATA + "'.";
+            case NUM_PARTECIPANTI_NON_POSITIVO ->
+                "'" + e.getNomeCampo() + "' deve essere un numero intero positivo.";
+            case NUM_PARTECIPANTI_NON_NUMERICO ->
+                "'" + e.getNomeCampo() + "': valore non numerico.";
+        };
     }
 }

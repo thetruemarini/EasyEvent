@@ -1,5 +1,6 @@
 package easyevent.proposta;
 
+import easyevent.exception.ErroreValidazione;
 import easyevent.exception.IscrizioneException;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.RitiroNonConsensitoException;
@@ -222,13 +223,15 @@ public class Proposta {
                 : StatoProposta.BOZZA;
     }
 
-    public List<String> validazioneErrori(LocalDate dataOggi) {
-        List<String> errori = new ArrayList<>();
+    public List<ErroreValidazione> validazioneErrori(LocalDate dataOggi) {
+        List<ErroreValidazione> errori = new ArrayList<>();
 
         for (Map.Entry<String, Boolean> entry : campiSnapshot.entrySet()) {
             if (Boolean.TRUE.equals(entry.getValue())) {
                 if (valori.getOrDefault(entry.getKey(), "").isBlank()) {
-                    errori.add("Campo obbligatorio non compilato: '" + entry.getKey() + "'");
+                    errori.add(new ErroreValidazione(
+                            ErroreValidazione.Tipo.CAMPO_OBBLIGATORIO_VUOTO,
+                            entry.getKey(), null));
                 }
             }
         }
@@ -242,30 +245,42 @@ public class Proposta {
         LocalDate dataConc = parseDateSafe(strDataConc);
 
         if (!strTermine.isBlank() && termine == null) {
-            errori.add("'" + CAMPO_TERMINE_ISCRIZIONE + "': formato data non valido (usare gg/mm/aaaa).");
+            errori.add(new ErroreValidazione(
+                    ErroreValidazione.Tipo.DATA_FORMATO_NON_VALIDO,
+                    CAMPO_TERMINE_ISCRIZIONE, null));
         }
         if (!strData.isBlank() && data == null) {
-            errori.add("'" + CAMPO_DATA + "': formato data non valido (usare gg/mm/aaaa).");
+            errori.add(new ErroreValidazione(
+                    ErroreValidazione.Tipo.DATA_FORMATO_NON_VALIDO,
+                    CAMPO_DATA, null));
         }
         if (!strDataConc.isBlank() && dataConc == null) {
-            errori.add("'" + CAMPO_DATA_CONCLUSIVA + "': formato data non valido (usare gg/mm/aaaa).");
+            errori.add(new ErroreValidazione(
+                    ErroreValidazione.Tipo.DATA_FORMATO_NON_VALIDO,
+                    CAMPO_DATA_CONCLUSIVA, null));
         }
 
         if (termine != null && !termine.isAfter(dataOggi)) {
-            errori.add("'" + CAMPO_TERMINE_ISCRIZIONE + "' deve essere successivo alla data odierna ("
-                    + dataOggi.format(DATE_FORMAT) + ").");
+            errori.add(new ErroreValidazione(
+                    ErroreValidazione.Tipo.TERMINE_NON_FUTURO,
+                    CAMPO_TERMINE_ISCRIZIONE,
+                    dataOggi.format(DATE_FORMAT)));
         }
 
         if (termine != null && data != null) {
             LocalDate minimaData = termine.plusDays(2);
             if (data.isBefore(minimaData)) {
-                errori.add("'" + CAMPO_DATA + "' deve essere almeno 2 giorni dopo '"
-                        + CAMPO_TERMINE_ISCRIZIONE + "' (minimo: " + minimaData.format(DATE_FORMAT) + ").");
+                errori.add(new ErroreValidazione(
+                        ErroreValidazione.Tipo.DATA_INIZIO_TROPPO_VICINA,
+                        CAMPO_DATA,
+                        minimaData.format(DATE_FORMAT)));
             }
         }
 
         if (data != null && dataConc != null && dataConc.isBefore(data)) {
-            errori.add("'" + CAMPO_DATA_CONCLUSIVA + "' non puo' essere precedente a '" + CAMPO_DATA + "'.");
+            errori.add(new ErroreValidazione(
+                    ErroreValidazione.Tipo.DATA_CONCLUSIVA_PRECEDENTE,
+                    CAMPO_DATA_CONCLUSIVA, null));
         }
 
         String strNumPart = getValore(CAMPO_NUM_PARTECIPANTI);
@@ -273,16 +288,22 @@ public class Proposta {
             try {
                 int n = Integer.parseInt(strNumPart.trim());
                 if (n <= 0) {
-                    errori.add("'" + CAMPO_NUM_PARTECIPANTI + "' deve essere un numero intero positivo.");
+                    errori.add(new ErroreValidazione(
+                            ErroreValidazione.Tipo.NUM_PARTECIPANTI_NON_POSITIVO,
+                            CAMPO_NUM_PARTECIPANTI, null));
                 }
             } catch (NumberFormatException e) {
-                errori.add("'" + CAMPO_NUM_PARTECIPANTI + "': valore non numerico.");
+                errori.add(new ErroreValidazione(
+                        ErroreValidazione.Tipo.NUM_PARTECIPANTI_NON_NUMERICO,
+                        CAMPO_NUM_PARTECIPANTI, null));
             }
         }
+
         String strOra = getValore(CAMPO_ORA);
         if (!strOra.isBlank() && !isFormatoOraValido(strOra)) {
-            errori.add("'" + CAMPO_ORA
-                    + "': formato non valido (usare HH:MM, es. 09:30 oppure 14:00).");
+            errori.add(new ErroreValidazione(
+                    ErroreValidazione.Tipo.ORA_FORMATO_NON_VALIDO,
+                    CAMPO_ORA, null));
         }
 
         return errori;
