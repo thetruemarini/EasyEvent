@@ -1,14 +1,17 @@
 package easyevent.persistence;
 
-import easyevent.core.AppData;
 import easyevent.categoria.Campo;
+import easyevent.categoria.CampoBase;
+import easyevent.categoria.CampoComune;
+import easyevent.categoria.CampoSpecifico;
 import easyevent.categoria.Categoria;
-import easyevent.utente.Configuratore;
-import easyevent.utente.Fruitore;
+import easyevent.core.AppData;
 import easyevent.notifica.Notifica;
+import easyevent.notifica.TipoNotifica;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import easyevent.notifica.TipoNotifica;
+import easyevent.utente.Configuratore;
+import easyevent.utente.Fruitore;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
@@ -393,7 +396,15 @@ public class PersistenceManager {
             String tipoStr = extractStringValue(obj, "tipo");
             if (nome != null && tipoStr != null) {
                 try {
-                    result.add(new Campo(nome, ob, Campo.TipoCampo.valueOf(tipoStr)));
+                    Campo c = switch (Campo.TipoCampo.valueOf(tipoStr)) {
+                        case BASE ->
+                            new CampoBase(nome);
+                        case COMUNE ->
+                            new CampoComune(nome, ob);
+                        case SPECIFICO ->
+                            new CampoSpecifico(nome, ob);
+                    };
+                    result.add(c);
                 } catch (IllegalArgumentException ignored) {
                 }
             }
@@ -421,7 +432,7 @@ public class PersistenceManager {
                     String ts = extractStringValue(campoObj, "tipo");
                     if (cn != null && ts != null) {
                         try {
-                            cat.aggiungiCampoSpecifico(new Campo(cn, ob, Campo.TipoCampo.valueOf(ts)));
+                            cat.aggiungiCampoSpecifico(new CampoSpecifico(cn, ob));
                         } catch (IllegalArgumentException ignored) {
                         }
                     }

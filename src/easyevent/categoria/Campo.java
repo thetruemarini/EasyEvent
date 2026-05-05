@@ -1,33 +1,27 @@
 package easyevent.categoria;
 
-import easyevent.exception.ModificaNonConsentitaException;
-
 /**
- * Rappresenta un campo generico che descrive un'iniziativa.
+ * Rappresenta un campo generico che descrive un'iniziativa. Classe astratta:
+ * ogni tipo di campo definisce il proprio comportamento per le operazioni che
+ * dipendono dal tipo (es. setObbligatorio).
  *
- * Invariante di classe: - nome != null && !nome.isBlank() - tipo != null
+ * Invariante: nome != null && !nome.isBlank()
  */
-public class Campo {
+public abstract class Campo {
 
     public enum TipoCampo {
         BASE, COMUNE, SPECIFICO
     }
 
-    private String nome;
-    private boolean obbligatorio;
-    private TipoCampo tipo;
+    private final String nome;
+    protected boolean obbligatorio;
 
-    public Campo(String nome, boolean obbligatorio, TipoCampo tipo) {
+    protected Campo(String nome, boolean obbligatorio) {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Il nome del campo non puo' essere null o vuoto.");
         }
-        if (tipo == null) {
-            throw new IllegalArgumentException("Il tipo del campo non puo' essere null.");
-        }
         this.nome = nome.trim();
         this.obbligatorio = obbligatorio;
-        this.tipo = tipo;
-        assert repOk() : "Invariante violato dopo costruzione Campo";
     }
 
     public String getNome() {
@@ -38,28 +32,26 @@ public class Campo {
         return obbligatorio;
     }
 
-    public TipoCampo getTipo() {
-        return tipo;
-    }
+    /**
+     * Ogni sottoclasse decide se e come permettere la modifica
+     * dell'obbligatorietà. I campi BASE lanciano eccezione, COMUNE e SPECIFICO
+     * la consentono.
+     */
+    public abstract void setObbligatorio(boolean obbligatorio);
 
-    public void setObbligatorio(boolean obbligatorio) {
-        if (this.tipo == TipoCampo.BASE) {
-            throw new ModificaNonConsentitaException(
-                    ModificaNonConsentitaException.TipoModifica.CAMPO_BASE_IMMUTABILE,
-                    this.nome
-            );
-        }
-        this.obbligatorio = obbligatorio;
-    }
+    /**
+     * Tipo del campo — mantenuto per compatibilità con serializzazione JSON.
+     */
+    public abstract TipoCampo getTipo();
+
+    public abstract boolean isData();
+
+    public abstract boolean isOra();
+
+    public abstract boolean isInEvidenza();
 
     public boolean repOk() {
-        return nome != null && !nome.isBlank() && tipo != null;
-    }
-
-    // solo per debug e log  
-    @Override
-    public String toString() {
-        return "Campo{tipo=" + tipo + ", nome='" + nome + "', obbligatorio=" + obbligatorio + "}";
+        return nome != null && !nome.isBlank();
     }
 
     @Override
@@ -71,44 +63,18 @@ public class Campo {
             return false;
         }
         Campo other = (Campo) obj;
-        return this.nome.equalsIgnoreCase(other.nome) && this.tipo == other.tipo;
+        return this.nome.equalsIgnoreCase(other.nome) && this.getTipo() == other.getTipo();
     }
 
     @Override
     public int hashCode() {
-        return nome.toLowerCase().hashCode() + tipo.hashCode();
+        return nome.toLowerCase().hashCode() + getTipo().hashCode();
     }
 
-    /**
-     * Determina se il campo rappresenta una data.
-     */
-    public boolean isData() {
-        String lower = this.nome.toLowerCase();
-        return lower.contains("data")
-                || lower.equals("termine ultimo di iscrizione");
-    }
-
-    /**
-     * Determina se il campo rappresenta un orario.
-     */
-    public boolean isOra() {
-        return this.nome.equalsIgnoreCase("ora");
-    }
-
-    /**
-     * Determina se il campo fa parte delle informazioni base "in evidenza" che
-     * la bacheca del Fruitore deve mostrare per prime.
-     */
-    public boolean isInEvidenza() {
-        String[] inEvidenza = {
-            "data inizio", "ora", "luogo", "quota individuale",
-            "data conclusiva", "durata", "note", "compreso nella quota"
-        };
-        for (String s : inEvidenza) {
-            if (s.equalsIgnoreCase(this.nome)) {
-                return true;
-            }
-        }
-        return false;
+    // Solo per debug e log infrastrutturale
+    @Override
+    public String toString() {
+        return "Campo{tipo=" + getTipo() + ", nome='" + nome
+                + "', obbligatorio=" + obbligatorio + "}";
     }
 }

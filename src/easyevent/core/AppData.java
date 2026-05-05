@@ -1,6 +1,8 @@
 package easyevent.core;
 
 import easyevent.categoria.Campo;
+import easyevent.categoria.CampoBase;
+import easyevent.categoria.CampoComune;
 import easyevent.categoria.Categoria;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.notifica.Notifica;
@@ -157,7 +159,7 @@ public class AppData {
             throw new IllegalStateException("I campi base sono gia' stati inizializzati.");
         }
         for (String nome : NOMI_CAMPI_BASE) {
-            campiBase.add(new Campo(nome, true, Campo.TipoCampo.BASE));
+            campiBase.add(new CampoBase(nome));
         }
         campiBaseInizialized = true;
         assert repOk() : "Invariante violato dopo inizializzaCampiBase";
@@ -185,7 +187,7 @@ public class AppData {
         if (campo == null) {
             throw new IllegalArgumentException("Il campo non puo' essere null.");
         }
-        if (campo.getTipo() != Campo.TipoCampo.COMUNE) {
+        if (!(campo instanceof CampoComune)) {
             throw new IllegalArgumentException("Il campo deve essere di tipo COMUNE.");
         }
         if (esisteCampoBase(campo.getNome())) {

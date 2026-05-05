@@ -1,6 +1,8 @@
 package easyevent.batch;
 
 import easyevent.categoria.Campo;
+import easyevent.categoria.CampoComune;
+import easyevent.categoria.CampoSpecifico;
 import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoGiaEsistenteException;
@@ -262,7 +264,7 @@ public class BatchImporter {
         }
 
         try {
-            Campo campo = new Campo(nomeCampo, obbligatorio, Campo.TipoCampo.COMUNE);
+            Campo campo = new CampoComune(nomeCampo, obbligatorio);
             appData.aggiungiCampoComune(campo);
             salvaCallback.salva();
             risultato.aggiungiSuccesso(
@@ -386,8 +388,7 @@ public class BatchImporter {
             boolean ob = obbligCS.equals("si") || obbligCS.equals("sì")
                     || obbligCS.equals("yes") || obbligCS.equals("true");
             try {
-                categoria.aggiungiCampoSpecifico(
-                        new Campo(nomeCS, ob, Campo.TipoCampo.SPECIFICO));
+                categoria.aggiungiCampoSpecifico(new CampoSpecifico(nomeCS, ob));
                 campiAggiuntiOk.add(nomeCS);
             } catch (ElementoGiaEsistenteException e) {
                 risultato.aggiungiWarning(numeroRiga,

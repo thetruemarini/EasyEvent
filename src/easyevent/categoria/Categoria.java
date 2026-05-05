@@ -30,7 +30,8 @@ public class Categoria {
         if (campo == null) {
             throw new IllegalArgumentException("Il campo non puo' essere null.");
         }
-        if (campo.getTipo() != Campo.TipoCampo.SPECIFICO) {
+        // (controllo strutturale sulla gerarchia, localizzato e atteso):
+        if (!(campo instanceof CampoSpecifico)) {
             throw new IllegalArgumentException("Il campo deve essere di tipo SPECIFICO.");
         }
         if (contieneCampo(campo.getNome())) {

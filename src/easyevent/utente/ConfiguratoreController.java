@@ -3,6 +3,8 @@ package easyevent.utente;
 import easyevent.batch.BatchImporter;
 import easyevent.batch.BatchRisultato;
 import easyevent.categoria.Campo;
+import easyevent.categoria.CampoComune;
+import easyevent.categoria.CampoSpecifico;
 import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoGiaEsistenteException;
@@ -164,7 +166,7 @@ public class ConfiguratoreController {
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
         }
-        appData.aggiungiCampoComune(new Campo(nome.trim(), obbligatorio, Campo.TipoCampo.COMUNE));
+        appData.aggiungiCampoComune(new CampoComune(nome.trim(), obbligatorio));
         try {
             salva();
         } catch (IOException e) {
@@ -282,7 +284,7 @@ public class ConfiguratoreController {
             throw new ElementoGiaEsistenteException(
                     ElementoGiaEsistenteException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
-        cat.aggiungiCampoSpecifico(new Campo(nomeCampo.trim(), obbligatorio, Campo.TipoCampo.SPECIFICO));
+        cat.aggiungiCampoSpecifico(new CampoSpecifico(nomeCampo.trim(), obbligatorio));
         try {
             salva();
         } catch (IOException e) {
