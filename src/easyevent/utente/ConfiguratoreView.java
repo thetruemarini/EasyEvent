@@ -30,9 +30,6 @@ import java.util.stream.Collectors;
  */
 public class ConfiguratoreView {
 
-    private static final String SEP = "------------------------------------------------------------";
-    private static final String SEP2 = "  ----------------------------------------------------------";
-
     private final ConfiguratoreController controller;
     private final Scanner scanner;
 
@@ -89,7 +86,7 @@ public class ConfiguratoreView {
     // LOGIN
     // ================================================================
     private boolean gestioneLogin() {
-        System.out.println("\n" + SEP + "\n  LOGIN CONFIGURATORE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  LOGIN CONFIGURATORE\n" + ViewUtils.SEP);
         System.out.println("  (digita 'esci' per uscire dall'applicazione)\n");
         for (int t = 0; t < 3; t++) {
             System.out.print("  Username: ");
@@ -114,7 +111,7 @@ public class ConfiguratoreView {
     }
 
     private boolean gestionePrimoAccesso() {
-        System.out.println("\n" + SEP + "\n  IMPOSTAZIONE CREDENZIALI PERSONALI\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  IMPOSTAZIONE CREDENZIALI PERSONALI\n" + ViewUtils.SEP);
         System.out.println("  (digita 'annulla' per interrompere)\n");
         System.out.print("  Nuovo username: ");
         String nu = scanner.nextLine().trim();
@@ -164,9 +161,9 @@ public class ConfiguratoreView {
                     || p.getStato() == StatoProposta.CONFERMATA)
                     .count();
 
-            System.out.println("\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP);
             System.out.println("  MENU PRINCIPALE  [" + controller.getConfiguratoreCorrente().getUsername() + "]");
-            System.out.println(SEP);
+            System.out.println(ViewUtils.SEP);
             System.out.println("  1. Gestione campi base");
             System.out.println("  2. Gestione campi comuni");
             System.out.println("  3. Gestione categorie");
@@ -220,9 +217,9 @@ public class ConfiguratoreView {
      * Al termine mostra il resoconto completo dell'importazione.
      */
     private void menuImportaBatch() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  IMPORTAZIONE BATCH  [NUOVO V5]");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         System.out.println("  Importa categorie, campi e proposte da file di testo.");
         System.out.println("  Formato: CAMPO_COMUNE | <nome> | <si/no>");
         System.out.println("           CATEGORIA    | <nome> [| CAMPO_SPECIFICO | <nome> | <si/no>]*");
@@ -254,9 +251,9 @@ public class ConfiguratoreView {
      * Importa un singolo file batch specificato dall'utente.
      */
     private void importaSingoloFile() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  IMPORTA SINGOLO FILE BATCH");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         System.out.println("  Inserisci il percorso del file batch.");
         System.out.println("  Esempio: batch_examples/setup_completo.batch");
         System.out.println("           /home/utente/mio_file.txt");
@@ -288,9 +285,9 @@ public class ConfiguratoreView {
      * Importa più file batch in sequenza.
      */
     private void importaFilMultipli() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  IMPORTA PIU' FILE BATCH IN SEQUENZA");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         System.out.println("  Inserisci i percorsi dei file batch uno alla volta.");
         System.out.println("  Premi INVIO senza testo per avviare l'importazione.");
         System.out.println("  (digita 'annulla' per tornare)\n");
@@ -325,9 +322,9 @@ public class ConfiguratoreView {
      * Mostra un esempio del formato batch direttamente in console.
      */
     private void mostraEsempioBatch() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  ESEMPIO DI FILE BATCH");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         System.out.println();
         System.out.println("  # EasyEvent – file batch di esempio");
         System.out.println("  # Le righe che iniziano con '#' sono commenti e vengono ignorate.");
@@ -369,9 +366,9 @@ public class ConfiguratoreView {
      * Stampa il resoconto di un'importazione di singolo file.
      */
     private void stampaResoconto(String percorso, BatchRisultato risultato) {
-        System.out.println("  " + SEP);
+        System.out.println("  " + ViewUtils.SEP);
         System.out.println("  RESOCONTO IMPORTAZIONE: " + percorso);
-        System.out.println("  " + SEP);
+        System.out.println("  " + ViewUtils.SEP);
 
         System.out.println("  Righe elaborate: " + risultato.getRigheTotali());
         System.out.println("  Successi:        " + risultato.getNumSuccessi());
@@ -395,11 +392,11 @@ public class ConfiguratoreView {
      * Stampa il resoconto aggregato di un'importazione multi-file.
      */
     private void stampaResocontoMulti(List<String> percorsi, BatchRisultato risultato) {
-        System.out.println("  " + SEP);
+        System.out.println("  " + ViewUtils.SEP);
         System.out.println("  RESOCONTO IMPORTAZIONE MULTI-FILE (" + percorsi.size() + " file)");
         System.out.println("  File elaborati:");
         percorsi.forEach(p -> System.out.println("    - " + p));
-        System.out.println("  " + SEP);
+        System.out.println("  " + ViewUtils.SEP);
 
         System.out.println("  Righe elaborate: " + risultato.getRigheTotali());
         System.out.println("  Successi:        " + risultato.getNumSuccessi());
@@ -453,9 +450,9 @@ public class ConfiguratoreView {
     // RITIRO PROPOSTA (V4 – invariato)
     // ================================================================
     private void menuRitiraProposta() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  RITIRO PROPOSTA  (misura eccezionale per cause di forza maggiore)");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         LocalDate oggi = LocalDate.now();
         List<Proposta> ritirabili = controller.getArchivio().stream()
                 .filter(p -> {
@@ -523,7 +520,7 @@ public class ConfiguratoreView {
     // CAMPI BASE
     // ================================================================
     private void menuCampiBase() {
-        System.out.println("\n" + SEP + "\n  CAMPI BASE  (immutabili)\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  CAMPI BASE  (immutabili)\n" + ViewUtils.SEP);
         List<Campo> cb = controller.getCampiBase();
         if (cb.isEmpty()) {
             System.out.println("  (nessun campo base definito)");
@@ -541,7 +538,7 @@ public class ConfiguratoreView {
     // ================================================================
     private void menuCampiComuni() {
         while (true) {
-            System.out.println("\n" + SEP + "\n  GESTIONE CAMPI COMUNI\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP + "\n  GESTIONE CAMPI COMUNI\n" + ViewUtils.SEP);
             List<Campo> cc = controller.getCampiComuni();
             if (cc.isEmpty()) {
                 System.out.println("  (nessun campo comune)");
@@ -608,7 +605,7 @@ public class ConfiguratoreView {
     // ================================================================
     private void menuCategorie() {
         while (true) {
-            System.out.println("\n" + SEP + "\n  GESTIONE CATEGORIE\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP + "\n  GESTIONE CATEGORIE\n" + ViewUtils.SEP);
             List<Categoria> cats = controller.getCategorie();
             if (cats.isEmpty()) {
                 System.out.println("  (nessuna categoria)");
@@ -723,7 +720,7 @@ public class ConfiguratoreView {
             return;
         }
         while (true) {
-            System.out.println("\n" + SEP + "\n  CAMPI SPECIFICI di '" + cat.getNome() + "'\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP + "\n  CAMPI SPECIFICI di '" + cat.getNome() + "'\n" + ViewUtils.SEP);
             List<Campo> campiSpec = controller.getCampiSpecificiCategoria(nomeCategoria);
             if (campiSpec.isEmpty()) {
                 System.out.println("  (nessuno)");
@@ -793,7 +790,7 @@ public class ConfiguratoreView {
             stampaErrore("Categoria non trovata: " + nome);
             return;
         }
-        System.out.println("\n" + SEP + "\n  DETTAGLIO: " + nome.toUpperCase() + "\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  DETTAGLIO: " + nome.toUpperCase() + "\n" + ViewUtils.SEP);
         System.out.println("\n  Campi BASE:");
         controller.getCampiBase().forEach(c -> System.out.println("    - " + c.getNome() + "  [obb]"));
         System.out.println("\n  Campi COMUNI:");
@@ -816,7 +813,7 @@ public class ConfiguratoreView {
     // RIEPILOGO
     // ================================================================
     private void visualizzaRiepilogo() {
-        System.out.println("\n" + SEP + "\n  RIEPILOGO CATEGORIE E CAMPI\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  RIEPILOGO CATEGORIE E CAMPI\n" + ViewUtils.SEP);
         System.out.println("\n  CAMPI BASE:");
         controller.getCampiBase().forEach(c -> System.out.println("    - " + c.getNome()));
         System.out.println("\n  CAMPI COMUNI:");
@@ -848,7 +845,7 @@ public class ConfiguratoreView {
     private void menuProposte() {
         while (true) {
             List<Proposta> sessione = controller.getProposteSessione();
-            System.out.println("\n" + SEP + "\n  GESTIONE PROPOSTE  (sessione corrente)\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP + "\n  GESTIONE PROPOSTE  (sessione corrente)\n" + ViewUtils.SEP);
             if (sessione.isEmpty()) {
                 System.out.println("  Nessuna proposta in sessione.");
             } else {
@@ -943,7 +940,7 @@ public class ConfiguratoreView {
     }
 
     private void mostraRiepilogoProposta(Proposta p) {
-        System.out.println("\n" + SEP2 + "\n  Riepilogo [ID " + p.getId() + "]  Stato: " + p.getStato() + "\n" + SEP2);
+        System.out.println("\n" + ViewUtils.SEP2 + "\n  Riepilogo [ID " + p.getId() + "]  Stato: " + p.getStato() + "\n" + ViewUtils.SEP2);
         for (String nome : p.getNomiCampi()) {
             boolean ob = p.isCampoObbligatorio(nome);
             String val = p.getValore(nome);
@@ -954,7 +951,7 @@ public class ConfiguratoreView {
             p.validazioneErrori(LocalDate.now())
                     .forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
         }
-        System.out.println(SEP2);
+        System.out.println(ViewUtils.SEP2);
     }
 
     private void offriPubblicazione(Proposta p) {
@@ -1052,7 +1049,7 @@ public class ConfiguratoreView {
     // BACHECA E ARCHIVIO
     // ================================================================
     private void visualizzaBacheca() {
-        System.out.println("\n" + SEP + "\n  BACHECA  -  PROPOSTE APERTE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  BACHECA  -  PROPOSTE APERTE\n" + ViewUtils.SEP);
         List<Proposta> tutte = controller.getBacheca();
         if (tutte.isEmpty()) {
             System.out.println("\n  (Nessuna proposta aperta)");
@@ -1080,7 +1077,7 @@ public class ConfiguratoreView {
     }
 
     private void visualizzaArchivio() {
-        System.out.println("\n" + SEP + "\n  ARCHIVIO PROPOSTE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  ARCHIVIO PROPOSTE\n" + ViewUtils.SEP);
         List<Proposta> archivio = controller.getArchivio();
         if (archivio.isEmpty()) {
             System.out.println("\n  (Nessuna proposta)");
@@ -1132,12 +1129,12 @@ public class ConfiguratoreView {
     }
 
     private void stampaBanner() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  EasyEvent  -  Back-end Configuratore  (Versione 5)");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         System.out.println("  Sistema di gestione iniziative ricreative");
         System.out.println("  Ingegneria del Software  -  A.A. 2025-2026");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
     }
 
     // ================================================================

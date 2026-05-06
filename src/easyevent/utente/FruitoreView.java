@@ -18,9 +18,6 @@ import java.util.stream.Collectors;
  */
 public class FruitoreView {
 
-    private static final String SEP = "------------------------------------------------------------";
-    private static final String SEP2 = "  ----------------------------------------------------------";
-
     private final FruitoreController controller;
     private final Scanner scanner;
 
@@ -64,7 +61,7 @@ public class FruitoreView {
     // ACCESSO (login o registrazione)
     // ================================================================
     private boolean gestioneAccesso() {
-        System.out.println("\n" + SEP + "\n  ACCESSO FRUITORE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  ACCESSO FRUITORE\n" + ViewUtils.SEP);
         System.out.println("  1. Login   2. Registrazione   0. Torna");
         System.out.print("  Scelta: ");
         return switch (scanner.nextLine().trim()) {
@@ -78,7 +75,7 @@ public class FruitoreView {
     }
 
     private boolean gestioneLogin() {
-        System.out.println("\n" + SEP + "\n  LOGIN FRUITORE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  LOGIN FRUITORE\n" + ViewUtils.SEP);
         System.out.println("  (digita 'annulla' per tornare)");
         for (int t = 0; t < 3; t++) {
             System.out.print("  Username: ");
@@ -102,7 +99,7 @@ public class FruitoreView {
     }
 
     private boolean gestioneRegistrazione() {
-        System.out.println("\n" + SEP + "\n  REGISTRAZIONE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  REGISTRAZIONE\n" + ViewUtils.SEP);
         System.out.println("  (digita 'annulla' per tornare)");
         System.out.print("  Username: ");
         String u = scanner.nextLine().trim();
@@ -146,9 +143,9 @@ public class FruitoreView {
             long nIscrizioni = controller.getBacheca().stream()
                     .filter(p -> controller.isIscritto(p.getId())).count();
 
-            System.out.println("\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP);
             System.out.println("  MENU FRUITORE  [" + controller.getFruitoreCorrente().getUsername() + "]");
-            System.out.println(SEP);
+            System.out.println(ViewUtils.SEP);
             System.out.println("  1. Visualizza bacheca");
             System.out.println("  2. Aderisci a una proposta");
             System.out.println("  3. Disdici iscrizione         [" + nIscrizioni + " iscrizione/i attive]");
@@ -179,7 +176,7 @@ public class FruitoreView {
     // BACHECA
     // ================================================================
     private void visualizzaBacheca() {
-        System.out.println("\n" + SEP + "\n  BACHECA  -  PROPOSTE APERTE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  BACHECA  -  PROPOSTE APERTE\n" + ViewUtils.SEP);
         List<String> categorie = controller.getCategorieConProposte();
         if (categorie.isEmpty()) {
             System.out.println("\n  (Nessuna proposta aperta in bacheca)");
@@ -190,7 +187,7 @@ public class FruitoreView {
             List<Proposta> perCat = controller.getBachecaPerCategoria(nomeCat);
             System.out.println("\n  CATEGORIA: " + nomeCat.toUpperCase()
                     + "  (" + perCat.size() + " proposta/e)");
-            System.out.println(SEP2);
+            System.out.println(ViewUtils.SEP2);
             perCat.forEach(this::stampaBloccoPropostaBacheca);
         }
         System.out.println("\n  Totale proposte aperte: " + controller.getBacheca().size());
@@ -249,7 +246,7 @@ public class FruitoreView {
             return;
         }
 
-        System.out.println("\n" + SEP + "\n  ADERISCI A UNA PROPOSTA\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  ADERISCI A UNA PROPOSTA\n" + ViewUtils.SEP);
         System.out.println("  Proposte disponibili:");
         for (Proposta p : disponibili) {
             int numMax = p.getNumeroMaxPartecipanti();
@@ -300,7 +297,7 @@ public class FruitoreView {
             return;
         }
 
-        System.out.println("\n" + SEP + "\n  DISDICI ISCRIZIONE\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP + "\n  DISDICI ISCRIZIONE\n" + ViewUtils.SEP);
         System.out.println("\n  Proposte a cui sei iscritto:");
         iscrittoA.forEach(p
                 -> System.out.println("    [ID " + p.getId() + "]  \""
@@ -398,10 +395,10 @@ public class FruitoreView {
     private void spazioPersonale() {
         while (true) {
             List<Notifica> notifiche = controller.getNotifiche();
-            System.out.println("\n" + SEP);
+            System.out.println("\n" + ViewUtils.SEP);
             System.out.println("  SPAZIO PERSONALE  ["
                     + controller.getFruitoreCorrente().getUsername() + "]");
-            System.out.println(SEP);
+            System.out.println(ViewUtils.SEP);
 
             if (notifiche.isEmpty()) {
                 System.out.println("\n  (Nessuna notifica)");
@@ -481,12 +478,12 @@ public class FruitoreView {
     }
 
     private void stampaBanner() {
-        System.out.println("\n" + SEP);
+        System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  EasyEvent  -  Front-end Fruitore  (Versione 5)");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
         System.out.println("  Sistema di gestione iniziative ricreative");
         System.out.println("  Ingegneria del Software  -  A.A. 2025-2026");
-        System.out.println(SEP);
+        System.out.println(ViewUtils.SEP);
     }
 
     private String messaggioIscrizioneErrore(IscrizioneException e) {

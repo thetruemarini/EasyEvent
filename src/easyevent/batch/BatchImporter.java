@@ -40,30 +40,20 @@ import java.util.List;
  */
 public class BatchImporter {
 
-    /**
-     * Separatore tra i token di ogni riga batch.
-     */
-    public static final String SEP = " | ";
+    // Separatore tra i token di ogni riga batch.
+    private static final String SEP = " | ";
 
-    /**
-     * Prefisso per i comandi di tipo campo comune.
-     */
-    public static final String CMD_CAMPO_COMUNE = "CAMPO_COMUNE";
+    // Prefisso per i comandi di tipo campo comune.
+    private static final String CMD_CAMPO_COMUNE = "CAMPO_COMUNE";
 
-    /**
-     * Prefisso per i comandi di tipo categoria.
-     */
-    public static final String CMD_CATEGORIA = "CATEGORIA";
+    // Prefisso per i comandi di tipo categoria.
+    private static final String CMD_CATEGORIA = "CATEGORIA";
 
-    /**
-     * Prefisso per i comandi di tipo proposta.
-     */
-    public static final String CMD_PROPOSTA = "PROPOSTA";
+    // Prefisso per i comandi di tipo proposta.
+    private static final String CMD_PROPOSTA = "PROPOSTA";
 
-    /**
-     * Parola chiave per i campi specifici inline nelle righe CATEGORIA.
-     */
-    public static final String KW_CAMPO_SPECIFICO = "CAMPO_SPECIFICO";
+    // Parola chiave per i campi specifici inline nelle righe CATEGORIA.
+    private static final String KW_CAMPO_SPECIFICO = "CAMPO_SPECIFICO";
 
     // ================================================================
     // INTERFACCIA FUNZIONALE per il callback di salvataggio
