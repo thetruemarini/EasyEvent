@@ -1,10 +1,15 @@
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\batch\BatchImporter.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\batch\BatchRisultato.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\categoria\Campo.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\categoria\CampoBase.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\categoria\CampoComune.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\categoria\CampoSpecifico.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\categoria\Categoria.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\core\AppData.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\ElementoGiaEsistenteException.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\ElementoInSessioneException.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\ElementoNonTrovatoException.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\ErroreValidazione.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\IscrizioneException.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\ModificaNonConsentitaException.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\RitiroNonConsensitoException.java
@@ -14,9 +19,11 @@ C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\notifica\TipoNotifica.ja
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\persistence\PersistenceManager.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\proposta\Proposta.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\proposta\StatoProposta.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\AppView.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\Configuratore.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\ConfiguratoreController.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\ConfiguratoreView.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\Fruitore.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\FruitoreController.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\FruitoreView.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\utente\ViewUtils.java
