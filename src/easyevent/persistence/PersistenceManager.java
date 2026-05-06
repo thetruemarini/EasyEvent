@@ -751,4 +751,39 @@ public class PersistenceManager {
     public String getDataFilePath() {
         return dataFilePath;
     }
+
+    // ================================================================
+    // METODI CON ECCEZIONE DI DOMINIO (usati dal Controller)
+    // ================================================================
+    /**
+     * Salva lo stato wrappando IOException in PersistenzaException. Il
+     * Controller usa questo metodo: non conosce IOException.
+     */
+    public void salvaSicuro(AppData data) {
+        try {
+            salva(data);
+        } catch (IOException e) {
+            throw new easyevent.exception.PersistenzaException(
+                    easyevent.exception.PersistenzaException.TipoErrore.ERRORE_SCRITTURA,
+                    "Impossibile salvare i dati su disco.",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Carica lo stato wrappando IOException in PersistenzaException. Il
+     * Controller usa questo metodo: non conosce IOException.
+     */
+    public boolean caricaSicuro(AppData data) {
+        try {
+            return carica(data);
+        } catch (IOException e) {
+            throw new easyevent.exception.PersistenzaException(
+                    easyevent.exception.PersistenzaException.TipoErrore.ERRORE_LETTURA,
+                    "Impossibile caricare i dati da disco.",
+                    e
+            );
+        }
+    }
 }

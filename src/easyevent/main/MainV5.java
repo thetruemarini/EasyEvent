@@ -1,6 +1,7 @@
 package easyevent.main;
 
 import easyevent.core.AppData;
+import easyevent.exception.PersistenzaException;
 import easyevent.persistence.PersistenceManager;
 import easyevent.utente.AppView;
 import easyevent.utente.ConfiguratoreController;
@@ -57,7 +58,7 @@ public class MainV5 {
         // Inizializza campi base se necessario
         try {
             confController.inizializzaCampiBase();
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             System.err.println("[Sistema] Campi base creati ma errore nel salvataggio: "
                     + e.getMessage());
         }

@@ -8,10 +8,10 @@ import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
+import easyevent.exception.PersistenzaException;
 import easyevent.exception.RitiroNonConsensitoException;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -273,8 +273,8 @@ public class ConfiguratoreView {
             stampaResoconto(percorso, risultato);
         } catch (IllegalStateException e) {
             stampaErrore("Impossibile importare: " + e.getMessage());
-        } catch (IOException e) {
-            stampaErrore("Errore di lettura file: " + e.getMessage()
+        } catch (PersistenzaException e) {
+            stampaErrore(messaggioPersistenza(e)
                     + "\n  Verificare che il percorso sia corretto e il file sia leggibile.");
         }
 
@@ -1135,6 +1135,17 @@ public class ConfiguratoreView {
         System.out.println("  Sistema di gestione iniziative ricreative");
         System.out.println("  Ingegneria del Software  -  A.A. 2025-2026");
         System.out.println(ViewUtils.SEP);
+    }
+
+    private String messaggioPersistenza(PersistenzaException e) {
+        return switch (e.getTipoErrore()) {
+            case FILE_NON_TROVATO ->
+                "File non trovato.";
+            case ERRORE_LETTURA ->
+                "Errore nella lettura del file: " + e.getMessage();
+            case ERRORE_SCRITTURA ->
+                "Errore nel salvataggio: " + e.getMessage();
+        };
     }
 
     // ================================================================

@@ -11,6 +11,7 @@ import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ErroreValidazione;
+import easyevent.exception.PersistenzaException;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
@@ -82,8 +83,8 @@ public class ConfiguratoreController {
                 Configuratore nuovo = new Configuratore(username, password, true);
                 appData.aggiungiConfiguratore(nuovo);
                 try {
-                    salva();
-                } catch (IOException ignored) {
+                    salvaInterno();
+                } catch (PersistenzaException ignored) {
                 }
                 configuratoreCorrente = nuovo;
                 return true;
@@ -134,22 +135,22 @@ public class ConfiguratoreController {
 
         configuratoreCorrente.impostaCredenzialiPersonali(nuovoUsername, nuovaPassword);
         try {
-            salva();
-        } catch (IOException e) {
+            salvaInterno();
+        } catch (PersistenzaException e) {
             configuratoreCorrente.revertCredenziali(vecchioUsername, vecchiaPassword);
-            throw new RuntimeException("Errore nel salvataggio delle credenziali.", e);
+            throw e;
         }
     }
 
     // ================================================================
     // CAMPI BASE
     // ================================================================
-    public void inizializzaCampiBase() throws IOException {
+    public void inizializzaCampiBase() {
         if (appData.isCampiBaseInitialized()) {
             return;
         }
         appData.inizializzaCampiBase();
-        salva();
+        persistenceManager.salvaSicuro(appData);
     }
 
     public List<Campo> getCampiBase() {
@@ -168,10 +169,10 @@ public class ConfiguratoreController {
         }
         appData.aggiungiCampoComune(new CampoComune(nome.trim(), obbligatorio));
         try {
-            salva();
-        } catch (IOException e) {
-            appData.rimuoviCampoComune(nome.trim()); // rollback
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            salvaInterno();
+        } catch (PersistenzaException e) {
+            appData.rimuoviCampoComune(nome.trim());
+            throw e;
         }
     }
 
@@ -193,9 +194,9 @@ public class ConfiguratoreController {
                     ElementoNonTrovatoException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
         try {
-            salva();
-        } catch (IOException e) {
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            salvaInterno();
+        } catch (PersistenzaException e) {
+            throw e;
         }
     }
 
@@ -208,9 +209,9 @@ public class ConfiguratoreController {
                     ElementoNonTrovatoException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
         try {
-            salva();
-        } catch (IOException e) {
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            salvaInterno();
+        } catch (PersistenzaException e) {
+            throw e;
         }
     }
 
@@ -230,10 +231,10 @@ public class ConfiguratoreController {
         }
         appData.aggiungiCategoria(new Categoria(nomeCategoria.trim()));
         try {
-            salva();
-        } catch (IOException e) {
+            salvaInterno();
+        } catch (PersistenzaException e) {
             appData.rimuoviCategoria(nomeCategoria.trim()); // rollback
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
     }
 
@@ -255,9 +256,9 @@ public class ConfiguratoreController {
                     ElementoNonTrovatoException.TipoElemento.CATEGORIA, nomeCategoria);
         }
         try {
-            salva();
-        } catch (IOException e) {
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            salvaInterno();
+        } catch (PersistenzaException e) {
+            throw e;
         }
     }
 
@@ -286,10 +287,10 @@ public class ConfiguratoreController {
         }
         cat.aggiungiCampoSpecifico(new CampoSpecifico(nomeCampo.trim(), obbligatorio));
         try {
-            salva();
-        } catch (IOException e) {
+            salvaInterno();
+        } catch (PersistenzaException e) {
             cat.rimuoviCampoSpecifico(nomeCampo.trim()); // rollback
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
     }
 
@@ -307,9 +308,9 @@ public class ConfiguratoreController {
                     ElementoNonTrovatoException.TipoElemento.CAMPO_SPECIFICO, nomeCampo);
         }
         try {
-            salva();
-        } catch (IOException e) {
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            salvaInterno();
+        } catch (PersistenzaException e) {
+            throw e;
         }
     }
 
@@ -328,9 +329,9 @@ public class ConfiguratoreController {
                     ElementoNonTrovatoException.TipoElemento.CAMPO_SPECIFICO, nomeCampo);
         }
         try {
-            salva();
-        } catch (IOException e) {
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            salvaInterno();
+        } catch (PersistenzaException e) {
+            throw e;
         }
     }
 
@@ -407,12 +408,12 @@ public class ConfiguratoreController {
         appData.aggiungiPropostaAperta(proposta);
         proposteSessione.remove(proposta);
         try {
-            salva();
-        } catch (IOException e) {
+            salvaInterno();
+        } catch (PersistenzaException e) {
             appData.rimuoviPropostaDaArchivio(proposta.getId());
             proposta.revertToValida();
             proposteSessione.add(proposta);
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
         return Collections.emptyList(); // lista vuota = successo
     }
@@ -450,8 +451,7 @@ public class ConfiguratoreController {
      * @throws IllegalArgumentException se percorsoFile è null o blank
      * @throws IOException se il file non esiste o non è leggibile
      */
-    public BatchRisultato importaBatch(String percorsoFile)
-            throws IOException {
+    public BatchRisultato importaBatch(String percorsoFile) {
         if (!isLoggato()) {
             throw new IllegalStateException("Nessun configuratore loggato: impossibile importare in batch.");
         }
@@ -462,7 +462,7 @@ public class ConfiguratoreController {
         BatchImporter importer = new BatchImporter(
                 appData,
                 configuratoreCorrente.getUsername(),
-                this::salva // lambda che delega al metodo salva() di questo controller
+                this::salvaInterno // lambda che delega al metodo salva() di questo controller
         );
 
         return importer.importa(percorsoFile);
@@ -490,7 +490,7 @@ public class ConfiguratoreController {
         BatchImporter importer = new BatchImporter(
                 appData,
                 configuratoreCorrente.getUsername(),
-                this::salva
+                this::salvaInterno
         );
 
         return importer.importaMultipli(percorsiFile);
@@ -514,14 +514,14 @@ public class ConfiguratoreController {
         p.verificaRitiroConsentito(oggi);
         appData.ritirareProposta(p, oggi);
         try {
-            salva();
-        } catch (IOException e) {
+            salvaInterno();
+        } catch (PersistenzaException e) {
             try {
                 persistenceManager.carica(appData);
             } catch (IOException re) {
                 System.err.println("[Sistema] Rollback fallito: " + re.getMessage());
             }
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
     }
 
@@ -547,8 +547,8 @@ public class ConfiguratoreController {
         int n = appData.aggiornaTransizioni(LocalDate.now());
         if (n > 0) {
             try {
-                salva();
-            } catch (IOException e) {
+                salvaInterno();
+            } catch (PersistenzaException e) {
                 System.err.println("[Sistema] Errore salvataggio dopo transizioni: " + e.getMessage());
                 try {
                     persistenceManager.carica(appData);
@@ -565,10 +565,17 @@ public class ConfiguratoreController {
     // ================================================================
     // UTILITA'
     // ================================================================
-    public void salva() throws IOException {
-        persistenceManager.salva(appData);
+    /**
+     * Uso interno al controller: wrappa in PersistenzaException
+     */
+    private void salvaInterno() {
+        persistenceManager.salvaSicuro(appData);
     }
 
+    /**
+     * Esposto al Main per il caricamento iniziale — accettabile nel punto di
+     * assemblaggio
+     */
     public boolean carica() throws IOException {
         return persistenceManager.carica(appData);
     }

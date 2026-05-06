@@ -8,6 +8,7 @@ import easyevent.core.AppData;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
+import easyevent.exception.PersistenzaException;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
 import java.io.IOException;
@@ -66,11 +67,9 @@ public class BatchImporter {
     public interface SalvaCallback {
 
         /**
-         * Salva lo stato corrente dell'applicazione.
-         *
-         * @throws IOException se il salvataggio fallisce
+         * Lancia PersistenzaException in caso di errore (RuntimeException).
          */
-        void salva() throws IOException;
+        void salva();
     }
 
     // ================================================================
@@ -116,21 +115,33 @@ public class BatchImporter {
      * @return il resoconto dell'importazione
      * @throws IOException se il file non esiste o non è leggibile
      */
-    public BatchRisultato importa(String percorsoFile) throws IOException {
+    public BatchRisultato importa(String percorsoFile) {
         if (percorsoFile == null || percorsoFile.isBlank()) {
             throw new IllegalArgumentException("Il percorso del file non puo' essere null o vuoto.");
         }
-
         Path path = Paths.get(percorsoFile);
         if (!Files.exists(path)) {
-            throw new IOException("File non trovato: " + percorsoFile);
+            throw new PersistenzaException(
+                    PersistenzaException.TipoErrore.FILE_NON_TROVATO,
+                    "File non trovato: " + percorsoFile
+            );
         }
         if (!Files.isRegularFile(path)) {
-            throw new IOException("Il percorso non indica un file regolare: " + percorsoFile);
+            throw new PersistenzaException(
+                    PersistenzaException.TipoErrore.ERRORE_LETTURA,
+                    "Il percorso non indica un file regolare: " + percorsoFile
+            );
         }
-
-        List<String> righe = Files.readAllLines(path, StandardCharsets.UTF_8);
-        return elaboraRighe(righe);
+        try {
+            List<String> righe = Files.readAllLines(path, StandardCharsets.UTF_8);
+            return elaboraRighe(righe);
+        } catch (IOException e) {
+            throw new PersistenzaException(
+                    PersistenzaException.TipoErrore.ERRORE_LETTURA,
+                    "Errore nella lettura del file: " + percorsoFile,
+                    e
+            );
+        }
     }
 
     /**
@@ -149,7 +160,7 @@ public class BatchImporter {
             try {
                 BatchRisultato parziale = importa(percorso);
                 totale.aggiungi(parziale);
-            } catch (IOException e) {
+            } catch (PersistenzaException e) {
                 // Anche l'apertura del file è un errore che non blocca il resto
                 totale.aggiungiErrore(0,
                         "Impossibile aprire il file '" + percorso + "': " + e.getMessage());
@@ -276,7 +287,7 @@ public class BatchImporter {
             // Cattura errori di programmazione (nome null/vuoto, tipo errato)
             // che restano come IllegalArgumentException nel Model.
             risultato.aggiungiErrore(numeroRiga, "Errore creazione campo comune: " + e.getMessage());
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             appData.rimuoviCampoComune(nomeCampo);
             risultato.aggiungiErrore(numeroRiga,
                     "Campo aggiunto in memoria ma errore nel salvataggio (rollback eseguito): "
@@ -406,7 +417,7 @@ public class BatchImporter {
         } catch (IllegalArgumentException e) {
             risultato.aggiungiErrore(numeroRiga,
                     "Errore creazione categoria: " + e.getMessage());
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             appData.rimuoviCategoria(nomeCategoria);
             risultato.aggiungiErrore(numeroRiga,
                     "Categoria aggiunta in memoria ma errore nel salvataggio (rollback eseguito): "
@@ -550,7 +561,7 @@ public class BatchImporter {
                     "Proposta pubblicata in bacheca: [ID " + id + "] '"
                     + (titolo.isBlank() ? "(senza titolo)" : titolo)
                     + "' — categoria: " + nomeCategoria);
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             // Rollback: rimuove la proposta dall'archivio e resetta lo stato
             appData.rimuoviPropostaDaArchivio(id);
             proposta.revertToValida();
