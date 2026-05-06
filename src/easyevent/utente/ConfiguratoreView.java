@@ -480,7 +480,7 @@ public class ConfiguratoreView {
         for (Proposta p : ritirabili) {
             System.out.println("  [ID " + p.getId() + "]  Stato: " + p.getStato()
                     + "  \"" + p.getValore("Titolo") + "\"  Data: " + p.getValore(Proposta.CAMPO_DATA)
-                    + "  Iscritti: " + p.getAderenti().size());
+                    + "  Iscritti: " + p.getNumAderenti());
         }
         System.out.print("\n  ID proposta da ritirare (0 per annullare): ");
         String input = scanner.nextLine().trim();
@@ -789,12 +789,11 @@ public class ConfiguratoreView {
     private void visualizzaDettaglioCategoria() {
         System.out.print("  Nome della categoria: ");
         String nome = scanner.nextLine().trim();
-        Categoria cat = controller.getCategoria(nome);
-        if (cat == null) {
+        if (controller.getCategoria(nome) == null) {
             stampaErrore("Categoria non trovata: " + nome);
             return;
         }
-        System.out.println("\n" + SEP + "\n  DETTAGLIO: " + cat.getNome().toUpperCase() + "\n" + SEP);
+        System.out.println("\n" + SEP + "\n  DETTAGLIO: " + nome.toUpperCase() + "\n" + SEP);
         System.out.println("\n  Campi BASE:");
         controller.getCampiBase().forEach(c -> System.out.println("    - " + c.getNome() + "  [obb]"));
         System.out.println("\n  Campi COMUNI:");
@@ -804,10 +803,11 @@ public class ConfiguratoreView {
             controller.getCampiComuni().forEach(c -> System.out.println("    - " + c.getNome() + "  [" + (c.isObbligatorio() ? "obb" : "fac") + "]"));
         }
         System.out.println("\n  Campi SPECIFICI:");
-        if (cat.getCampiSpecifici().isEmpty()) {
+        List<Campo> campiSpec = controller.getCampiSpecificiCategoria(nome);
+        if (campiSpec.isEmpty()) {
             System.out.println("    (nessuno)");
         } else {
-            cat.getCampiSpecifici().forEach(c -> System.out.println("    - " + c.getNome() + "  [" + (c.isObbligatorio() ? "obb" : "fac") + "]"));
+            campiSpec.forEach(c -> System.out.println("    - " + c.getNome() + "  [" + (c.isObbligatorio() ? "obb" : "fac") + "]"));
         }
         premInvio();
     }
@@ -831,10 +831,11 @@ public class ConfiguratoreView {
         } else {
             controller.getCategorie().forEach(cat -> {
                 System.out.println("    > " + cat.getNome());
-                if (cat.getCampiSpecifici().isEmpty()) {
+                List<Campo> campiSpec = controller.getCampiSpecificiCategoria(cat.getNome());
+                if (campiSpec.isEmpty()) {
                     System.out.println("      (nessun campo specifico)");
                 } else {
-                    cat.getCampiSpecifici().forEach(c -> System.out.println("      - " + c.getNome() + "  [" + (c.isObbligatorio() ? "obb" : "fac") + "]"));
+                    campiSpec.forEach(c -> System.out.println("      - " + c.getNome() + "  [" + (c.isObbligatorio() ? "obb" : "fac") + "]"));
                 }
             });
         }
@@ -1063,13 +1064,13 @@ public class ConfiguratoreView {
                     perCat.forEach(p -> {
                         String dataPub = p.getDataPubblicazione() != null ? p.getDataPubblicazione().format(Proposta.DATE_FORMAT) : "-";
                         int numMax = p.getNumeroMaxPartecipanti();
-                        System.out.println("\n  [ID " + p.getId() + "]  Pub: " + dataPub + "  Iscritti: " + p.getAderenti().size() + "/" + (numMax < 0 ? "N/D" : numMax));
-                        p.getValori().forEach((nome, val) -> {
+                        System.out.println("\n  [ID " + p.getId() + "]  Pub: " + dataPub + "  Iscritti: " + p.getNumAderenti() + "/" + (numMax < 0 ? "N/D" : numMax));
+                        for (String nomeCampo : p.getNomiCampi()) {
+                            String val = p.getValore(nomeCampo);
                             if (!val.isBlank()) {
-                                System.out.println("    " + nome + ": " + val);
-
+                                System.out.println("    " + nomeCampo + ": " + val);
                             }
-                        });
+                        }
                     });
                 }
             });
@@ -1099,9 +1100,12 @@ public class ConfiguratoreView {
                 String titolo = p.getValore("Titolo");
                 String dataPub = p.getDataPubblicazione() != null ? p.getDataPubblicazione().format(Proposta.DATE_FORMAT) : "-";
                 System.out.println("\n    [ID " + p.getId() + "]  \"" + (titolo.isBlank() ? "(senza titolo)" : titolo) + "\"  " + p.getNomeCategoria());
-                System.out.println("    Pub: " + dataPub + "  Iscritti: " + p.getAderenti().size() + "/" + (p.getNumeroMaxPartecipanti() < 0 ? "N/D" : p.getNumeroMaxPartecipanti()));
+                System.out.println("    Pub: " + dataPub + "  Iscritti: " + p.getNumAderenti() + "/" + (p.getNumeroMaxPartecipanti() < 0 ? "N/D" : p.getNumeroMaxPartecipanti()));
                 if (!p.getStoricoStati().isEmpty()) {
-                    System.out.println("    Storico: " + p.getStoricoStati().stream().map(Object::toString).collect(Collectors.joining(" -> ")));
+                    String storico = p.getStoricoStati().stream()
+                            .map(cs -> cs.stato.name() + " (" + cs.data.format(Proposta.DATE_FORMAT) + ")")
+                            .collect(Collectors.joining(" -> "));
+                    System.out.println("    Storico: " + storico);
                 }
             });
         }

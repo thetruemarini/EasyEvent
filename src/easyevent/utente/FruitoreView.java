@@ -206,17 +206,15 @@ public class FruitoreView {
         System.out.println("    [ID " + p.getId() + "]  \""
                 + (titolo.isBlank() ? "(senza titolo)" : titolo) + "\""
                 + (iscritto ? "  [ISCRITTO]" : ""));
-        System.out.println("    Iscrizioni: " + p.getAderenti().size()
+        System.out.println("    Iscrizioni: " + p.getNumAderenti()
                 + "/" + (numMax < 0 ? "N/D" : numMax)
                 + "   Termine: " + p.getValore(Proposta.CAMPO_TERMINE_ISCRIZIONE));
 
-        // 1. Stampa prima i campi "in evidenza" dettati dal Model
-        for (String nome : p.getValori().keySet()) {
+        for (String nome : p.getNomiCampi()) {
             if (controller.isCampoInEvidenza(p.getNomeCategoria(), nome)
                     && !nome.equalsIgnoreCase("Titolo")
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_TERMINE_ISCRIZIONE)
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_NUM_PARTECIPANTI)) {
-
                 String v = p.getValore(nome);
                 if (!v.isBlank()) {
                     System.out.println("    " + nome + ": " + v);
@@ -224,13 +222,11 @@ public class FruitoreView {
             }
         }
 
-        // 2. Stampa i restanti campi aggiuntivi/specifici
-        for (String nome : p.getValori().keySet()) {
+        for (String nome : p.getNomiCampi()) {
             if (!controller.isCampoInEvidenza(p.getNomeCategoria(), nome)
                     && !nome.equalsIgnoreCase("Titolo")
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_TERMINE_ISCRIZIONE)
                     && !nome.equalsIgnoreCase(Proposta.CAMPO_NUM_PARTECIPANTI)) {
-
                 String v = p.getValore(nome);
                 if (!v.isBlank()) {
                     System.out.println("    " + nome + ": " + v);
@@ -257,7 +253,7 @@ public class FruitoreView {
         System.out.println("  Proposte disponibili:");
         for (Proposta p : disponibili) {
             int numMax = p.getNumeroMaxPartecipanti();
-            String posti = numMax < 0 ? "N/D" : String.valueOf(numMax - p.getAderenti().size());
+            String posti = numMax < 0 ? "N/D" : String.valueOf(numMax - p.getNumAderenti());
             System.out.println("    [ID " + p.getId() + "]  "
                     + p.getNomeCategoria() + "  \""
                     + p.getValore("Titolo") + "\""

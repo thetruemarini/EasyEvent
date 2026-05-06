@@ -536,6 +536,10 @@ public class Proposta {
         return Collections.unmodifiableList(storicoStati);
     }
 
+    public int getNumAderenti() {
+        return aderenti.size();
+    }
+
     // ================================================================
     // INVARIANTE
     // ================================================================
