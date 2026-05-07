@@ -1,4 +1,4 @@
-package easyevent.utente;
+package easyevent.model;
 /**
  * Rappresenta un utente configuratore del sistema.
  *

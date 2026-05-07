@@ -1,5 +1,7 @@
-package easyevent.utente;
+package easyevent.view;
 
+import easyevent.controller.ConfiguratoreController;
+import easyevent.controller.FruitoreController;
 import java.util.Scanner;
 
 /**

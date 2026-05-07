@@ -1,4 +1,4 @@
-package easyevent.utente;
+package easyevent.model;
 
 import easyevent.notifica.Notifica;
 import java.util.ArrayList;

@@ -1,5 +1,6 @@
-package easyevent.utente;
+package easyevent.view;
 
+import easyevent.controller.FruitoreController;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.IscrizioneException;

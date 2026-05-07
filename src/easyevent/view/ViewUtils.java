@@ -1,4 +1,4 @@
-package easyevent.utente;
+package easyevent.view;
 
 /**
  * Costanti e utilità condivise tra le View testuali.

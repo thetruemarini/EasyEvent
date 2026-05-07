@@ -1,8 +1,9 @@
-package easyevent.utente;
+package easyevent.view;
 
 import easyevent.batch.BatchRisultato;
 import easyevent.categoria.Campo;
 import easyevent.categoria.Categoria;
+import easyevent.controller.ConfiguratoreController;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;

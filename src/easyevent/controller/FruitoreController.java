@@ -1,4 +1,4 @@
-package easyevent.utente;
+package easyevent.controller;
 
 import easyevent.categoria.Campo;
 import easyevent.core.AppData;
@@ -6,6 +6,7 @@ import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.notifica.Notifica;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.Proposta;
+import easyevent.model.Fruitore;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;

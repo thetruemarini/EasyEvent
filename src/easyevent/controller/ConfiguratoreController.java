@@ -1,4 +1,4 @@
-package easyevent.utente;
+package easyevent.controller;
 
 import easyevent.batch.BatchImporter;
 import easyevent.batch.BatchRisultato;
@@ -15,6 +15,7 @@ import easyevent.exception.PersistenzaException;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
+import easyevent.model.Configuratore;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
