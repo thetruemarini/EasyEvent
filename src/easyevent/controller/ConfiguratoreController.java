@@ -12,10 +12,10 @@ import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.PersistenzaException;
+import easyevent.model.Configuratore;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import easyevent.model.Configuratore;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -524,6 +524,14 @@ public class ConfiguratoreController {
             }
             throw e;
         }
+    }
+
+    /**
+     * Restituisce le proposte che il configuratore può ritirare oggi. La regola
+     * "quali proposte sono ritirabili" è nel Model.
+     */
+    public List<Proposta> getProposteRitirabili() {
+        return appData.getProposteRitirabili(LocalDate.now());
     }
 
     // ================================================================

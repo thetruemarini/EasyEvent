@@ -157,10 +157,7 @@ public class ConfiguratoreView {
         while (true) {
             int nSessione = controller.getProposteSessione().size();
             int nBacheca = controller.getBacheca().size();
-            long nRitirabili = controller.getArchivio().stream()
-                    .filter(p -> p.getStato() == StatoProposta.APERTA
-                    || p.getStato() == StatoProposta.CONFERMATA)
-                    .count();
+            int nRitirabili = controller.getProposteRitirabili().size();
 
             System.out.println("\n" + ViewUtils.SEP);
             System.out.println("  MENU PRINCIPALE  [" + controller.getConfiguratoreCorrente().getUsername() + "]");
@@ -454,21 +451,9 @@ public class ConfiguratoreView {
         System.out.println("\n" + ViewUtils.SEP);
         System.out.println("  RITIRO PROPOSTA  (misura eccezionale per cause di forza maggiore)");
         System.out.println(ViewUtils.SEP);
-        LocalDate oggi = LocalDate.now();
-        List<Proposta> ritirabili = controller.getArchivio().stream()
-                .filter(p -> {
-                    if (p.getStato() != StatoProposta.APERTA
-                            && p.getStato() != StatoProposta.CONFERMATA) {
-                        return false;
-                    }
-                    try {
-                        p.verificaRitiroConsentito(oggi);
-                        return true;
-                    } catch (RitiroNonConsensitoException e) {
-                        return false;
-                    }
-                })
-                .collect(Collectors.toList());
+
+        List<Proposta> ritirabili = controller.getProposteRitirabili();
+
         if (ritirabili.isEmpty()) {
             System.out.println("\n  Nessuna proposta ritirabile al momento.");
             premInvio();
@@ -498,7 +483,8 @@ public class ConfiguratoreView {
             stampaErrore("Nessuna proposta ritirabile con ID " + id + ".");
             return;
         }
-        System.out.print("  Confermi il ritiro di [ID " + id + "] \"" + scelta.getValore("Titolo") + "\"? (s/n): ");
+        System.out.print("  Confermi il ritiro di [ID " + id + "] \""
+                + scelta.getValore("Titolo") + "\"? (s/n): ");
         if (!scanner.nextLine().trim().equalsIgnoreCase("s")) {
             System.out.println("  Annullato.");
             return;

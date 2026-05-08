@@ -357,6 +357,55 @@ public class AppData {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Restituisce le proposte che possono essere ritirate oggi. Una proposta è
+     * ritirabile se è APERTA o CONFERMATA e la data dell'evento è ancora
+     * futura.
+     */
+    public List<Proposta> getProposteRitirabili(LocalDate oggi) {
+        return archivio.stream()
+                .filter(p -> {
+                    if (p.getStato() != StatoProposta.APERTA
+                            && p.getStato() != StatoProposta.CONFERMATA) {
+                        return false;
+                    }
+                    try {
+                        p.verificaRitiroConsentito(oggi);
+                        return true;
+                    } catch (easyevent.exception.RitiroNonConsensitoException e) {
+                        return false;
+                    }
+                })
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Restituisce le proposte aperte a cui il fruitore con questo username è
+     * iscritto.
+     */
+    public List<Proposta> getProposteIscrittoFruitore(String username) {
+        if (username == null) {
+            return new ArrayList<>();
+        }
+        return archivio.stream()
+                .filter(p -> p.getStato() == StatoProposta.APERTA
+                && p.isAderito(username))
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Restituisce i nomi delle categorie che hanno almeno una proposta aperta,
+     * ordinati alfabeticamente.
+     */
+    public List<String> getCategorieConProposteAperte() {
+        return archivio.stream()
+                .filter(p -> p.getStato() == StatoProposta.APERTA)
+                .map(Proposta::getNomeCategoria)
+                .distinct()
+                .sorted()
+                .collect(java.util.stream.Collectors.toList());
+    }
+
     public int getNuovoIdProposta() {
         return prossimoIdProposta++;
     }

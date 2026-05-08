@@ -3,15 +3,14 @@ package easyevent.controller;
 import easyevent.categoria.Campo;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoNonTrovatoException;
+import easyevent.model.Fruitore;
 import easyevent.notifica.Notifica;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.Proposta;
-import easyevent.model.Fruitore;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Controller per tutte le operazioni del fruitore (Versione 5). Identico alla
@@ -99,8 +98,7 @@ public class FruitoreController {
     }
 
     public List<String> getCategorieConProposte() {
-        return appData.getBacheca().stream()
-                .map(Proposta::getNomeCategoria).distinct().sorted().collect(Collectors.toList());
+        return appData.getCategorieConProposteAperte();
     }
 
     public Proposta getPropostaAperta(int id) {
@@ -157,6 +155,17 @@ public class FruitoreController {
         }
         Proposta p = getPropostaAperta(idProposta);
         return p != null && p.isAderito(fruitoreCorrente.getUsername());
+    }
+
+    /**
+     * Restituisce il numero di proposte aperte a cui il fruitore è iscritto. La
+     * logica "quali iscrizioni conta" sta nel Model, non nella View.
+     */
+    public int getNumeroIscrizioniAttive() {
+        if (!isLoggato()) {
+            return 0;
+        }
+        return appData.getProposteIscrittoFruitore(fruitoreCorrente.getUsername()).size();
     }
 
     public List<Notifica> getNotifiche() {

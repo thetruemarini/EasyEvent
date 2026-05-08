@@ -141,8 +141,7 @@ public class FruitoreView {
     private boolean menuPrincipale() {
         while (true) {
             int nNotifiche = controller.getNotifiche().size();
-            long nIscrizioni = controller.getBacheca().stream()
-                    .filter(p -> controller.isIscritto(p.getId())).count();
+            int nIscrizioni = controller.getNumeroIscrizioniAttive();
 
             System.out.println("\n" + ViewUtils.SEP);
             System.out.println("  MENU FRUITORE  [" + controller.getFruitoreCorrente().getUsername() + "]");
