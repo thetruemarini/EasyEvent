@@ -38,19 +38,6 @@ public class CampoBase extends Campo {
 
     @Override
     public boolean isInEvidenza() {
-        return isInEvidenzaHelper(getNome());
-    }
-
-    static boolean isInEvidenzaHelper(String nome) {
-        String[] inEvidenza = {
-            "data inizio", "ora", "luogo", "quota individuale",
-            "data conclusiva", "durata", "note", "compreso nella quota"
-        };
-        for (String s : inEvidenza) {
-            if (s.equalsIgnoreCase(nome)) {
-                return true;
-            }
-        }
-        return false;
+        return isInEvidenzaPerNome();
     }
 }

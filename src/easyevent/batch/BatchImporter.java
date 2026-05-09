@@ -575,12 +575,9 @@ public class BatchImporter {
     // UTILITY
     // ================================================================
     /**
-     * Cerca una chiave nella mappa in modo case-insensitive.
-     *
-     * @param mappa la mappa in cui cercare
-     * @param chiave la chiave da trovare
-     * @return la chiave nella forma originale presente nella mappa, o null se
-     * non trovata
+     * Utility statica privata: funzione pura senza stato e senza effetti
+     * collaterali. Non è esposta all'esterno, quindi non crea dipendenze dalla
+     * classe concreta.
      */
     private static String trovaChiaveCaseInsensitive(
             LinkedHashMap<String, Boolean> mappa, String chiave) {

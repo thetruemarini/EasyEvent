@@ -576,7 +576,7 @@ public class Proposta {
     // ================================================================
     // UTILITY
     // ================================================================
-    public static LocalDate parseDateSafe(String s) {
+    private static LocalDate parseDateSafe(String s) {
         if (s == null || s.isBlank()) {
             return null;
         }

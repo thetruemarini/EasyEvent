@@ -32,6 +32,6 @@ public class CampoComune extends Campo {
 
     @Override
     public boolean isInEvidenza() {
-        return CampoBase.isInEvidenzaHelper(getNome());
+        return isInEvidenzaPerNome();
     }
 }

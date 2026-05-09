@@ -77,4 +77,22 @@ public abstract class Campo {
         return "Campo{tipo=" + getTipo() + ", nome='" + nome
                 + "', obbligatorio=" + obbligatorio + "}";
     }
+
+    /**
+     * Logica condivisa tra le sottoclassi per determinare se un campo è "in
+     * evidenza" nella bacheca. Messa qui per evitare che CampoComune e
+     * CampoSpecifico dipendano da CampoBase solo per questo helper.
+     */
+    protected boolean isInEvidenzaPerNome() {
+        String[] inEvidenza = {
+            "data inizio", "ora", "luogo", "quota individuale",
+            "data conclusiva", "durata", "note", "compreso nella quota"
+        };
+        for (String s : inEvidenza) {
+            if (s.equalsIgnoreCase(getNome())) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
