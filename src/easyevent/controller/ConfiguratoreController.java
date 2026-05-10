@@ -14,6 +14,7 @@ import easyevent.exception.ErroreValidazione;
 import easyevent.exception.PersistenzaException;
 import easyevent.model.Configuratore;
 import easyevent.persistence.PersistenceManager;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
 import java.io.IOException;
@@ -377,7 +378,7 @@ public class ConfiguratoreController {
         for (Campo c : cat.getCampiSpecifici()) {
             snapshot.put(c.getNome(), c.isObbligatorio());
         }
-        int id = appData.getNuovoIdProposta();
+        IdProposta id = appData.getNuovoIdProposta();
         Proposta p = new Proposta(id, nomeCategoria, configuratoreCorrente.getUsername(), snapshot);
         proposteSessione.add(p);
         return p;
@@ -500,7 +501,7 @@ public class ConfiguratoreController {
     // ================================================================
     // RITIRO PROPOSTA (V4 – invariato)
     // ================================================================
-    public void ritirareProposta(int idProposta) {
+    public void ritirareProposta(IdProposta idProposta) {
         if (!isLoggato()) {
             throw new IllegalStateException("Accesso negato.");
         }
@@ -508,7 +509,7 @@ public class ConfiguratoreController {
         if (p == null) {
             throw new ElementoNonTrovatoException(
                     ElementoNonTrovatoException.TipoElemento.PROPOSTA,
-                    String.valueOf(idProposta)
+                    idProposta.toString()
             );
         }
         LocalDate oggi = LocalDate.now();

@@ -1,5 +1,6 @@
 package easyevent.model;
 
+import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -59,8 +60,8 @@ public class Fruitore {
         assert repOk() : "Invariante violato dopo aggiungiNotifica";
     }
 
-    public boolean rimuoviNotifica(int id) {
-        boolean rimossa = notifiche.removeIf(n -> n.getId() == id);
+    public boolean rimuoviNotifica(IdNotifica id) {
+        boolean rimossa = notifiche.removeIf(n -> n.getId().equals(id));
         assert repOk() : "Invariante violato dopo rimuoviNotifica";
         return rimossa;
     }

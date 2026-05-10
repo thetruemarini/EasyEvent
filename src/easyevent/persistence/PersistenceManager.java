@@ -8,8 +8,10 @@ import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
 import easyevent.model.Configuratore;
 import easyevent.model.Fruitore;
+import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.notifica.TipoNotifica;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
 import java.io.*;
@@ -176,7 +178,8 @@ public class PersistenceManager {
 
         int maxIdNotifica = data.getFruitori().stream()
                 .flatMap(f -> f.getNotifiche().stream())
-                .mapToInt(Notifica::getId).max().orElse(0);
+                .mapToInt(n -> n.getId().getValore()) // <-- estrai il valore primitivo
+                .max().orElse(0);
         if (maxIdNotifica >= data.getProssimoIdNotifica()) {
             data.setProssimoIdNotifica(maxIdNotifica + 1);
         }
@@ -214,7 +217,7 @@ public class PersistenceManager {
         for (int i = 0; i < notifiche.size(); i++) {
             Notifica n = notifiche.get(i);
             sb.append(indent).append("    {\n");
-            sb.append(indent).append("      \"id\": ").append(n.getId()).append(",\n");
+            sb.append(indent).append("      \"id\": ").append(n.getId().getValore()).append(",\n");
             sb.append(indent).append("      \"tipo\": ").append(jsonStr(n.getTipo().name())).append(",\n");
             sb.append(indent).append("      \"idProposta\": ").append(n.getIdProposta()).append(",\n");
             sb.append(indent).append("      \"titoloProposta\": ").append(jsonStr(n.getTitoloProposta())).append(",\n");
@@ -238,7 +241,7 @@ public class PersistenceManager {
     private String serializzaProposta(Proposta p, String indent) {
         StringBuilder sb = new StringBuilder();
         sb.append(indent).append("{\n");
-        sb.append(indent).append("  \"id\": ").append(p.getId()).append(",\n");
+        sb.append(indent).append("  \"id\": ").append(p.getId().getValore()).append(",\n");
         sb.append(indent).append("  \"nomeCategoria\": ").append(jsonStr(p.getNomeCategoria())).append(",\n");
         sb.append(indent).append("  \"usernameCreatore\": ").append(jsonStr(p.getUsernameCreatore())).append(",\n");
         sb.append(indent).append("  \"stato\": ").append(jsonStr(p.getStato().name())).append(",\n");
@@ -367,7 +370,7 @@ public class PersistenceManager {
                         dataCreazStr.trim(), Notifica.DATE_FORMAT);
 
                 result.add(new Notifica(
-                        id,
+                        new IdNotifica(idProposta),
                         tipo,
                         idProposta,
                         titoloProposta != null ? titoloProposta : "",
@@ -543,7 +546,7 @@ public class PersistenceManager {
                 }
             }
             try {
-                result.add(new Proposta(id, nomeCategoria, usernameCreatore,
+                result.add(new Proposta(new IdProposta(id), nomeCategoria, usernameCreatore,
                         campiSnapshot, valori, stato, dataPub, aderenti, storico));
             } catch (IllegalArgumentException e) {
                 System.err.println("[PersistenceManager] Proposta scartata: " + e.getMessage());

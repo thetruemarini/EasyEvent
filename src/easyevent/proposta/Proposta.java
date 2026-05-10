@@ -37,7 +37,7 @@ public class Proposta {
     public static final String CAMPO_NUM_PARTECIPANTI = "Numero di partecipanti";
     private static final String CAMPO_ORA = "Ora";
 
-    private final int id;
+    private final IdProposta id;
     private final String nomeCategoria;
     private final String usernameCreatore;
 
@@ -75,10 +75,10 @@ public class Proposta {
     // ================================================================
     // COSTRUTTORI
     // ================================================================
-    public Proposta(int id, String nomeCategoria, String usernameCreatore,
+    public Proposta(IdProposta id, String nomeCategoria, String usernameCreatore,
             LinkedHashMap<String, Boolean> campiOrdinati) {
-        if (id < 0) {
-            throw new IllegalArgumentException("L'id della proposta non puo' essere negativo.");
+        if (id == null) {
+            throw new IllegalArgumentException("L'id della proposta non puo' essere null.");
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Il nome della categoria non puo' essere null o vuoto.");
@@ -107,14 +107,14 @@ public class Proposta {
         assert repOk() : "Invariante violato dopo costruzione Proposta";
     }
 
-    public Proposta(int id, String nomeCategoria, String usernameCreatore,
+    public Proposta(IdProposta id, String nomeCategoria, String usernameCreatore,
             LinkedHashMap<String, Boolean> campiOrdinati,
             Map<String, String> valori, StatoProposta stato,
             LocalDate dataPubblicazione,
             List<String> aderenti,
             List<CambioStato> storicoStati) {
-        if (id < 0) {
-            throw new IllegalArgumentException("L'id della proposta non puo' essere negativo.");
+        if (id == null) {
+            throw new IllegalArgumentException("L'id della proposta non puo' essere null.");
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Il nome della categoria non puo' essere null o vuoto.");
@@ -148,7 +148,7 @@ public class Proposta {
     /**
      * Costruttore di compatibilita' V2 (senza aderenti e storico).
      */
-    public Proposta(int id, String nomeCategoria, String usernameCreatore,
+    public Proposta(IdProposta id, String nomeCategoria, String usernameCreatore,
             LinkedHashMap<String, Boolean> campiOrdinati,
             Map<String, String> valori, StatoProposta stato,
             LocalDate dataPubblicazione) {
@@ -500,7 +500,7 @@ public class Proposta {
     // ================================================================
     // GETTERS
     // ================================================================
-    public int getId() {
+    public IdProposta getId() {
         return id;
     }
 
@@ -544,7 +544,7 @@ public class Proposta {
     // INVARIANTE
     // ================================================================
     public boolean repOk() {
-        if (id < 0) {
+        if (id == null) {
             return false;
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {

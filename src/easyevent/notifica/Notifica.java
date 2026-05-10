@@ -15,7 +15,7 @@ public class Notifica {
     public static final DateTimeFormatter DATE_FORMAT
             = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    private final int id;
+    private final IdNotifica id;
     private final TipoNotifica tipo;        // COSA è successo
     private final int idProposta;
     private final String titoloProposta;    // dati grezzi, non frasi
@@ -25,12 +25,12 @@ public class Notifica {
     private final String quotaIndividuale;
     private final LocalDate dataCreazione;
 
-    public Notifica(int id, TipoNotifica tipo, int idProposta, 
+    public Notifica(IdNotifica id, TipoNotifica tipo, int idProposta, 
                     String titoloProposta, String dataEvento, 
                     String oraEvento, String luogoEvento, 
                     String quotaIndividuale, LocalDate dataCreazione) {
-        if (id < 0) {
-            throw new IllegalArgumentException("L'id della notifica non puo' essere negativo.");
+        if (id == null) {
+            throw new IllegalArgumentException("L'id della notifica non puo' essere null.");
         }
         if (tipo == null) {
             throw new IllegalArgumentException("Il tipo della notifica non puo' essere null.");
@@ -50,7 +50,7 @@ public class Notifica {
         assert repOk() : "Invariante violato dopo costruzione Notifica";
     }
 
-    public int getId() {
+    public IdNotifica getId() {
         return id;
     }
 
@@ -67,7 +67,7 @@ public class Notifica {
     public LocalDate getDataCreazione() { return dataCreazione; }
 
     public boolean repOk() {
-        return id >= 0
+        return id != null
             && tipo != null
             && titoloProposta != null
             && dataEvento != null

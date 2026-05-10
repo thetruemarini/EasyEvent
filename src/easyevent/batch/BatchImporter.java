@@ -9,6 +9,7 @@ import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
 import java.io.IOException;
@@ -477,7 +478,7 @@ public class BatchImporter {
         }
 
         // Crea la proposta con un ID univoco
-        int id = appData.getNuovoIdProposta();
+        IdProposta id = appData.getNuovoIdProposta();
         Proposta proposta = new Proposta(id, nomeCategoria, usernameCreatore, snapshot);
 
         // Assegna i valori dei campi leggendo i token rimanenti (formato: campo = valore)

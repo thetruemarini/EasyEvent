@@ -7,8 +7,10 @@ import easyevent.categoria.Categoria;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.model.Configuratore;
 import easyevent.model.Fruitore;
+import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.notifica.TipoNotifica;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
 import java.time.LocalDate;
@@ -333,12 +335,12 @@ public class AppData {
         return Collections.unmodifiableList(archivio);
     }
 
-    public boolean rimuoviPropostaDaArchivio(int id) {
-        return archivio.removeIf(p -> p.getId() == id);
+    public boolean rimuoviPropostaDaArchivio(IdProposta id) {
+        return archivio.removeIf(p -> p.getId().equals(id));
     }
 
-    public Proposta getPropostaDaArchivio(int id) {
-        return archivio.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+    public Proposta getPropostaDaArchivio(IdProposta id) {
+        return archivio.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
     }
 
     public List<Proposta> getBacheca() {
@@ -406,16 +408,16 @@ public class AppData {
                 .collect(java.util.stream.Collectors.toList());
     }
 
-    public int getNuovoIdProposta() {
-        return prossimoIdProposta++;
+    public IdProposta getNuovoIdProposta() {
+        return new IdProposta(prossimoIdProposta++);
     }
 
     public int getProssimoIdProposta() {
         return prossimoIdProposta;
     }
 
-    public int getNuovoIdNotifica() {
-        return prossimoIdNotifica++;
+    public IdNotifica getNuovoIdNotifica() {
+        return new IdNotifica(prossimoIdNotifica++);
     }
 
     public int getProssimoIdNotifica() {
@@ -478,7 +480,7 @@ public class AppData {
                 Notifica n = new Notifica(
                         getNuovoIdNotifica(),
                         tipo, // COSA è successo
-                        p.getId(), // dati grezzi
+                        p.getId().getValore(), // dati grezzi
                         p.getValore("Titolo"),
                         p.getValore(Proposta.CAMPO_DATA),
                         p.getValore("Ora"),
@@ -517,7 +519,9 @@ public class AppData {
 
     public void setArchivio(List<Proposta> archivio) {
         this.archivio = new ArrayList<>(archivio);
-        int maxId = archivio.stream().mapToInt(Proposta::getId).max().orElse(0);
+        int maxId = archivio.stream()
+                .mapToInt(p -> p.getId().getValore()) // <-- estrai il valore primitivo
+                .max().orElse(0);
         this.prossimoIdProposta = Math.max(this.prossimoIdProposta, maxId + 1);
     }
 

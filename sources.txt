@@ -19,9 +19,12 @@ C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\exception\RitiroNonConse
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\main\MainV5.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\model\Configuratore.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\model\Fruitore.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\model\Username.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\notifica\IdNotifica.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\notifica\Notifica.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\notifica\TipoNotifica.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\persistence\PersistenceManager.java
+C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\proposta\IdProposta.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\proposta\Proposta.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\proposta\StatoProposta.java
 C:\Users\raffo\OneDrive\Desktop\EasyEvent\src\easyevent\view\AppView.java

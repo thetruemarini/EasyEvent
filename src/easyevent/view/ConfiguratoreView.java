@@ -11,6 +11,7 @@ import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
 import easyevent.exception.RitiroNonConsensitoException;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
 import java.time.LocalDate;
@@ -471,14 +472,17 @@ public class ConfiguratoreView {
             System.out.println("  Operazione annullata.");
             return;
         }
-        int id;
+        IdProposta id;
         try {
-            id = Integer.parseInt(input);
+            id = new IdProposta(Integer.parseInt(input));
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido.");
             return;
+        } catch (IllegalArgumentException e) {
+            stampaErrore("ID non valido: " + e.getMessage());
+            return;
         }
-        Proposta scelta = ritirabili.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+        Proposta scelta = ritirabili.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
         if (scelta == null) {
             stampaErrore("Nessuna proposta ritirabile con ID " + id + ".");
             return;
@@ -977,8 +981,8 @@ public class ConfiguratoreView {
         valide.forEach(p -> System.out.println("    [ID " + p.getId() + "]  " + p.getNomeCategoria() + "  \"" + p.getValore("Titolo") + "\""));
         System.out.print("  ID da pubblicare: ");
         try {
-            int id = Integer.parseInt(scanner.nextLine().trim());
-            Proposta p = valide.stream().filter(x -> x.getId() == id).findFirst().orElse(null);
+            IdProposta id = new IdProposta(Integer.parseInt(scanner.nextLine().trim()));
+            Proposta p = valide.stream().filter(x -> x.getId().equals(id)).findFirst().orElse(null);
             if (p == null) {
                 stampaErrore("ID non trovato.");
                 return;
@@ -1020,8 +1024,9 @@ public class ConfiguratoreView {
     private Proposta selezionaPropostaSessione() {
         System.out.print("  ID proposta: ");
         try {
-            int id = Integer.parseInt(scanner.nextLine().trim());
-            Proposta p = controller.getProposteSessione().stream().filter(x -> x.getId() == id).findFirst().orElse(null);
+            IdProposta id = new IdProposta(Integer.parseInt(scanner.nextLine().trim()));
+            Proposta p = controller.getProposteSessione().stream()
+                    .filter(x -> x.getId().equals(id)).findFirst().orElse(null);
             if (p == null) {
                 stampaErrore("Nessuna proposta con ID " + id + ".");
             }

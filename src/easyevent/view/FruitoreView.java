@@ -4,7 +4,9 @@ import easyevent.controller.FruitoreController;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.IscrizioneException;
+import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -264,7 +266,7 @@ public class FruitoreView {
         }
 
         try {
-            int id = Integer.parseInt(input);
+            IdProposta id = new IdProposta(Integer.parseInt(input));
             try {
                 controller.aderisci(id);
                 Proposta p = controller.getPropostaAperta(id);
@@ -312,15 +314,19 @@ public class FruitoreView {
             return;
         }
 
-        int id;
+        IdProposta id;
         try {
-            id = Integer.parseInt(input);
+            id = new IdProposta(Integer.parseInt(input));
         } catch (NumberFormatException e) {
+            stampaErrore("ID non valido.");
+            return;
+        } catch (IllegalArgumentException e) {
             stampaErrore("ID non valido.");
             return;
         }
 
-        Proposta scelta = iscrittoA.stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+        Proposta scelta = iscrittoA.stream()
+                .filter(p -> p.getId().equals(id)).findFirst().orElse(null);
         if (scelta == null) {
             stampaErrore("Non sei iscritto a nessuna proposta con ID " + id + ".");
             return;
@@ -434,7 +440,7 @@ public class FruitoreView {
         }
         System.out.print("  ID notifica da cancellare: ");
         try {
-            int id = Integer.parseInt(scanner.nextLine().trim());
+            IdNotifica id = new IdNotifica(Integer.parseInt(scanner.nextLine().trim()));
             String err = controller.cancellaNotifica(id);
             if (err.isEmpty()) {
                 System.out.println("  Notifica [ID " + id + "] cancellata.");

@@ -4,8 +4,10 @@ import easyevent.categoria.Campo;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.model.Fruitore;
+import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.persistence.PersistenceManager;
+import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -101,11 +103,12 @@ public class FruitoreController {
         return appData.getCategorieConProposteAperte();
     }
 
-    public Proposta getPropostaAperta(int id) {
-        return appData.getBacheca().stream().filter(p -> p.getId() == id).findFirst().orElse(null);
+    public Proposta getPropostaAperta(IdProposta id) {
+        return appData.getBacheca().stream()
+                .filter(p -> p.getId().equals(id)).findFirst().orElse(null);
     }
 
-    public void aderisci(int idProposta) {
+    public void aderisci(IdProposta idProposta) {
         if (!isLoggato()) {
             throw new IllegalStateException("Nessun fruitore loggato.");
         }
@@ -127,7 +130,7 @@ public class FruitoreController {
         }
     }
 
-    public void disdiciIscrizione(int idProposta) {
+    public void disdiciIscrizione(IdProposta idProposta) {
         if (!isLoggato()) {
             throw new IllegalStateException("Nessun fruitore loggato.");
         }
@@ -149,7 +152,7 @@ public class FruitoreController {
         }
     }
 
-    public boolean isIscritto(int idProposta) {
+    public boolean isIscritto(IdProposta idProposta) {
         if (!isLoggato()) {
             return false;
         }
@@ -177,12 +180,12 @@ public class FruitoreController {
         return lista;
     }
 
-    public String cancellaNotifica(int idNotifica) {
+    public String cancellaNotifica(IdNotifica idNotifica) {
         if (!isLoggato()) {
             return "Nessun fruitore loggato.";
         }
         Notifica daRimuovere = fruitoreCorrente.getNotifiche().stream()
-                .filter(n -> n.getId() == idNotifica).findFirst().orElse(null);
+                .filter(n -> n.getId().equals(idNotifica)).findFirst().orElse(null);
         if (daRimuovere == null) {
             return "Notifica non trovata con ID: " + idNotifica;
         }
