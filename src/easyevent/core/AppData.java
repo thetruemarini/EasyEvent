@@ -185,12 +185,9 @@ public class AppData {
     // ================================================================
     // CAMPI COMUNI
     // ================================================================
-    public void aggiungiCampoComune(Campo campo) {
+    public void aggiungiCampoComune(CampoComune campo) {
         if (campo == null) {
             throw new IllegalArgumentException("Il campo non puo' essere null.");
-        }
-        if (!(campo instanceof CampoComune)) {
-            throw new IllegalArgumentException("Il campo deve essere di tipo COMUNE.");
         }
         if (esisteCampoBase(campo.getNome())) {
             throw new ElementoGiaEsistenteException(

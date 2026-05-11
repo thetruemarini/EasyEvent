@@ -26,13 +26,9 @@ public class Categoria {
         assert repOk() : "Invariante violato dopo costruzione Categoria";
     }
 
-    public void aggiungiCampoSpecifico(Campo campo) {
+    public void aggiungiCampoSpecifico(CampoSpecifico campo) {
         if (campo == null) {
             throw new IllegalArgumentException("Il campo non puo' essere null.");
-        }
-        // (controllo strutturale sulla gerarchia, localizzato e atteso):
-        if (!(campo instanceof CampoSpecifico)) {
-            throw new IllegalArgumentException("Il campo deve essere di tipo SPECIFICO.");
         }
         if (contieneCampo(campo.getNome())) {
             throw new ElementoGiaEsistenteException(

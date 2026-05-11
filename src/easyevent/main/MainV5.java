@@ -6,7 +6,6 @@ import easyevent.core.AppData;
 import easyevent.exception.PersistenzaException;
 import easyevent.persistence.PersistenceManager;
 import easyevent.view.AppView;
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -36,15 +35,14 @@ public class MainV5 {
 
         // 3. Caricamento dati
         try {
-            boolean fileEsisteva = persistenceManager.carica(appData);
+            boolean fileEsisteva = persistenceManager.caricaSicuro(appData);
             if (fileEsisteva) {
                 System.out.println("[Sistema] Dati caricati da: " + DATA_FILE);
             } else {
                 System.out.println("[Sistema] Primo avvio: nessun dato precedente trovato.");
             }
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             System.err.println("[Sistema] Impossibile caricare i dati: " + e.getMessage());
-            System.err.println("[Sistema] L'applicazione partira' con dati vuoti.");
         }
 
         // 4. Controller (Dependency Injection)

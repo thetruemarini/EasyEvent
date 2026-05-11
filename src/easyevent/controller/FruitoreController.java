@@ -3,13 +3,13 @@ package easyevent.controller;
 import easyevent.categoria.Campo;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoNonTrovatoException;
+import easyevent.exception.PersistenzaException;
 import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,9 +69,9 @@ public class FruitoreController {
         try {
             salva();
             fruitoreCorrente = f;
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             appData.rimuoviFruitore(username.trim()); // rollback
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
     }
 
@@ -124,7 +124,7 @@ public class FruitoreController {
         p.aggiungiAderente(username, oggi);
         try {
             salva();
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             p.rimuoviAderente(username, oggi); // rollback
             throw new RuntimeException("Errore nel salvataggio.", e);
         }
@@ -146,7 +146,7 @@ public class FruitoreController {
         p.rimuoviAderente(username, oggi);
         try {
             salva();
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             p.aggiungiAderente(username, oggi); // rollback
             throw new RuntimeException("Errore nel salvataggio.", e);
         }
@@ -193,7 +193,7 @@ public class FruitoreController {
         try {
             salva();
             return "";
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             fruitoreCorrente.aggiungiNotifica(daRimuovere);
             return "Errore nel salvataggio; la notifica non e' stata cancellata: " + e.getMessage();
         }
@@ -208,14 +208,14 @@ public class FruitoreController {
         try {
             salva();
             return "";
-        } catch (IOException e) {
+        } catch (PersistenzaException e) {
             fruitoreCorrente.ripristinaNotifiche(copia);
             return "Errore nel salvataggio; le notifiche non sono state cancellate: " + e.getMessage();
         }
     }
 
-    private void salva() throws IOException {
-        persistenceManager.salva(appData);
+    private void salva() {
+        persistenceManager.salvaSicuro(appData);
     }
 
     // ================================================================

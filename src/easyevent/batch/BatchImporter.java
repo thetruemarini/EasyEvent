@@ -266,7 +266,7 @@ public class BatchImporter {
         }
 
         try {
-            Campo campo = new CampoComune(nomeCampo, obbligatorio);
+            CampoComune campo = new CampoComune(nomeCampo, obbligatorio);
             appData.aggiungiCampoComune(campo);
             salvaCallback.salva();
             risultato.aggiungiSuccesso(

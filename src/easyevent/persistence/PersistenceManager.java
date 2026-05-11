@@ -43,7 +43,7 @@ public class PersistenceManager {
     // ================================================================
     // SALVATAGGIO
     // ================================================================
-    public void salva(AppData data) throws IOException {
+    private void salva(AppData data) throws IOException {
         if (data == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
