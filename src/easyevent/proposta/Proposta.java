@@ -28,8 +28,8 @@ import java.util.Map;
  */
 public class Proposta {
 
-    public static final DateTimeFormatter DATE_FORMAT
-            = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    public static final DateTimeFormatter DATE_FORMAT =
+    DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public static final String CAMPO_TERMINE_ISCRIZIONE = "Termine ultimo di iscrizione";
     public static final String CAMPO_DATA = "Data inizio";
@@ -520,8 +520,8 @@ public class Proposta {
         return dataPubblicazione;
     }
 
-    public LinkedHashMap<String, Boolean> getCampiSnapshot() {
-        return new LinkedHashMap<>(campiSnapshot);
+    public Map<String, Boolean> getCampiSnapshot() {
+        return Collections.unmodifiableMap(campiSnapshot);
     }
 
     public Map<String, String> getValori() {

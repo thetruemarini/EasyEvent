@@ -17,6 +17,7 @@ import easyevent.proposta.StatoProposta;
 import java.io.*;
 import java.nio.file.*;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -275,7 +276,7 @@ public class PersistenceManager {
         sb.append("],\n");
 
         sb.append(indent).append("  \"campi\": [\n");
-        LinkedHashMap<String, Boolean> snapshot = p.getCampiSnapshot();
+        Map<String, Boolean> snapshot = p.getCampiSnapshot();
         Map<String, String> valori = p.getValori();
         List<String> nomi = new ArrayList<>(snapshot.keySet());
         for (int i = 0; i < nomi.size(); i++) {

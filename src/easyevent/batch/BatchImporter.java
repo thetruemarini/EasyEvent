@@ -42,17 +42,17 @@ import java.util.List;
  */
 public class BatchImporter {
 
-    // Separatore tra i token di ogni riga batch.
-    private static final String SEP = " | ";
+    private enum ComandoBatch {
+        CAMPO_COMUNE, CATEGORIA, PROPOSTA;
 
-    // Prefisso per i comandi di tipo campo comune.
-    private static final String CMD_CAMPO_COMUNE = "CAMPO_COMUNE";
-
-    // Prefisso per i comandi di tipo categoria.
-    private static final String CMD_CATEGORIA = "CATEGORIA";
-
-    // Prefisso per i comandi di tipo proposta.
-    private static final String CMD_PROPOSTA = "PROPOSTA";
+        public static ComandoBatch fromString(String s) {
+            try {
+                return valueOf(s.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return null;
+            }
+        }
+    }
 
     // Parola chiave per i campi specifici inline nelle righe CATEGORIA.
     private static final String KW_CAMPO_SPECIFICO = "CAMPO_SPECIFICO";
@@ -201,28 +201,28 @@ public class BatchImporter {
                 continue;
             }
 
-            String comando = token[0].trim().toUpperCase();
+            ComandoBatch cmd = ComandoBatch.fromString(token[0].trim());
 
-            switch (comando) {
-                case CMD_CAMPO_COMUNE ->
-                    elaboraCampoComune(token, numeroRiga, risultato);
-                case CMD_CATEGORIA ->
-                    elaboraCategoria(token, numeroRiga, risultato);
-                case CMD_PROPOSTA ->
-                    elaboraProposta(token, numeroRiga, risultato);
-                default ->
-                    risultato.aggiungiWarning(numeroRiga,
-                            "Comando non riconosciuto: '" + token[0].trim()
-                            + "'. Comandi validi: CAMPO_COMUNE, CATEGORIA, PROPOSTA.");
+            if (cmd == null) {
+                risultato.aggiungiWarning(numeroRiga, "Comando non riconosciuto: '" + token[0].trim() + "'.");
+            } else {
+                switch (cmd) {
+                    case CAMPO_COMUNE ->
+                        elaboraCampoComune(token, numeroRiga, risultato);
+                    case CATEGORIA ->
+                        elaboraCategoria(token, numeroRiga, risultato);
+                    case PROPOSTA ->
+                        elaboraProposta(token, numeroRiga, risultato);
+                }
             }
         }
 
         return risultato;
     }
-
     // ================================================================
     // ELABORAZIONE CAMPO COMUNE
     // ================================================================
+
     /**
      * Elabora una riga CAMPO_COMUNE.
      *
