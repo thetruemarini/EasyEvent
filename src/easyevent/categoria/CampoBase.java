@@ -24,20 +24,4 @@ public class CampoBase extends Campo {
     public TipoCampo getTipo() {
         return TipoCampo.BASE;
     }
-
-    @Override
-    public boolean isData() {
-        String lower = getNome().toLowerCase();
-        return lower.contains("data") || lower.equals("termine ultimo di iscrizione");
-    }
-
-    @Override
-    public boolean isOra() {
-        return getNome().equalsIgnoreCase("ora");
-    }
-
-    @Override
-    public boolean isInEvidenza() {
-        return isInEvidenzaPerNome();
-    }
 }

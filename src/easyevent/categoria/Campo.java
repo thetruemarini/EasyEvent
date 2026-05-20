@@ -44,11 +44,18 @@ public abstract class Campo {
      */
     public abstract TipoCampo getTipo();
 
-    public abstract boolean isData();
+    public boolean isData(){
+        String lower = getNome().toLowerCase();
+        return lower.contains("data") || lower.equals("termine ultimo di iscrizione");
+    }
 
-    public abstract boolean isOra();
+    public boolean isOra(){
+        return getNome().equalsIgnoreCase("ora");
+    }
 
-    public abstract boolean isInEvidenza();
+    public boolean isInEvidenza() {
+        return isInEvidenzaPerNome();
+    }
 
     public boolean repOk() {
         return nome != null && !nome.isBlank();

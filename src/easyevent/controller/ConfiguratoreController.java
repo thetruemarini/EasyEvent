@@ -16,7 +16,6 @@ import easyevent.model.Configuratore;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import easyevent.proposta.StatoProposta;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -401,13 +400,10 @@ public class ConfiguratoreController {
         if (!proposteSessione.contains(proposta)) {
             throw new IllegalStateException("La proposta non appartiene alla sessione corrente.");
         }
-        LocalDate oggi = LocalDate.now();
-        proposta.aggiornaStato(oggi);
-        if (proposta.getStato() != StatoProposta.VALIDA) {
-            return proposta.validazioneErrori(oggi);
+        List<ErroreValidazione> errori = appData.pubblicaPropostaDiretta(proposta, LocalDate.now());
+        if (!errori.isEmpty()) {
+            return errori;
         }
-        proposta.pubblicaInBacheca(oggi);
-        appData.aggiungiPropostaAperta(proposta);
         proposteSessione.remove(proposta);
         try {
             salvaInterno();
@@ -417,7 +413,7 @@ public class ConfiguratoreController {
             proposteSessione.add(proposta);
             throw e;
         }
-        return Collections.emptyList(); // lista vuota = successo
+        return Collections.emptyList();
     }
 
     public boolean eliminaPropostaSessione(Proposta proposta) {

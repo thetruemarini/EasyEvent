@@ -5,6 +5,7 @@ import easyevent.categoria.CampoBase;
 import easyevent.categoria.CampoComune;
 import easyevent.categoria.Categoria;
 import easyevent.exception.ElementoGiaEsistenteException;
+import easyevent.exception.ErroreValidazione;
 import easyevent.model.Configuratore;
 import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
@@ -326,6 +327,28 @@ public class AppData {
         }
         archivio.add(proposta);
         assert repOk() : "Invariante violato dopo aggiungiPropostaAperta";
+    }
+
+    /**
+     * Valida e pubblica una proposta direttamente in bacheca. Unico punto in
+     * cui vive la regola "solo le VALIDE si pubblicano". Usato sia dalla
+     * modalità interattiva (ConfiguratoreController) sia dalla modalità batch
+     * (BatchImporter).
+     *
+     * @return lista vuota se pubblicata con successo; lista di errori se la
+     * proposta non è ancora VALIDA.
+     */
+    public List<ErroreValidazione> pubblicaPropostaDiretta(Proposta proposta, LocalDate oggi) {
+        if (proposta == null) {
+            throw new IllegalArgumentException("La proposta non puo' essere null.");
+        }
+        proposta.aggiornaStato(oggi);
+        if (proposta.getStato() != StatoProposta.VALIDA) {
+            return proposta.validazioneErrori(oggi);
+        }
+        proposta.pubblicaInBacheca(oggi);
+        aggiungiPropostaAperta(proposta);
+        return Collections.emptyList();
     }
 
     public List<Proposta> getArchivio() {

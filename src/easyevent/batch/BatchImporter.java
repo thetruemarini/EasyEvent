@@ -11,7 +11,6 @@ import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import easyevent.proposta.StatoProposta;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -534,11 +533,9 @@ public class BatchImporter {
 
         // Ricalcola lo stato: BOZZA o VALIDA
         LocalDate oggi = LocalDate.now();
-        proposta.aggiornaStato(oggi);
+        List<ErroreValidazione> erroriValidazione = appData.pubblicaPropostaDiretta(proposta, oggi);
 
-        if (proposta.getStato() != StatoProposta.VALIDA) {
-            // La proposta non è pubblicabile: segnala gli errori di validazione
-            List<ErroreValidazione> erroriValidazione = proposta.validazioneErrori(oggi);
+        if (!erroriValidazione.isEmpty()) {
             List<String> messaggiErrori = erroriValidazione.stream()
                     .map(e -> e.getNomeCampo() != null
                     ? e.getTipo().name() + " [" + e.getNomeCampo() + "]"
