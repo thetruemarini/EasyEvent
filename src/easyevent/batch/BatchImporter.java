@@ -548,10 +548,6 @@ public class BatchImporter {
             return;
         }
 
-        // Pubblica la proposta in bacheca
-        proposta.pubblicaInBacheca(oggi);
-        appData.aggiungiPropostaAperta(proposta);
-
         try {
             salvaCallback.salva();
             String titolo = proposta.getValore("Titolo");
