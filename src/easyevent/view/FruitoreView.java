@@ -4,6 +4,7 @@ import easyevent.controller.FruitoreController;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.IscrizioneException;
+import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.proposta.IdProposta;
@@ -130,7 +131,7 @@ public class FruitoreView {
             stampaErrore(ex.getMessage());
             return false;
         } catch (RuntimeException ex) {
-            stampaErrore("Errore di sistema: " + ex.getMessage());
+            stampaErrore("Errore di sistema.");
             return false;
         }
         System.out.println("\n  Registrazione completata. Benvenuto, " + u + "!");
@@ -277,8 +278,10 @@ public class FruitoreView {
                 stampaErrore(messaggioIscrizioneErrore(ex));
             } catch (ElementoNonTrovatoException ex) {
                 stampaErrore("Proposta non trovata o non più aperta (ID: " + id + ").");
+            } catch (ModificaNonConsentitaException ex) {
+                stampaErrore(messaggioModificaNonConsentita(ex));
             } catch (RuntimeException ex) {
-                stampaErrore("Errore: " + ex.getMessage());
+                stampaErrore("Errore inatteso durante l'iscrizione.");
             }
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido.");
@@ -347,8 +350,10 @@ public class FruitoreView {
             stampaErrore(messaggioIscrizioneErrore(ex));
         } catch (ElementoNonTrovatoException ex) {
             stampaErrore("Proposta non trovata o non più aperta (ID: " + id + ").");
+        } catch (ModificaNonConsentitaException ex) {
+            stampaErrore(messaggioModificaNonConsentita(ex));
         } catch (RuntimeException ex) {
-            stampaErrore("Errore: " + ex.getMessage());
+            stampaErrore("Errore inatteso durante la disdetta.");
         }
         premInvio();
     }
@@ -508,5 +513,24 @@ public class FruitoreView {
                 "Il numero di partecipanti della proposta non è valido.";
         };
 
+    }
+
+    private String messaggioModificaNonConsentita(ModificaNonConsentitaException e) {
+        return switch (e.getTipoModifica()) {
+            case NESSUN_FRUITORE_LOGGATO ->
+                "Nessun fruitore loggato.";
+            case ACCESSO_NEGATO ->
+                "Accesso negato.";
+            case STATO_PROPOSTA_NON_VALIDO ->
+                "Operazione non consentita nello stato attuale della proposta"
+                + (e.getDettaglio() == null ? "." : ": " + e.getDettaglio() + ".");
+            case TRANSIZIONE_STATO_NON_VALIDA ->
+                "Transizione di stato non valida"
+                + (e.getDettaglio() == null ? "." : ": " + e.getDettaglio() + ".");
+            case CAMPO_BASE_IMMUTABILE, PROPOSTA_GIA_PUBBLICATA,
+                    CAMPO_NON_PRESENTE, NESSUN_CONFIGURATORE_LOGGATO,
+                    CREDENZIALI_GIA_IMPOSTATE, PROPOSTA_NON_IN_SESSIONE ->
+                "Operazione non consentita.";
+        };
     }
 }

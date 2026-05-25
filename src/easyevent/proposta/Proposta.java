@@ -350,7 +350,9 @@ public class Proposta {
 
     public void pubblicaInBacheca(LocalDate dataPubblicazione) {
         if (stato != StatoProposta.VALIDA) {
-            throw new IllegalStateException("Solo le proposte VALIDE possono essere pubblicate in bacheca.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.STATO_PROPOSTA_NON_VALIDO,
+                    stato.name());
         }
         if (dataPubblicazione == null) {
             throw new IllegalArgumentException("La data di pubblicazione non puo' essere null.");
@@ -363,7 +365,9 @@ public class Proposta {
 
     public void revertToValida() {
         if (stato != StatoProposta.APERTA) {
-            throw new IllegalStateException("revertToValida puo' essere chiamato solo su proposte APERTE.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.STATO_PROPOSTA_NON_VALIDO,
+                    stato.name());
         }
         if (!storicoStati.isEmpty()) {
             storicoStati.remove(storicoStati.size() - 1);
@@ -389,7 +393,9 @@ public class Proposta {
                 || (stato == StatoProposta.CONFERMATA && nuovoStato == StatoProposta.RITIRATA);
 
         if (!valida) {
-            throw new IllegalStateException("Transizione non valida: " + stato + " -> " + nuovoStato);
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.TRANSIZIONE_STATO_NON_VALIDA,
+                    stato + " -> " + nuovoStato);
         }
 
         this.stato = nuovoStato;

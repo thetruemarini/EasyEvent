@@ -3,6 +3,7 @@ package easyevent.controller;
 import easyevent.categoria.Campo;
 import easyevent.core.AppData;
 import easyevent.exception.ElementoNonTrovatoException;
+import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
 import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
@@ -110,7 +111,7 @@ public class FruitoreController {
 
     public void aderisci(IdProposta idProposta) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Nessun fruitore loggato.");
+            throw nessunFruitoreLoggato();
         }
         Proposta p = getPropostaAperta(idProposta);
         if (p == null) {
@@ -132,7 +133,7 @@ public class FruitoreController {
 
     public void disdiciIscrizione(IdProposta idProposta) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Nessun fruitore loggato.");
+            throw nessunFruitoreLoggato();
         }
         Proposta p = getPropostaAperta(idProposta);
         if (p == null) {
@@ -216,6 +217,12 @@ public class FruitoreController {
 
     private void salva() {
         persistenceManager.salvaSicuro(appData);
+    }
+
+    private ModificaNonConsentitaException nessunFruitoreLoggato() {
+        return new ModificaNonConsentitaException(
+                ModificaNonConsentitaException.TipoModifica.NESSUN_FRUITORE_LOGGATO,
+                null);
     }
 
     // ================================================================

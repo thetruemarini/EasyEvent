@@ -518,6 +518,8 @@ public class BatchImporter {
                         "la proposta è già pubblicata (stato: " + e.getDettaglio() + ")";
                     case CAMPO_BASE_IMMUTABILE ->
                         "il campo '" + e.getDettaglio() + "' è immutabile";
+                    default ->
+                        "operazione non consentita";
                 };
                 risultato.aggiungiWarning(numeroRiga,
                         "Impossibile impostare '" + nomeCampo + "': " + motivazione + ".");

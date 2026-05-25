@@ -11,6 +11,7 @@ import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ErroreValidazione;
+import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
 import easyevent.model.Configuratore;
 import easyevent.persistence.PersistenceManager;
@@ -115,10 +116,14 @@ public class ConfiguratoreController {
 
     public void impostaCredenzialiPersonali(String nuovoUsername, String nuovaPassword) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Nessun configuratore loggato.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.NESSUN_CONFIGURATORE_LOGGATO,
+                    null);
         }
         if (!richiedeCambioCredenziali()) {
-            throw new IllegalStateException("Le credenziali personali sono gia' state impostate.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.CREDENZIALI_GIA_IMPOSTATE,
+                    null);
         }
         if (nuovoUsername == null || nuovoUsername.isBlank()) {
             throw new IllegalArgumentException("nuovoUsername non può essere vuoto");
@@ -163,7 +168,7 @@ public class ConfiguratoreController {
     // ================================================================
     public void aggiungiCampoComune(String nome, boolean obbligatorio) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         if (nome == null || nome.isBlank()) {
             throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
@@ -179,7 +184,7 @@ public class ConfiguratoreController {
 
     public void rimuoviCampoComune(String nomeCampo) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         if (nomeCampo == null || nomeCampo.isBlank()) {
             throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
@@ -203,7 +208,7 @@ public class ConfiguratoreController {
 
     public void modificaObbligatorietaCampoComune(String nomeCampo, boolean obbligatorio) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         if (!appData.modificaObbligatorietaCampoComune(nomeCampo, obbligatorio)) {
             throw new ElementoNonTrovatoException(
@@ -225,7 +230,7 @@ public class ConfiguratoreController {
     // ================================================================
     public void aggiungiCategoria(String nomeCategoria) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Il nome non può essere vuoto.");
@@ -241,7 +246,7 @@ public class ConfiguratoreController {
 
     public void rimuoviCategoria(String nomeCategoria) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Il nome non può essere vuoto.");
@@ -265,7 +270,7 @@ public class ConfiguratoreController {
 
     public void aggiungiCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Nome categoria non può essere vuoto.");
@@ -297,7 +302,7 @@ public class ConfiguratoreController {
 
     public void rimuoviCampoSpecifico(String nomeCategoria, String nomeCampo) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         Categoria cat = appData.getCategoria(nomeCategoria);
         if (cat == null) {
@@ -318,7 +323,7 @@ public class ConfiguratoreController {
     public void modificaObbligatorietaCampoSpecifico(
             String nomeCategoria, String nomeCampo, boolean obbligatorio) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         Categoria cat = appData.getCategoria(nomeCategoria);
         if (cat == null) {
@@ -398,7 +403,9 @@ public class ConfiguratoreController {
             throw new IllegalArgumentException("proposta non può essere null");
         }
         if (!proposteSessione.contains(proposta)) {
-            throw new IllegalStateException("La proposta non appartiene alla sessione corrente.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.PROPOSTA_NON_IN_SESSIONE,
+                    proposta.getId().toString());
         }
         List<ErroreValidazione> errori = appData.pubblicaPropostaDiretta(proposta, LocalDate.now());
         if (!errori.isEmpty()) {
@@ -451,7 +458,9 @@ public class ConfiguratoreController {
      */
     public BatchRisultato importaBatch(String percorsoFile) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Nessun configuratore loggato: impossibile importare in batch.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.NESSUN_CONFIGURATORE_LOGGATO,
+                    null);
         }
         if (percorsoFile == null || percorsoFile.isBlank()) {
             throw new IllegalArgumentException("Il percorso del file non puo' essere null o vuoto.");
@@ -479,7 +488,9 @@ public class ConfiguratoreController {
      */
     public BatchRisultato importaBatch(List<String> percorsiFile) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Nessun configuratore loggato: impossibile importare in batch.");
+            throw new ModificaNonConsentitaException(
+                    ModificaNonConsentitaException.TipoModifica.NESSUN_CONFIGURATORE_LOGGATO,
+                    null);
         }
         if (percorsiFile == null) {
             throw new IllegalArgumentException("La lista dei percorsi non puo' essere null.");
@@ -499,7 +510,7 @@ public class ConfiguratoreController {
     // ================================================================
     public void ritirareProposta(IdProposta idProposta) {
         if (!isLoggato()) {
-            throw new IllegalStateException("Accesso negato.");
+            throw accessoNegato();
         }
         Proposta p = appData.getPropostaDaArchivio(idProposta);
         if (p == null) {
@@ -576,6 +587,12 @@ public class ConfiguratoreController {
      */
     private void salvaInterno() {
         persistenceManager.salvaSicuro(appData);
+    }
+
+    private ModificaNonConsentitaException accessoNegato() {
+        return new ModificaNonConsentitaException(
+                ModificaNonConsentitaException.TipoModifica.ACCESSO_NEGATO,
+                null);
     }
 
     /**

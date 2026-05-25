@@ -140,11 +140,14 @@ public class ConfiguratoreView {
         } catch (ElementoGiaEsistenteException e) {
             stampaErrore(messaggioElementoGiaEsistente(e));
             return false;
-        } catch (IllegalStateException | IllegalArgumentException e) {
+        } catch (ModificaNonConsentitaException e) {
+            stampaErrore(messaggioModificaNonConsentita(e));
+            return false;
+        } catch (IllegalArgumentException e) {
             stampaErrore(e.getMessage());
             return false;
         } catch (RuntimeException e) {
-            stampaErrore("Errore di sistema: " + e.getMessage());
+            stampaErrore("Errore di sistema.");
             return false;
         }
         System.out.println("\n  Credenziali impostate correttamente.");
@@ -270,8 +273,8 @@ public class ConfiguratoreView {
         try {
             BatchRisultato risultato = controller.importaBatch(percorso);
             stampaResoconto(percorso, risultato);
-        } catch (IllegalStateException e) {
-            stampaErrore("Impossibile importare: " + e.getMessage());
+        } catch (ModificaNonConsentitaException e) {
+            stampaErrore("Impossibile importare: " + messaggioModificaNonConsentita(e));
         } catch (PersistenzaException e) {
             stampaErrore(messaggioPersistenza(e)
                     + "\n  Verificare che il percorso sia corretto e il file sia leggibile.");
@@ -564,8 +567,8 @@ public class ConfiguratoreView {
                     } catch (ElementoInSessioneException ex) {
                         stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
                                 + "che contengono il campo '" + ex.getNomeElemento() + "'.");
-                    } catch (IllegalStateException ex) {
-                        stampaErrore("Operazione non consentita: " + ex.getMessage());
+                    } catch (ModificaNonConsentitaException ex) {
+                        stampaErrore(messaggioModificaNonConsentita(ex));
                     } catch (RuntimeException ex) {
                         stampaErrore("Errore: " + ex.getMessage());
                     }
@@ -691,8 +694,8 @@ public class ConfiguratoreView {
         } catch (ElementoInSessioneException ex) {
             stampaErrore("Impossibile rimuovere: ci sono proposte in sessione "
                     + "per la categoria '" + ex.getNomeElemento() + "'.");
-        } catch (IllegalStateException ex) {
-            stampaErrore("Operazione non consentita: " + ex.getMessage());
+        } catch (ModificaNonConsentitaException ex) {
+            stampaErrore(messaggioModificaNonConsentita(ex));
         } catch (RuntimeException ex) {
             stampaErrore("Errore: " + ex.getMessage());
         }
@@ -922,7 +925,7 @@ public class ConfiguratoreView {
                 try {
                     controller.setValoreCampo(p, nome, input);
                 } catch (ModificaNonConsentitaException ex) {
-                    stampaErrore("Modifica non consentita per il campo '" + ex.getDettaglio() + "'.");
+                    stampaErrore(messaggioModificaNonConsentita(ex));
                 } catch (RuntimeException ex) {
                     stampaErrore("Errore: " + ex.getMessage());
                 }
@@ -960,8 +963,10 @@ public class ConfiguratoreView {
                         System.out.println("\n  Proposta non valida. Problemi:");
                         erroriValidazione.forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
                     }
+                } catch (ModificaNonConsentitaException ex) {
+                    stampaErrore(messaggioModificaNonConsentita(ex));
                 } catch (RuntimeException ex) {
-                    stampaErrore("Errore: " + ex.getMessage());
+                    stampaErrore("Errore inatteso durante la pubblicazione.");
                 }
             } else {
                 System.out.println("  Conservata in sessione.");
@@ -995,8 +1000,10 @@ public class ConfiguratoreView {
                     System.out.println("\n  Proposta non valida. Problemi:");
                     erroriValidazione.forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
                 }
+            } catch (ModificaNonConsentitaException ex) {
+                stampaErrore(messaggioModificaNonConsentita(ex));
             } catch (RuntimeException ex) {
-                stampaErrore("Errore: " + ex.getMessage());
+                stampaErrore("Errore inatteso durante la pubblicazione.");
             }
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido.");
@@ -1196,6 +1203,33 @@ public class ConfiguratoreView {
         };
         String obbLabel = c.isObbligatorio() ? "obbligatorio" : "facoltativo";
         return "[" + tipoLabel + "] " + c.getNome() + " (" + obbLabel + ")";
+    }
+
+    private String messaggioModificaNonConsentita(ModificaNonConsentitaException e) {
+        return switch (e.getTipoModifica()) {
+            case CAMPO_BASE_IMMUTABILE ->
+                "Il campo base non puo' essere modificato.";
+            case PROPOSTA_GIA_PUBBLICATA ->
+                "La proposta e' gia' stata pubblicata e non puo' essere modificata.";
+            case CAMPO_NON_PRESENTE ->
+                "Il campo '" + e.getDettaglio() + "' non appartiene alla proposta.";
+            case ACCESSO_NEGATO ->
+                "Accesso negato.";
+            case NESSUN_CONFIGURATORE_LOGGATO ->
+                "Nessun configuratore loggato.";
+            case NESSUN_FRUITORE_LOGGATO ->
+                "Nessun fruitore loggato.";
+            case CREDENZIALI_GIA_IMPOSTATE ->
+                "Le credenziali personali sono gia' state impostate.";
+            case PROPOSTA_NON_IN_SESSIONE ->
+                "La proposta non appartiene alla sessione corrente.";
+            case STATO_PROPOSTA_NON_VALIDO ->
+                "Operazione non consentita nello stato attuale della proposta"
+                + (e.getDettaglio() == null ? "." : ": " + e.getDettaglio() + ".");
+            case TRANSIZIONE_STATO_NON_VALIDA ->
+                "Transizione di stato non valida"
+                + (e.getDettaglio() == null ? "." : ": " + e.getDettaglio() + ".");
+        };
     }
 
     private String messaggioErroreValidazione(ErroreValidazione e) {
