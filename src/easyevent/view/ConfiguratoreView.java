@@ -1175,6 +1175,8 @@ public class ConfiguratoreView {
                 "Nessuna categoria trovata con nome '" + e.getNomeElemento() + "'.";
             case PROPOSTA ->
                 "Nessuna proposta trovata con ID " + e.getNomeElemento() + ".";
+            case NOTIFICA ->
+                "Nessuna notifica trovata con ID " + e.getNomeElemento() + ".";
         };
     }
 

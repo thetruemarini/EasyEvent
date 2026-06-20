@@ -181,37 +181,37 @@ public class FruitoreController {
         return lista;
     }
 
-    public String cancellaNotifica(IdNotifica idNotifica) {
+    public void cancellaNotifica(IdNotifica idNotifica) {
         if (!isLoggato()) {
-            return "Nessun fruitore loggato.";
+            throw nessunFruitoreLoggato();
         }
         Notifica daRimuovere = fruitoreCorrente.getNotifiche().stream()
                 .filter(n -> n.getId().equals(idNotifica)).findFirst().orElse(null);
         if (daRimuovere == null) {
-            return "Notifica non trovata con ID: " + idNotifica;
+            throw new ElementoNonTrovatoException(
+                    ElementoNonTrovatoException.TipoElemento.NOTIFICA,
+                    String.valueOf(idNotifica));
         }
         fruitoreCorrente.rimuoviNotifica(idNotifica);
         try {
             salva();
-            return "";
         } catch (PersistenzaException e) {
-            fruitoreCorrente.aggiungiNotifica(daRimuovere);
-            return "Errore nel salvataggio; la notifica non e' stata cancellata: " + e.getMessage();
+            fruitoreCorrente.aggiungiNotifica(daRimuovere); // rollback
+            throw e;
         }
     }
 
-    public String cancellaAllNotifiche() {
+    public void cancellaAllNotifiche() {
         if (!isLoggato()) {
-            return "Nessun fruitore loggato.";
+            throw nessunFruitoreLoggato();
         }
         List<Notifica> copia = new ArrayList<>(fruitoreCorrente.getNotifiche());
         copia.forEach(n -> fruitoreCorrente.rimuoviNotifica(n.getId()));
         try {
             salva();
-            return "";
         } catch (PersistenzaException e) {
-            fruitoreCorrente.ripristinaNotifiche(copia);
-            return "Errore nel salvataggio; le notifiche non sono state cancellate: " + e.getMessage();
+            fruitoreCorrente.ripristinaNotifiche(copia); // rollback
+            throw e;
         }
     }
 

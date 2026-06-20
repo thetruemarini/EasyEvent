@@ -9,7 +9,8 @@ public class ElementoNonTrovatoException extends RuntimeException {
         CAMPO_COMUNE,
         CAMPO_SPECIFICO,
         CATEGORIA,
-        PROPOSTA
+        PROPOSTA,
+        NOTIFICA
     }
 
     private final TipoElemento tipoElemento;

@@ -17,7 +17,6 @@ import easyevent.model.Configuratore;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -189,9 +188,7 @@ public class ConfiguratoreController {
         if (nomeCampo == null || nomeCampo.isBlank()) {
             throw new IllegalArgumentException("Il nome del campo non può essere vuoto.");
         }
-        boolean inSessione = proposteSessione.stream()
-                .anyMatch(p -> p.usaCampo(nomeCampo));
-        if (inSessione) {
+        if (appData.campoUsatoInSessione(proposteSessione, nomeCampo)) {
             throw new ElementoInSessioneException(
                     ElementoInSessioneException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
@@ -251,9 +248,7 @@ public class ConfiguratoreController {
         if (nomeCategoria == null || nomeCategoria.isBlank()) {
             throw new IllegalArgumentException("Il nome non può essere vuoto.");
         }
-        boolean inSessione = proposteSessione.stream()
-                .anyMatch(p -> p.getNomeCategoria().equalsIgnoreCase(nomeCategoria));
-        if (inSessione) {
+        if (appData.categoriaUsataInSessione(proposteSessione, nomeCategoria)) {
             throw new ElementoInSessioneException(
                     ElementoInSessioneException.TipoElemento.CATEGORIA, nomeCategoria);
         }
@@ -452,9 +447,8 @@ public class ConfiguratoreController {
      *
      * @param percorsoFile path del file batch, non null e non blank
      * @return resoconto dell'importazione
-     * @throws IllegalStateException se nessun configuratore è loggato
+     * @throws ModificaNonConsentitaException se nessun configuratore è loggato
      * @throws IllegalArgumentException se percorsoFile è null o blank
-     * @throws IOException se il file non esiste o non è leggibile
      */
     public BatchRisultato importaBatch(String percorsoFile) {
         if (!isLoggato()) {
@@ -526,8 +520,8 @@ public class ConfiguratoreController {
             salvaInterno();
         } catch (PersistenzaException e) {
             try {
-                persistenceManager.carica(appData);
-            } catch (IOException re) {
+                persistenceManager.caricaSicuro(appData);
+            } catch (PersistenzaException re) {
                 System.err.println("[Sistema] Rollback fallito: " + re.getMessage());
             }
             throw e;
@@ -568,9 +562,9 @@ public class ConfiguratoreController {
             } catch (PersistenzaException e) {
                 System.err.println("[Sistema] Errore salvataggio dopo transizioni: " + e.getMessage());
                 try {
-                    persistenceManager.carica(appData);
+                    persistenceManager.caricaSicuro(appData);
                     System.err.println("[Sistema] Rollback transizioni completato.");
-                } catch (IOException rollbackEx) {
+                } catch (PersistenzaException rollbackEx) {
                     System.err.println("[Sistema] Rollback fallito: " + rollbackEx.getMessage());
                 }
                 return 0;
@@ -593,14 +587,6 @@ public class ConfiguratoreController {
         return new ModificaNonConsentitaException(
                 ModificaNonConsentitaException.TipoModifica.ACCESSO_NEGATO,
                 null);
-    }
-
-    /**
-     * Esposto al Main per il caricamento iniziale — accettabile nel punto di
-     * assemblaggio
-     */
-    public boolean carica() throws IOException {
-        return persistenceManager.carica(appData);
     }
 
     public Configuratore getConfiguratoreCorrente() {

@@ -5,6 +5,7 @@ import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.IscrizioneException;
 import easyevent.exception.ModificaNonConsentitaException;
+import easyevent.exception.PersistenzaException;
 import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.proposta.IdProposta;
@@ -446,11 +447,15 @@ public class FruitoreView {
         System.out.print("  ID notifica da cancellare: ");
         try {
             IdNotifica id = new IdNotifica(Integer.parseInt(scanner.nextLine().trim()));
-            String err = controller.cancellaNotifica(id);
-            if (err.isEmpty()) {
+            try {
+                controller.cancellaNotifica(id);
                 System.out.println("  Notifica [ID " + id + "] cancellata.");
-            } else {
-                stampaErrore(err);
+            } catch (ElementoNonTrovatoException ex) {
+                stampaErrore("Nessuna notifica trovata con quell'identificativo (ID: " + id + ").");
+            } catch (ModificaNonConsentitaException ex) {
+                stampaErrore(messaggioModificaNonConsentita(ex));
+            } catch (PersistenzaException ex) {
+                stampaErrore("Salvataggio non riuscito: la notifica non e' stata cancellata.");
             }
         } catch (NumberFormatException e) {
             stampaErrore("ID non valido.");
@@ -467,11 +472,13 @@ public class FruitoreView {
             System.out.println("  Annullato.");
             return;
         }
-        String err = controller.cancellaAllNotifiche();
-        if (err.isEmpty()) {
+        try {
+            controller.cancellaAllNotifiche();
             System.out.println("  Tutte le notifiche cancellate.");
-        } else {
-            stampaErrore(err);
+        } catch (ModificaNonConsentitaException ex) {
+            stampaErrore(messaggioModificaNonConsentita(ex));
+        } catch (PersistenzaException ex) {
+            stampaErrore("Salvataggio non riuscito: le notifiche non sono state cancellate.");
         }
     }
 

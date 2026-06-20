@@ -428,6 +428,32 @@ public class AppData {
                 .collect(java.util.stream.Collectors.toList());
     }
 
+    /**
+     * Una categoria è rimovibile solo se nessuna proposta della sessione data la
+     * usa. La regola di dominio vive qui (non nel Controller): una seconda
+     * interfaccia (es. API REST) la riusa passando la propria lista di sessione.
+     */
+    public boolean categoriaUsataInSessione(List<Proposta> proposteSessione, String nomeCategoria) {
+        if (proposteSessione == null || nomeCategoria == null) {
+            return false;
+        }
+        return proposteSessione.stream()
+                .anyMatch(p -> p.getNomeCategoria().equalsIgnoreCase(nomeCategoria));
+    }
+
+    /**
+     * Un campo comune è rimovibile solo se nessuna proposta della sessione data
+     * lo usa. La regola di dominio vive qui (non nel Controller): una seconda
+     * interfaccia (es. API REST) la riusa passando la propria lista di sessione.
+     */
+    public boolean campoUsatoInSessione(List<Proposta> proposteSessione, String nomeCampo) {
+        if (proposteSessione == null || nomeCampo == null) {
+            return false;
+        }
+        return proposteSessione.stream()
+                .anyMatch(p -> p.usaCampo(nomeCampo));
+    }
+
     public IdProposta getNuovoIdProposta() {
         return new IdProposta(prossimoIdProposta++);
     }
