@@ -123,9 +123,10 @@ class PersistenceManagerTest {
     }
 
     @Test
-    void salvaECarica_FruitoreConNotifiche_PreservaTipoNotifica() {
+    void salvaECarica_FruitoreConNotifiche_PreservaTipoEIdNotifica() {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd"));
+        // id notifica (1) diverso da idProposta (5): smaschera l'uso errato del campo
         Notifica n = new Notifica(new IdNotifica(1), TipoNotifica.PROPOSTA_CONFERMATA, 5,
                 "Concerto", "10/07/2026", "21:00", "Arena", "20", OGGI);
         app.getFruitore("mario").aggiungiNotifica(n);
@@ -138,7 +139,10 @@ class PersistenceManagerTest {
 
         Fruitore mario = ricaricato.getFruitore("mario");
         assertEquals(1, mario.getNotifiche().size());
-        assertEquals(TipoNotifica.PROPOSTA_CONFERMATA, mario.getNotifiche().get(0).getTipo());
+        Notifica caricata = mario.getNotifiche().get(0);
+        assertEquals(TipoNotifica.PROPOSTA_CONFERMATA, caricata.getTipo());
+        assertEquals(1, caricata.getId().getValore()); // ID proprio, non idProposta
+        assertEquals(5, caricata.getIdProposta());
     }
 
     @Test

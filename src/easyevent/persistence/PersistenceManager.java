@@ -371,7 +371,7 @@ public class PersistenceManager {
                         dataCreazStr.trim(), Notifica.DATE_FORMAT);
 
                 result.add(new Notifica(
-                        new IdNotifica(idProposta),
+                        new IdNotifica(id),
                         tipo,
                         idProposta,
                         titoloProposta != null ? titoloProposta : "",
