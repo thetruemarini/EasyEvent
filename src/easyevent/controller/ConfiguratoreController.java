@@ -531,7 +531,7 @@ public class ConfiguratoreController {
      *
      * @throws ModificaNonConsentitaException se nessun configuratore è loggato.
      * @throws ElementoNonTrovatoException se la proposta non esiste in archivio.
-     * @throws RitiroNonConsensitoException se il ritiro non è consentito.
+     * @throws RitiroNonConsentitoException se il ritiro non è consentito.
      */
     public void ritirareProposta(IdProposta idProposta) {
         if (!isLoggato()) {

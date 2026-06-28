@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.IscrizioneException;
 import easyevent.exception.ModificaNonConsentitaException;
-import easyevent.exception.RitiroNonConsensitoException;
+import easyevent.exception.RitiroNonConsentitoException;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -470,9 +470,9 @@ class PropostaTest {
     @Test
     void ritiro_StatoNonRitirabile_LanciaStatoNonRitirabile() {
         Proposta p = new Proposta(new IdProposta(1), "Concerti", "creatore", campiCompleti());
-        RitiroNonConsensitoException ex = assertThrows(RitiroNonConsensitoException.class,
+        RitiroNonConsentitoException ex = assertThrows(RitiroNonConsentitoException.class,
                 () -> p.verificaRitiroConsentito(OGGI));
-        assertEquals(RitiroNonConsensitoException.TipoErrore.STATO_NON_RITIRABILE, ex.getTipoErrore());
+        assertEquals(RitiroNonConsentitoException.TipoErrore.STATO_NON_RITIRABILE, ex.getTipoErrore());
     }
 
     @Test
@@ -486,9 +486,9 @@ class PropostaTest {
         p.setValore(Proposta.CAMPO_NUM_PARTECIPANTI, "10");
         p.aggiornaStato(OGGI);
         p.pubblicaInBacheca(OGGI);
-        RitiroNonConsensitoException ex = assertThrows(RitiroNonConsensitoException.class,
+        RitiroNonConsentitoException ex = assertThrows(RitiroNonConsentitoException.class,
                 () -> p.verificaRitiroConsentito(OGGI));
-        assertEquals(RitiroNonConsensitoException.TipoErrore.DATA_EVENTO_NON_VALORIZZATA,
+        assertEquals(RitiroNonConsentitoException.TipoErrore.DATA_EVENTO_NON_VALORIZZATA,
                 ex.getTipoErrore());
     }
 
@@ -496,9 +496,9 @@ class PropostaTest {
     void ritiro_DataEventoPassata_LanciaDataEventoPassata() {
         Proposta p = propostaAperta(OGGI);
         // data inizio = oggi+15; verifico a oggi+20 (evento gia' passato)
-        RitiroNonConsensitoException ex = assertThrows(RitiroNonConsensitoException.class,
+        RitiroNonConsentitoException ex = assertThrows(RitiroNonConsentitoException.class,
                 () -> p.verificaRitiroConsentito(OGGI.plusDays(20)));
-        assertEquals(RitiroNonConsensitoException.TipoErrore.DATA_EVENTO_PASSATA, ex.getTipoErrore());
+        assertEquals(RitiroNonConsentitoException.TipoErrore.DATA_EVENTO_PASSATA, ex.getTipoErrore());
     }
 
     // ================================================================

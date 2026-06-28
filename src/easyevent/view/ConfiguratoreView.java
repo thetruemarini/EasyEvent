@@ -10,7 +10,7 @@ import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
-import easyevent.exception.RitiroNonConsensitoException;
+import easyevent.exception.RitiroNonConsentitoException;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
@@ -497,7 +497,7 @@ public class ConfiguratoreView {
             controller.ritirareProposta(id);
             System.out.println("\n  Proposta [ID " + id + "] ritirata. "
                     + "Tutti gli iscritti sono stati notificati.");
-        } catch (RitiroNonConsensitoException ex) {
+        } catch (RitiroNonConsentitoException ex) {
             stampaErrore(messaggioRitiroNonConsentito(ex));
         } catch (ElementoNonTrovatoException ex) {
             stampaErrore(messaggioElementoNonTrovato(ex));
@@ -1177,7 +1177,7 @@ public class ConfiguratoreView {
         };
     }
 
-    private String messaggioRitiroNonConsentito(RitiroNonConsensitoException e) {
+    private String messaggioRitiroNonConsentito(RitiroNonConsentitoException e) {
         return switch (e.getTipoErrore()) {
             case STATO_NON_RITIRABILE ->
                 "Il ritiro è consentito solo per proposte APERTE o CONFERMATE. "

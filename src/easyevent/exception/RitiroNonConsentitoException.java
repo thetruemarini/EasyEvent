@@ -3,7 +3,7 @@ package easyevent.exception;
 /**
  * Lanciata quando il ritiro di una proposta non è consentito.
  */
-public class RitiroNonConsensitoException extends RuntimeException {
+public class RitiroNonConsentitoException extends RuntimeException {
 
     public enum TipoErrore {
         STATO_NON_RITIRABILE, // stato non è APERTA né CONFERMATA
@@ -14,7 +14,7 @@ public class RitiroNonConsensitoException extends RuntimeException {
     private final TipoErrore tipoErrore;
     private final String statoAttuale; // usato solo per STATO_NON_RITIRABILE
 
-    public RitiroNonConsensitoException(TipoErrore tipoErrore, String statoAttuale) {
+    public RitiroNonConsentitoException(TipoErrore tipoErrore, String statoAttuale) {
         super("Ritiro non consentito [" + tipoErrore + "]");
         this.tipoErrore = tipoErrore;
         this.statoAttuale = statoAttuale != null ? statoAttuale : "";

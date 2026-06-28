@@ -15,7 +15,7 @@ src/easyevent/exception/ErroreValidazione.java
 src/easyevent/exception/IscrizioneException.java
 src/easyevent/exception/ModificaNonConsentitaException.java
 src/easyevent/exception/PersistenzaException.java
-src/easyevent/exception/RitiroNonConsensitoException.java
+src/easyevent/exception/RitiroNonConsentitoException.java
 src/easyevent/main/MainV5.java
 src/easyevent/model/Configuratore.java
 src/easyevent/model/Fruitore.java

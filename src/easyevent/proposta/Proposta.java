@@ -3,7 +3,7 @@ package easyevent.proposta;
 import easyevent.exception.ErroreValidazione;
 import easyevent.exception.IscrizioneException;
 import easyevent.exception.ModificaNonConsentitaException;
-import easyevent.exception.RitiroNonConsensitoException;
+import easyevent.exception.RitiroNonConsentitoException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -499,25 +499,25 @@ public class Proposta {
      * CONFERMATA e la data dell'evento dev'essere ancora futura. Non modifica lo
      * stato; serve a decidere se il ritiro è ammissibile.
      *
-     * @throws RitiroNonConsensitoException se il ritiro non è consentito.
+     * @throws RitiroNonConsentitoException se il ritiro non è consentito.
      */
     public void verificaRitiroConsentito(LocalDate oggi) {
         if (stato != StatoProposta.APERTA && stato != StatoProposta.CONFERMATA) {
-            throw new RitiroNonConsensitoException(
-                    RitiroNonConsensitoException.TipoErrore.STATO_NON_RITIRABILE,
+            throw new RitiroNonConsentitoException(
+                    RitiroNonConsentitoException.TipoErrore.STATO_NON_RITIRABILE,
                     stato.name()
             );
         }
         LocalDate dataInizio = parseDateSafe(getValore(CAMPO_DATA));
         if (dataInizio == null) {
-            throw new RitiroNonConsensitoException(
-                    RitiroNonConsensitoException.TipoErrore.DATA_EVENTO_NON_VALORIZZATA,
+            throw new RitiroNonConsentitoException(
+                    RitiroNonConsentitoException.TipoErrore.DATA_EVENTO_NON_VALORIZZATA,
                     null
             );
         }
         if (!oggi.isBefore(dataInizio)) {
-            throw new RitiroNonConsensitoException(
-                    RitiroNonConsensitoException.TipoErrore.DATA_EVENTO_PASSATA,
+            throw new RitiroNonConsentitoException(
+                    RitiroNonConsentitoException.TipoErrore.DATA_EVENTO_PASSATA,
                     null
             );
         }

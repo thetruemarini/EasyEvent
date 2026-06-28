@@ -401,7 +401,7 @@ public class AppData {
                     try {
                         p.verificaRitiroConsentito(oggi);
                         return true;
-                    } catch (easyevent.exception.RitiroNonConsensitoException e) {
+                    } catch (easyevent.exception.RitiroNonConsentitoException e) {
                         return false;
                     }
                 })
