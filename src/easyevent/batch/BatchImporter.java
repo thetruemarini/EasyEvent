@@ -113,7 +113,7 @@ public class BatchImporter {
      * @param percorsoFile path del file da importare (assoluto o relativo alla
      * CWD)
      * @return il resoconto dell'importazione
-     * @throws IOException se il file non esiste o non è leggibile
+     * @throws PersistenzaException se il file non esiste o non è leggibile
      */
     public BatchRisultato importa(String percorsoFile) {
         if (percorsoFile == null || percorsoFile.isBlank()) {

@@ -14,17 +14,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Rappresenta una proposta di iniziativa (Versione 5).
+ * Rappresenta una proposta di iniziativa.
  *
- * Ciclo di vita (invariato da V4): BOZZA -> VALIDA -> APERTA (pubblicazione
- * interattiva o batch) APERTA -> CONFERMATA / ANNULLATA (automatico, alla
- * scadenza) CONFERMATA -> CONCLUSA (automatico, dopo dataConclusiva) APERTA /
- * CONFERMATA -> RITIRATA (configuratore, V4)
+ * Ciclo di vita: BOZZA -> VALIDA -> APERTA (pubblicazione interattiva o batch)
+ * APERTA -> CONFERMATA / ANNULLATA (automatico, alla scadenza) CONFERMATA ->
+ * CONCLUSA (automatico, dopo dataConclusiva) APERTA / CONFERMATA -> RITIRATA
+ * (configuratore)
  *
- * Invariante di classe: - id >= 0 - nomeCategoria, usernameCreatore != null e
- * non blank - campiSnapshot, valori, stato, aderenti, storicoStati != null -
- * dataPubblicazione != null <-> stato in {APERTA, CONFERMATA, ANNULLATA,
- * CONCLUSA, RITIRATA}
+ * Invariante di classe: - id != null (l'IdProposta garantisce valore >= 0) -
+ * nomeCategoria, usernameCreatore != null e non blank - campiSnapshot, valori,
+ * stato, aderenti, storicoStati != null - dataPubblicazione != null <-> stato in
+ * {APERTA, CONFERMATA, ANNULLATA, CONCLUSA, RITIRATA}
  */
 public class Proposta {
 
@@ -212,6 +212,11 @@ public class Proposta {
     // ================================================================
     // VALIDAZIONE E STATO
     // ================================================================
+    /**
+     * Ricalcola lo stato di una proposta ancora in lavorazione: diventa VALIDA
+     * se non ci sono errori di validazione, altrimenti torna BOZZA. Le proposte
+     * già pubblicate o in stato finale non vengono toccate.
+     */
     public void aggiornaStato(LocalDate dataOggi) {
         if (stato == StatoProposta.APERTA || stato == StatoProposta.CONFERMATA
                 || stato == StatoProposta.ANNULLATA || stato == StatoProposta.CONCLUSA
@@ -223,6 +228,14 @@ public class Proposta {
                 : StatoProposta.BOZZA;
     }
 
+    /**
+     * Verifica tutte le regole di validità della proposta rispetto alla data
+     * indicata: campi obbligatori valorizzati, formati di data e ora corretti,
+     * coerenza temporale (termine futuro, data evento e data conclusiva) e numero
+     * di partecipanti positivo. Restituisce dati strutturati, non testo utente.
+     *
+     * @return la lista degli errori riscontrati; vuota se la proposta è valida.
+     */
     public List<ErroreValidazione> validazioneErrori(LocalDate dataOggi) {
         List<ErroreValidazione> errori = new ArrayList<>();
 
@@ -348,6 +361,12 @@ public class Proposta {
         }
     }
 
+    /**
+     * Pubblica la proposta portandola da VALIDA ad APERTA e registrando la data
+     * di pubblicazione nello storico.
+     *
+     * @throws ModificaNonConsentitaException se la proposta non è in stato VALIDA.
+     */
     public void pubblicaInBacheca(LocalDate dataPubblicazione) {
         if (stato != StatoProposta.VALIDA) {
             throw new ModificaNonConsentitaException(
@@ -363,6 +382,12 @@ public class Proposta {
         assert repOk() : "Invariante violato dopo pubblicaInBacheca";
     }
 
+    /**
+     * Annulla una pubblicazione riportando la proposta da APERTA a VALIDA e
+     * rimuovendo l'ultimo cambio di stato dallo storico.
+     *
+     * @throws ModificaNonConsentitaException se la proposta non è in stato APERTA.
+     */
     public void revertToValida() {
         if (stato != StatoProposta.APERTA) {
             throw new ModificaNonConsentitaException(
@@ -380,6 +405,13 @@ public class Proposta {
     // ================================================================
     // TRANSIZIONI DI STATO
     // ================================================================
+    /**
+     * Esegue una transizione di stato del ciclo di vita, ammettendo solo i
+     * passaggi legali: APERTA -> CONFERMATA/ANNULLATA/RITIRATA e CONFERMATA ->
+     * CONCLUSA/RITIRATA. Registra il cambiamento nello storico.
+     *
+     * @throws ModificaNonConsentitaException se la transizione non è ammessa.
+     */
     public void transitaStato(StatoProposta nuovoStato, LocalDate data) {
         if (nuovoStato == null || data == null) {
             throw new IllegalArgumentException("Stato e data non possono essere null.");
@@ -406,6 +438,14 @@ public class Proposta {
     // ================================================================
     // GESTIONE ADERENTI
     // ================================================================
+    /**
+     * Iscrive un fruitore alla proposta, verificando tutte le regole di
+     * dominio: la proposta dev'essere APERTA, le iscrizioni ancora aperte, il
+     * fruitore non già iscritto e i posti non esauriti.
+     *
+     * @throws IscrizioneException se una qualsiasi di queste condizioni non è
+     * soddisfatta.
+     */
     public void aggiungiAderente(String usernameF, LocalDate oggi) {
         if (usernameF == null || usernameF.isBlank()) {
             throw new IllegalArgumentException("usernameF non può essere null o vuoto");
@@ -430,6 +470,13 @@ public class Proposta {
         assert repOk() : "Invariante violato dopo aggiungiAderente";
     }
 
+    /**
+     * Disdice l'iscrizione di un fruitore alla proposta: ammessa solo se la
+     * proposta è APERTA, le iscrizioni ancora aperte e il fruitore è iscritto.
+     *
+     * @throws IscrizioneException se una qualsiasi di queste condizioni non è
+     * soddisfatta.
+     */
     public void rimuoviAderente(String usernameF, LocalDate oggi) {
         if (stato != StatoProposta.APERTA) {
             throw new IscrizioneException(IscrizioneException.TipoErrore.PROPOSTA_NON_APERTA);
@@ -447,6 +494,13 @@ public class Proposta {
     // ================================================================
     // HELPER V4: ritiro proposta
     // ================================================================
+    /**
+     * Verifica che la proposta possa essere ritirata oggi: dev'essere APERTA o
+     * CONFERMATA e la data dell'evento dev'essere ancora futura. Non modifica lo
+     * stato; serve a decidere se il ritiro è ammissibile.
+     *
+     * @throws RitiroNonConsensitoException se il ritiro non è consentito.
+     */
     public void verificaRitiroConsentito(LocalDate oggi) {
         if (stato != StatoProposta.APERTA && stato != StatoProposta.CONFERMATA) {
             throw new RitiroNonConsensitoException(

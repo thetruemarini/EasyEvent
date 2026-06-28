@@ -21,12 +21,9 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
- * Interfaccia testuale (CLI) per il configuratore - Versione 5.
- *
- * Novita' rispetto alla V4: - " Importa da file batch": consente al
- * configuratore di importare categorie, campi e proposte da uno o piu' file di
- * testo con sintassi batch, invece di inserirli manualmente riga per riga. La
- * modalita' interattiva resta invariata.
+ * Interfaccia testuale (CLI) per il configuratore. Offre sia l'inserimento
+ * interattivo riga per riga di categorie, campi e proposte, sia l'importazione
+ * da uno o più file di testo con sintassi batch.
  *
  * Invariante di classe: controller != null, scanner != null
  */

@@ -244,6 +244,13 @@ public class AppData {
     // ================================================================
     // RICERCA GLOBALE CAMPI (Aggiunta per Refactoring Problema 6)
     // ================================================================
+    /**
+     * Cerca un campo per nome attraverso tutti i livelli, nell'ordine: campi
+     * base, campi comuni, campi specifici della categoria indicata. Il confronto
+     * sul nome è case-insensitive.
+     *
+     * @return il primo campo trovato, o null se nessuno corrisponde.
+     */
     public Campo getCampo(String nomeCategoria, String nomeCampo) {
         if (nomeCampo == null) {
             return null;
@@ -473,6 +480,15 @@ public class AppData {
     // ================================================================
     // TRANSIZIONI AUTOMATICHE
     // ================================================================
+    /**
+     * Applica le transizioni di stato automatiche dovute al trascorrere del
+     * tempo: le proposte APERTE scadute diventano CONFERMATA (se raggiunto il
+     * numero minimo di aderenti) o ANNULLATA, notificando gli aderenti; le
+     * CONFERMATE oltre la data conclusiva diventano CONCLUSA.
+     *
+     * @param oggi la data rispetto a cui valutare le scadenze.
+     * @return il numero di proposte che hanno cambiato stato.
+     */
     public int aggiornaTransizioni(LocalDate oggi) {
         int modificate = 0;
         for (Proposta p : archivio) {
@@ -507,6 +523,11 @@ public class AppData {
     // ================================================================
     // RITIRO PROPOSTA (V4)
     // ================================================================
+    /**
+     * Ritira una proposta su iniziativa del configuratore: la porta in stato
+     * RITIRATA e notifica tutti gli aderenti. La legittimità del ritiro
+     * (stato e data dell'evento) è verificata dalla transizione stessa.
+     */
     public void ritirareProposta(Proposta proposta, LocalDate oggi) {
         if (proposta == null) {
             throw new IllegalArgumentException("La proposta non puo' essere null.");
@@ -586,6 +607,12 @@ public class AppData {
     // ================================================================
     // INVARIANTE
     // ================================================================
+    /**
+     * Controllo dell'invariante di rappresentazione: verifica che tutte le
+     * collezioni siano non null, i contatori di ID validi, gli username
+     * globalmente univoci e l'archivio privo di proposte in BOZZA o VALIDA.
+     * Usato dalle assert al termine dei metodi mutatori.
+     */
     public boolean repOk() {
         if (configuratori == null || fruitori == null || campiBase == null
                 || campiComuni == null || categorie == null || archivio == null) {

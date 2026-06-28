@@ -1,11 +1,8 @@
 package easyevent.proposta;
 /**
- * Rappresenta lo stato di una proposta di iniziativa.
- *
- * Versione 2: BOZZA, VALIDA, APERTA
- * Versione 3: aggiunti CONFERMATA, ANNULLATA, CONCLUSA
- * Versione 4: RITIRATA pienamente implementata
- * Versione 5: nessuna modifica agli stati (aggiunta modalità batch)
+ * Rappresenta lo stato di una proposta di iniziativa nel suo ciclo di vita:
+ * dalla creazione (BOZZA, VALIDA) alla pubblicazione (APERTA) fino agli esiti
+ * finali (CONFERMATA, ANNULLATA, CONCLUSA, RITIRATA).
  */
 public enum StatoProposta {
     BOZZA,

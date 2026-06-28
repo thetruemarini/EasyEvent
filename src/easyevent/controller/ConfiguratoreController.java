@@ -24,18 +24,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
- * Controller per tutte le operazioni del configuratore (Versione 5).
+ * Controller per tutte le operazioni del configuratore: gestione di campi,
+ * categorie e proposte, sia in modalità interattiva sia tramite import batch.
  *
- * Estende la V4 aggiungendo: - importaBatch(percorso): importa categorie, campi
- * e proposte da un file batch - importaBatch(lista): importa più file batch in
- * sequenza
- *
- * La modalità interattiva resta invariata.
- *
- * Il configuratore può fornire uno o più file di testo contenenti comandi
- * CAMPO_COMUNE, CATEGORIA e PROPOSTA, che vengono eseguiti in sequenza. Il
- * risultato dell'importazione è restituito come BatchRisultato e visualizzato
- * dalla view.
+ * Nell'import batch il configuratore fornisce uno o più file di testo contenenti
+ * comandi CAMPO_COMUNE, CATEGORIA e PROPOSTA, eseguiti in sequenza; l'esito è
+ * restituito come BatchRisultato e visualizzato dalla View.
  *
  * Invariante di classe: - appData != null - persistenceManager != null -
  * proposteSessione != null
@@ -75,6 +69,13 @@ public class ConfiguratoreController {
     // ================================================================
     // AUTENTICAZIONE
     // ================================================================
+    /**
+     * Autentica un configuratore. Al primo avvio del sistema (nessun
+     * configuratore registrato) accetta le credenziali di amministratore di
+     * default e crea il primo configuratore, marcato come "primo accesso".
+     *
+     * @return true se il login ha avuto successo, false altrimenti.
+     */
     public boolean login(String username, String password) {
         if (username == null || password == null) {
             return false;
@@ -113,6 +114,16 @@ public class ConfiguratoreController {
         return configuratoreCorrente != null && configuratoreCorrente.isPrimoAccesso();
     }
 
+    /**
+     * Sostituisce le credenziali di default con quelle personali del
+     * configuratore, consentito solo al primo accesso. Verifica l'unicità del
+     * nuovo username e, se la persistenza fallisce, ripristina le vecchie
+     * credenziali (rollback).
+     *
+     * @throws ModificaNonConsentitaException se nessuno è loggato o le
+     * credenziali sono già state impostate.
+     * @throws ElementoGiaEsistenteException se il nuovo username è già in uso.
+     */
     public void impostaCredenzialiPersonali(String nuovoUsername, String nuovaPassword) {
         if (!isLoggato()) {
             throw new ModificaNonConsentitaException(
@@ -181,6 +192,14 @@ public class ConfiguratoreController {
         }
     }
 
+    /**
+     * Rimuove un campo comune e persiste la modifica. Il campo non può essere
+     * rimosso se è ancora usato da una proposta della sessione corrente.
+     *
+     * @throws ModificaNonConsentitaException se nessun configuratore è loggato.
+     * @throws ElementoInSessioneException se il campo è usato in sessione.
+     * @throws ElementoNonTrovatoException se il campo non esiste.
+     */
     public void rimuoviCampoComune(String nomeCampo) {
         if (!isLoggato()) {
             throw accessoNegato();
@@ -241,6 +260,14 @@ public class ConfiguratoreController {
         }
     }
 
+    /**
+     * Rimuove una categoria e persiste la modifica. La categoria non può essere
+     * rimossa se è ancora usata da una proposta della sessione corrente.
+     *
+     * @throws ModificaNonConsentitaException se nessun configuratore è loggato.
+     * @throws ElementoInSessioneException se la categoria è usata in sessione.
+     * @throws ElementoNonTrovatoException se la categoria non esiste.
+     */
     public void rimuoviCategoria(String nomeCategoria) {
         if (!isLoggato()) {
             throw accessoNegato();
@@ -359,6 +386,14 @@ public class ConfiguratoreController {
     // ================================================================
     // PROPOSTE – SESSIONE
     // ================================================================
+    /**
+     * Crea una nuova proposta in bozza per la categoria indicata, costruendone
+     * lo snapshot dei campi (base + comuni + specifici della categoria con la
+     * rispettiva obbligatorietà) e aggiungendola alla sessione corrente.
+     *
+     * @return la proposta creata, o null se nessuno è loggato o la categoria non
+     * esiste.
+     */
     public Proposta creaProposta(String nomeCategoria) {
         if (!isLoggato()) {
             return null;
@@ -391,8 +426,15 @@ public class ConfiguratoreController {
         proposta.aggiornaStato(LocalDate.now());
     }
 
-    // Nota: restituisce List<ErroreValidazione> errori se la proposta non è valida,
-    // perché gli errori di validazione sono multipli e strutturati.
+    /**
+     * Pubblica una proposta della sessione corrente in bacheca e persiste la
+     * modifica. Se la persistenza fallisce, annulla la pubblicazione e riporta
+     * la proposta in sessione (rollback). Restituisce dati strutturati anziché
+     * lanciare un'eccezione perché gli errori di validazione sono multipli.
+     *
+     * @return lista vuota se pubblicata; lista di errori se non ancora valida.
+     * @throws ModificaNonConsentitaException se la proposta non è in sessione.
+     */
     public List<ErroreValidazione> pubblicaProposta(Proposta proposta) {
         if (proposta == null) {
             throw new IllegalArgumentException("proposta non può essere null");
@@ -477,7 +519,7 @@ public class ConfiguratoreController {
      *
      * @param percorsiFile lista dei path dei file batch, non null
      * @return resoconto aggregato dell'intera importazione
-     * @throws IllegalStateException se nessun configuratore è loggato
+     * @throws ModificaNonConsentitaException se nessun configuratore è loggato
      * @throws IllegalArgumentException se percorsiFile è null
      */
     public BatchRisultato importaBatch(List<String> percorsiFile) {
@@ -502,6 +544,15 @@ public class ConfiguratoreController {
     // ================================================================
     // RITIRO PROPOSTA (V4 – invariato)
     // ================================================================
+    /**
+     * Ritira la proposta indicata (notificando gli aderenti) e persiste la
+     * modifica. Se la persistenza fallisce, ricarica lo stato da disco per
+     * annullare il ritiro (rollback).
+     *
+     * @throws ModificaNonConsentitaException se nessun configuratore è loggato.
+     * @throws ElementoNonTrovatoException se la proposta non esiste in archivio.
+     * @throws RitiroNonConsensitoException se il ritiro non è consentito.
+     */
     public void ritirareProposta(IdProposta idProposta) {
         if (!isLoggato()) {
             throw accessoNegato();
@@ -554,6 +605,12 @@ public class ConfiguratoreController {
     // ================================================================
     // TRANSIZIONI AUTOMATICHE
     // ================================================================
+    /**
+     * Applica le transizioni di stato automatiche dovute al tempo trascorso e,
+     * se qualcosa è cambiato, persiste lo stato aggiornato.
+     *
+     * @return il numero di proposte che hanno cambiato stato.
+     */
     public int aggiornaTransizioni() {
         int n = appData.aggiornaTransizioni(LocalDate.now());
         if (n > 0) {

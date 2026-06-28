@@ -6,7 +6,8 @@ import java.time.format.DateTimeFormatter;
  * Rappresenta una notifica destinata a un fruitore.
  *
  * Invariante di classe:
- *   - id >= 0
+ *   - id != null (l'IdNotifica garantisce valore >= 0)
+ *   - idProposta >= 0
  *   - testo != null && !testo.isBlank()
  *   - dataCreazione != null
  */

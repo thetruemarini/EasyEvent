@@ -16,8 +16,8 @@ import java.util.Scanner;
 import java.util.stream.Collectors;
 
 /**
- * Interfaccia testuale (CLI) per il fruitore - Versione 5. Identica alla V4; la
- * V5 non aggiunge funzionalita' lato fruitore.
+ * Interfaccia testuale (CLI) per il fruitore: è l'unico layer che costruisce i
+ * testi mostrati all'utente, reagendo agli esiti e alle eccezioni del Controller.
  *
  * Invariante di classe: controller != null, scanner != null
  */

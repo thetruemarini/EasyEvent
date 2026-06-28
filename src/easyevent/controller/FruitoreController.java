@@ -16,8 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Controller per tutte le operazioni del fruitore (Versione 5). Identico alla
- * V4; la V5 non aggiunge funzionalità lato fruitore.
+ * Controller per tutte le operazioni del fruitore: login, registrazione,
+ * adesione/ritiro alle proposte e gestione delle notifiche. Orchestra il Model e
+ * la persistenza senza contenere logica di presentazione.
  *
  * Invariante di classe: - appData != null - persistenceManager != null -
  * fruitoreCorrente puo' essere null
@@ -46,6 +47,12 @@ public class FruitoreController {
         this.fruitoreCorrente = null;
     }
 
+    /**
+     * Autentica un fruitore e, se le credenziali sono corrette, lo imposta come
+     * fruitore corrente della sessione.
+     *
+     * @return true se il login ha avuto successo, false altrimenti.
+     */
     public boolean login(String username, String password) {
         if (username == null || password == null) {
             return false;
@@ -58,6 +65,12 @@ public class FruitoreController {
         return false;
     }
 
+    /**
+     * Registra un nuovo fruitore, lo persiste e lo imposta come corrente. Se il
+     * salvataggio fallisce, annulla l'aggiunta (rollback) e propaga l'errore.
+     *
+     * @throws PersistenzaException se il salvataggio non riesce.
+     */
     public void registra(String username, String password) {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Lo username non può essere vuoto.");
@@ -109,6 +122,13 @@ public class FruitoreController {
                 .filter(p -> p.getId().equals(id)).findFirst().orElse(null);
     }
 
+    /**
+     * Iscrive il fruitore corrente alla proposta indicata e persiste la
+     * modifica. In caso di errore di salvataggio annulla l'iscrizione (rollback).
+     *
+     * @throws ModificaNonConsentitaException se nessun fruitore è loggato.
+     * @throws ElementoNonTrovatoException se la proposta non è in bacheca.
+     */
     public void aderisci(IdProposta idProposta) {
         if (!isLoggato()) {
             throw nessunFruitoreLoggato();
@@ -131,6 +151,14 @@ public class FruitoreController {
         }
     }
 
+    /**
+     * Disdice l'iscrizione del fruitore corrente alla proposta indicata e
+     * persiste la modifica. In caso di errore di salvataggio ripristina
+     * l'iscrizione (rollback).
+     *
+     * @throws ModificaNonConsentitaException se nessun fruitore è loggato.
+     * @throws ElementoNonTrovatoException se la proposta non è in bacheca.
+     */
     public void disdiciIscrizione(IdProposta idProposta) {
         if (!isLoggato()) {
             throw nessunFruitoreLoggato();
@@ -181,6 +209,14 @@ public class FruitoreController {
         return lista;
     }
 
+    /**
+     * Cancella una singola notifica del fruitore corrente e persiste la
+     * modifica. In caso di errore di salvataggio ripristina la notifica
+     * (rollback).
+     *
+     * @throws ModificaNonConsentitaException se nessun fruitore è loggato.
+     * @throws ElementoNonTrovatoException se la notifica non esiste.
+     */
     public void cancellaNotifica(IdNotifica idNotifica) {
         if (!isLoggato()) {
             throw nessunFruitoreLoggato();
@@ -201,6 +237,12 @@ public class FruitoreController {
         }
     }
 
+    /**
+     * Cancella tutte le notifiche del fruitore corrente e persiste la modifica.
+     * In caso di errore di salvataggio ripristina l'intero elenco (rollback).
+     *
+     * @throws ModificaNonConsentitaException se nessun fruitore è loggato.
+     */
     public void cancellaAllNotifiche() {
         if (!isLoggato()) {
             throw nessunFruitoreLoggato();

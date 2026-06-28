@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Gestore della persistenza su file JSON (Versione 5). Identico alla V4 nel
- * formato; piena compatibilità con file V4/V3/V2/V1. La V5 non introduce nuovi
- * campi nel file di persistenza.
+ * Gestore della persistenza su file JSON. È l'unico componente che conosce i
+ * dettagli tecnologici dello storage (formato JSON, IOException): verso gli altri
+ * layer espone solo operazioni di dominio e PersistenzaException.
  *
  * Invariante: dataFilePath != null && !dataFilePath.isBlank()
  */
