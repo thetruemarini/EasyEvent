@@ -281,6 +281,8 @@ public class FruitoreView {
                 stampaErrore("Proposta non trovata o non più aperta (ID: " + id + ").");
             } catch (ModificaNonConsentitaException ex) {
                 stampaErrore(messaggioModificaNonConsentita(ex));
+            } catch (PersistenzaException ex) {
+                stampaErrore("Salvataggio non riuscito: l'iscrizione non e' stata registrata.");
             } catch (RuntimeException ex) {
                 stampaErrore("Errore inatteso durante l'iscrizione.");
             }
@@ -353,6 +355,8 @@ public class FruitoreView {
             stampaErrore("Proposta non trovata o non più aperta (ID: " + id + ").");
         } catch (ModificaNonConsentitaException ex) {
             stampaErrore(messaggioModificaNonConsentita(ex));
+        } catch (PersistenzaException ex) {
+            stampaErrore("Salvataggio non riuscito: la disdetta non e' stata registrata.");
         } catch (RuntimeException ex) {
             stampaErrore("Errore inatteso durante la disdetta.");
         }

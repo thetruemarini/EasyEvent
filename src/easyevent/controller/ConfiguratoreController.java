@@ -215,11 +215,7 @@ public class ConfiguratoreController {
             throw new ElementoNonTrovatoException(
                     ElementoNonTrovatoException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
-        try {
-            salvaInterno();
-        } catch (PersistenzaException e) {
-            throw e;
-        }
+        salvaInterno();
     }
 
     public void modificaObbligatorietaCampoComune(String nomeCampo, boolean obbligatorio) {
@@ -230,11 +226,7 @@ public class ConfiguratoreController {
             throw new ElementoNonTrovatoException(
                     ElementoNonTrovatoException.TipoElemento.CAMPO_COMUNE, nomeCampo);
         }
-        try {
-            salvaInterno();
-        } catch (PersistenzaException e) {
-            throw e;
-        }
+        salvaInterno();
     }
 
     public List<Campo> getCampiComuni() {
@@ -283,11 +275,7 @@ public class ConfiguratoreController {
             throw new ElementoNonTrovatoException(
                     ElementoNonTrovatoException.TipoElemento.CATEGORIA, nomeCategoria);
         }
-        try {
-            salvaInterno();
-        } catch (PersistenzaException e) {
-            throw e;
-        }
+        salvaInterno();
     }
 
     public void aggiungiCampoSpecifico(String nomeCategoria, String nomeCampo, boolean obbligatorio) {
@@ -335,11 +323,7 @@ public class ConfiguratoreController {
             throw new ElementoNonTrovatoException(
                     ElementoNonTrovatoException.TipoElemento.CAMPO_SPECIFICO, nomeCampo);
         }
-        try {
-            salvaInterno();
-        } catch (PersistenzaException e) {
-            throw e;
-        }
+        salvaInterno();
     }
 
     public void modificaObbligatorietaCampoSpecifico(
@@ -356,11 +340,7 @@ public class ConfiguratoreController {
             throw new ElementoNonTrovatoException(
                     ElementoNonTrovatoException.TipoElemento.CAMPO_SPECIFICO, nomeCampo);
         }
-        try {
-            salvaInterno();
-        } catch (PersistenzaException e) {
-            throw e;
-        }
+        salvaInterno();
     }
 
     public List<Categoria> getCategorie() {

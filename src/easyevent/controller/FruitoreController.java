@@ -147,7 +147,7 @@ public class FruitoreController {
             salva();
         } catch (PersistenzaException e) {
             p.rimuoviAderente(username, oggi); // rollback
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
     }
 
@@ -177,7 +177,7 @@ public class FruitoreController {
             salva();
         } catch (PersistenzaException e) {
             p.aggiungiAderente(username, oggi); // rollback
-            throw new RuntimeException("Errore nel salvataggio.", e);
+            throw e;
         }
     }
 
