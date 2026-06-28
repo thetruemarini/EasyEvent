@@ -6,6 +6,8 @@ import easyevent.core.AppData;
 import easyevent.exception.PersistenzaException;
 import easyevent.persistence.PersistenceManager;
 import easyevent.view.AppView;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 /**
@@ -26,6 +28,11 @@ public class MainV5 {
     private static final String DEFAULT_ADMIN_PASS = "admin123";
 
     public static void main(String[] args) {
+
+        // 0. Forza l'output console in UTF-8 a prescindere dalla code page del
+        //    terminale, così i simboli Unicode (✓, 📋, …) si visualizzano sempre.
+        System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
+        System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
 
         // 1. Stato centrale — creato una sola volta, iniettato tramite costruttore
         AppData appData = new AppData();
