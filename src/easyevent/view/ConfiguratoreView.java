@@ -1054,7 +1054,7 @@ public class ConfiguratoreView {
                 if (!perCat.isEmpty()) {
                     System.out.println("\n  CATEGORIA: " + cat.getNome().toUpperCase() + "  (" + perCat.size() + ")");
                     perCat.forEach(p -> {
-                        String dataPub = p.getDataPubblicazione() != null ? p.getDataPubblicazione().format(Proposta.DATE_FORMAT) : "-";
+                        String dataPub = p.getDataPubblicazione() != null ? p.getDataPubblicazione().format(ViewUtils.DATA) : "-";
                         int numMax = p.getNumeroMaxPartecipanti();
                         System.out.println("\n  [ID " + p.getId() + "]  Pub: " + dataPub + "  Iscritti: " + p.getNumAderenti() + "/" + (numMax < 0 ? "N/D" : numMax));
                         for (String nomeCampo : p.getNomiCampi()) {
@@ -1090,12 +1090,12 @@ public class ConfiguratoreView {
             System.out.println("\n  ---- " + stato + "  (" + perStato.size() + ") ----");
             perStato.forEach(p -> {
                 String titolo = p.getValore("Titolo");
-                String dataPub = p.getDataPubblicazione() != null ? p.getDataPubblicazione().format(Proposta.DATE_FORMAT) : "-";
+                String dataPub = p.getDataPubblicazione() != null ? p.getDataPubblicazione().format(ViewUtils.DATA) : "-";
                 System.out.println("\n    [ID " + p.getId() + "]  \"" + (titolo.isBlank() ? "(senza titolo)" : titolo) + "\"  " + p.getNomeCategoria());
                 System.out.println("    Pub: " + dataPub + "  Iscritti: " + p.getNumAderenti() + "/" + (p.getNumeroMaxPartecipanti() < 0 ? "N/D" : p.getNumeroMaxPartecipanti()));
                 if (!p.getStoricoStati().isEmpty()) {
                     String storico = p.getStoricoStati().stream()
-                            .map(cs -> cs.getStato().name() + " (" + cs.getData().format(Proposta.DATE_FORMAT) + ")")
+                            .map(cs -> cs.getStato().name() + " (" + cs.getData().format(ViewUtils.DATA) + ")")
                             .collect(Collectors.joining(" -> "));
                     System.out.println("    Storico: " + storico);
                 }
@@ -1240,10 +1240,11 @@ public class ConfiguratoreView {
                 "'" + e.getNomeCampo() + "': formato non valido (usare HH:MM, es. 09:30).";
             case TERMINE_NON_FUTURO ->
                 "'" + e.getNomeCampo() + "' deve essere successivo alla data odierna ("
-                + e.getDettaglio() + ").";
+                + e.getData().format(ViewUtils.DATA) + ").";
             case DATA_INIZIO_TROPPO_VICINA ->
                 "'" + e.getNomeCampo() + "' deve essere almeno 2 giorni dopo '"
-                + Proposta.CAMPO_TERMINE_ISCRIZIONE + "' (minimo: " + e.getDettaglio() + ").";
+                + Proposta.CAMPO_TERMINE_ISCRIZIONE + "' (minimo: "
+                + e.getData().format(ViewUtils.DATA) + ").";
             case DATA_CONCLUSIVA_PRECEDENTE ->
                 "'" + e.getNomeCampo() + "' non può essere precedente a '" + Proposta.CAMPO_DATA + "'.";
             case NUM_PARTECIPANTI_NON_POSITIVO ->

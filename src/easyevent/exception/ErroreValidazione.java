@@ -1,35 +1,41 @@
 package easyevent.exception;
 
+import java.time.LocalDate;
+
 /**
  * Rappresenta un singolo errore di validazione di una Proposta.
  *
  * Porta dati strutturati (tipo + parametri grezzi). La View costruisce il
- * messaggio italiano dai dati.
+ * messaggio italiano dai dati, e decide con quale formato mostrare le date.
  */
 public class ErroreValidazione {
 
     public enum Tipo {
-        CAMPO_OBBLIGATORIO_VUOTO, // dettaglio = nome del campo
-        DATA_FORMATO_NON_VALIDO, // dettaglio = nome del campo data
-        ORA_FORMATO_NON_VALIDO, // dettaglio = (null)
-        TERMINE_NON_FUTURO, // dettaglio = data odierna (String)
-        DATA_INIZIO_TROPPO_VICINA, // dettaglio = data minima ammessa (String)
-        DATA_CONCLUSIVA_PRECEDENTE, // dettaglio = (null)
-        NUM_PARTECIPANTI_NON_POSITIVO, // dettaglio = (null)
-        NUM_PARTECIPANTI_NON_NUMERICO    // dettaglio = (null)
+        CAMPO_OBBLIGATORIO_VUOTO,        // data = (null)
+        DATA_FORMATO_NON_VALIDO,         // data = (null)
+        ORA_FORMATO_NON_VALIDO,          // data = (null)
+        TERMINE_NON_FUTURO,              // data = data odierna
+        DATA_INIZIO_TROPPO_VICINA,       // data = data minima ammessa
+        DATA_CONCLUSIVA_PRECEDENTE,      // data = (null)
+        NUM_PARTECIPANTI_NON_POSITIVO,   // data = (null)
+        NUM_PARTECIPANTI_NON_NUMERICO    // data = (null)
     }
 
     private final Tipo tipo;
-    private final String nomeCampo;   // campo coinvolto, può essere null
-    private final String dettaglio;   // dato grezzo aggiuntivo, può essere null
+    private final String nomeCampo;   // campo coinvolto, puo' essere null
+    private final LocalDate data;     // data grezza pertinente all'errore, null se non applicabile
 
-    public ErroreValidazione(Tipo tipo, String nomeCampo, String dettaglio) {
+    public ErroreValidazione(Tipo tipo, String nomeCampo) {
+        this(tipo, nomeCampo, null);
+    }
+
+    public ErroreValidazione(Tipo tipo, String nomeCampo, LocalDate data) {
         if (tipo == null) {
-            throw new IllegalArgumentException("tipo non può essere null");
+            throw new IllegalArgumentException("tipo non puo' essere null");
         }
         this.tipo = tipo;
         this.nomeCampo = nomeCampo;
-        this.dettaglio = dettaglio;
+        this.data = data;
     }
 
     public Tipo getTipo() {
@@ -40,7 +46,11 @@ public class ErroreValidazione {
         return nomeCampo;
     }
 
-    public String getDettaglio() {
-        return dettaglio;
+    /**
+     * @return la data grezza collegata all'errore, o null se il tipo non ne
+     * prevede una. Non e' formattata: il formato lo sceglie la View.
+     */
+    public LocalDate getData() {
+        return data;
     }
 }

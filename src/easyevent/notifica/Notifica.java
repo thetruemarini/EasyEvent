@@ -1,7 +1,6 @@
 package easyevent.notifica;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 /**
  * Rappresenta una notifica destinata a un fruitore.
  *
@@ -12,9 +11,6 @@ import java.time.format.DateTimeFormatter;
  *   - dataCreazione != null
  */
 public class Notifica {
-
-    public static final DateTimeFormatter DATE_FORMAT
-            = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final IdNotifica id;
     private final TipoNotifica tipo;        // COSA è successo

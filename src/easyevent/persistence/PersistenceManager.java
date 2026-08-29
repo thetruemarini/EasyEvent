@@ -35,6 +35,13 @@ import java.util.Map;
  */
 public class PersistenceManager {
 
+    /**
+     * Formato con cui le date sono scritte nel file JSON. Coincide oggi con il
+     * formato dei campi data del dominio, ma e' una decisione indipendente:
+     * cambiarne uno non deve costringere a cambiare l'altro.
+     */
+    private static final DateTimeFormatter DATA_JSON = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+
     private final String dataFilePath;
 
     public PersistenceManager(String dataFilePath) {
@@ -230,7 +237,7 @@ public class PersistenceManager {
             sb.append(indent).append("      \"luogoEvento\": ").append(jsonStr(n.getLuogoEvento())).append(",\n");
             sb.append(indent).append("      \"quotaIndividuale\": ").append(jsonStr(n.getQuotaIndividuale())).append(",\n");
             sb.append(indent).append("      \"dataCreazione\": ")
-                    .append(jsonStr(n.getDataCreazione().format(Notifica.DATE_FORMAT))).append("\n");
+                    .append(jsonStr(n.getDataCreazione().format(DATA_JSON))).append("\n");
             sb.append(indent).append("    }");
             if (i < notifiche.size() - 1) {
                 sb.append(",");
@@ -250,7 +257,7 @@ public class PersistenceManager {
         sb.append(indent).append("  \"usernameCreatore\": ").append(jsonStr(p.getUsernameCreatore())).append(",\n");
         sb.append(indent).append("  \"stato\": ").append(jsonStr(p.getStato().name())).append(",\n");
         String dataPub = p.getDataPubblicazione() != null
-                ? p.getDataPubblicazione().format(Proposta.DATE_FORMAT) : "";
+                ? p.getDataPubblicazione().format(DATA_JSON) : "";
         sb.append(indent).append("  \"dataPubblicazione\": ").append(jsonStr(dataPub)).append(",\n");
 
         sb.append(indent).append("  \"storicoStati\": [\n");
@@ -259,7 +266,7 @@ public class PersistenceManager {
             Proposta.CambioStato cs = storico.get(i);
             sb.append(indent).append("    {");
             sb.append("\"stato\": ").append(jsonStr(cs.getStato().name())).append(", ");
-            sb.append("\"data\": ").append(jsonStr(cs.getData().format(Proposta.DATE_FORMAT)));
+            sb.append("\"data\": ").append(jsonStr(cs.getData().format(DATA_JSON)));
             sb.append("}");
             if (i < storico.size() - 1) {
                 sb.append(",");
@@ -371,7 +378,7 @@ public class PersistenceManager {
             try {
                 TipoNotifica tipo = TipoNotifica.valueOf(tipoStr);
                 LocalDate dataCreazione = LocalDate.parse(
-                        dataCreazStr.trim(), Notifica.DATE_FORMAT);
+                        dataCreazStr.trim(), DATA_JSON);
 
                 result.add(new Notifica(
                         new IdNotifica(id),
@@ -478,7 +485,7 @@ public class PersistenceManager {
             LocalDate dataPub = null;
             if (dataPubStr != null && !dataPubStr.isBlank()) {
                 try {
-                    dataPub = LocalDate.parse(dataPubStr.trim(), Proposta.DATE_FORMAT);
+                    dataPub = LocalDate.parse(dataPubStr.trim(), DATA_JSON);
                 } catch (Exception ignored) {
                 }
             }
@@ -495,7 +502,7 @@ public class PersistenceManager {
                     try {
                         storico.add(new Proposta.CambioStato(
                                 StatoProposta.valueOf(csStatoStr),
-                                LocalDate.parse(csDataStr.trim(), Proposta.DATE_FORMAT)));
+                                LocalDate.parse(csDataStr.trim(), DATA_JSON)));
                     } catch (Exception ignored) {
                     }
                 }

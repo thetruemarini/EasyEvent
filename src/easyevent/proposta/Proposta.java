@@ -28,6 +28,12 @@ import java.util.Map;
  */
 public class Proposta {
 
+    /**
+     * Formato con cui i campi di tipo data sono scritti e riletti come valore
+     * di una proposta. E' il contratto del dominio verso chi compila un campo
+     * (utente, file batch, test): non e' il formato con cui la View mostra le
+     * date, ne' quello con cui la persistenza le serializza.
+     */
     public static final DateTimeFormatter DATE_FORMAT =
     DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -242,7 +248,7 @@ public class Proposta {
                 if (valori.getOrDefault(entry.getKey(), "").isBlank()) {
                     errori.add(new ErroreValidazione(
                             ErroreValidazione.Tipo.CAMPO_OBBLIGATORIO_VUOTO,
-                            entry.getKey(), null));
+                            entry.getKey()));
                 }
             }
         }
@@ -258,24 +264,24 @@ public class Proposta {
         if (!strTermine.isBlank() && termine == null) {
             errori.add(new ErroreValidazione(
                     ErroreValidazione.Tipo.DATA_FORMATO_NON_VALIDO,
-                    CAMPO_TERMINE_ISCRIZIONE, null));
+                    CAMPO_TERMINE_ISCRIZIONE));
         }
         if (!strData.isBlank() && data == null) {
             errori.add(new ErroreValidazione(
                     ErroreValidazione.Tipo.DATA_FORMATO_NON_VALIDO,
-                    CAMPO_DATA, null));
+                    CAMPO_DATA));
         }
         if (!strDataConc.isBlank() && dataConc == null) {
             errori.add(new ErroreValidazione(
                     ErroreValidazione.Tipo.DATA_FORMATO_NON_VALIDO,
-                    CAMPO_DATA_CONCLUSIVA, null));
+                    CAMPO_DATA_CONCLUSIVA));
         }
 
         if (termine != null && !termine.isAfter(dataOggi)) {
             errori.add(new ErroreValidazione(
                     ErroreValidazione.Tipo.TERMINE_NON_FUTURO,
                     CAMPO_TERMINE_ISCRIZIONE,
-                    dataOggi.format(DATE_FORMAT)));
+                    dataOggi));
         }
 
         if (termine != null && data != null) {
@@ -284,14 +290,14 @@ public class Proposta {
                 errori.add(new ErroreValidazione(
                         ErroreValidazione.Tipo.DATA_INIZIO_TROPPO_VICINA,
                         CAMPO_DATA,
-                        minimaData.format(DATE_FORMAT)));
+                        minimaData));
             }
         }
 
         if (data != null && dataConc != null && dataConc.isBefore(data)) {
             errori.add(new ErroreValidazione(
                     ErroreValidazione.Tipo.DATA_CONCLUSIVA_PRECEDENTE,
-                    CAMPO_DATA_CONCLUSIVA, null));
+                    CAMPO_DATA_CONCLUSIVA));
         }
 
         String strNumPart = getValore(CAMPO_NUM_PARTECIPANTI);
@@ -301,12 +307,12 @@ public class Proposta {
                 if (n <= 0) {
                     errori.add(new ErroreValidazione(
                             ErroreValidazione.Tipo.NUM_PARTECIPANTI_NON_POSITIVO,
-                            CAMPO_NUM_PARTECIPANTI, null));
+                            CAMPO_NUM_PARTECIPANTI));
                 }
             } catch (NumberFormatException e) {
                 errori.add(new ErroreValidazione(
                         ErroreValidazione.Tipo.NUM_PARTECIPANTI_NON_NUMERICO,
-                        CAMPO_NUM_PARTECIPANTI, null));
+                        CAMPO_NUM_PARTECIPANTI));
             }
         }
 
@@ -314,7 +320,7 @@ public class Proposta {
         if (!strOra.isBlank() && !isFormatoOraValido(strOra)) {
             errori.add(new ErroreValidazione(
                     ErroreValidazione.Tipo.ORA_FORMATO_NON_VALIDO,
-                    CAMPO_ORA, null));
+                    CAMPO_ORA));
         }
 
         return errori;

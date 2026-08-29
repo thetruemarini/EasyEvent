@@ -10,7 +10,6 @@ import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 import java.util.stream.Collectors;
@@ -422,7 +421,7 @@ public class FruitoreView {
                 System.out.println("\n  Notifiche (" + notifiche.size() + "):");
                 notifiche.forEach(n
                         -> System.out.println("\n  [ID " + n.getId() + "]  ["
-                                + n.getDataCreazione().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                                + n.getDataCreazione().format(ViewUtils.DATA)
                                 + "]  " + costruisciTestoNotifica(n))
                 );
             }
