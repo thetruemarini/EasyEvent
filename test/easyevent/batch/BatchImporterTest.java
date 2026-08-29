@@ -23,6 +23,9 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class BatchImporterTest {
 
+    /** Data fissa dell'importazione: rende i test indipendenti dal giorno di esecuzione. */
+    private static final LocalDate OGGI = LocalDate.of(2026, 6, 1);
+
     @TempDir
     Path tempDir;
 
@@ -38,10 +41,9 @@ class BatchImporterTest {
 
     /** Riga PROPOSTA con tutti i campi base valorizzati validamente rispetto a oggi. */
     private String rigaPropostaValida(String categoria) {
-        LocalDate now = LocalDate.now();
-        String termine = now.plusDays(30).format(Proposta.DATE_FORMAT);
-        String dataInizio = now.plusDays(40).format(Proposta.DATE_FORMAT);
-        String dataConc = now.plusDays(41).format(Proposta.DATE_FORMAT);
+        String termine = OGGI.plusDays(30).format(Proposta.DATE_FORMAT);
+        String dataInizio = OGGI.plusDays(40).format(Proposta.DATE_FORMAT);
+        String dataConc = OGGI.plusDays(41).format(Proposta.DATE_FORMAT);
         return "PROPOSTA | " + categoria
                 + " | Titolo = Concerto"
                 + " | Numero di partecipanti = 10"
@@ -59,19 +61,25 @@ class BatchImporterTest {
     @Test
     void costruttore_AppDataNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new BatchImporter(null, "admin", noop));
+                () -> new BatchImporter(null, "admin", noop, OGGI));
     }
 
     @Test
     void costruttore_UsernameBlank_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new BatchImporter(new AppData(), "  ", noop));
+                () -> new BatchImporter(new AppData(), "  ", noop, OGGI));
     }
 
     @Test
     void costruttore_CallbackNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new BatchImporter(new AppData(), "admin", null));
+                () -> new BatchImporter(new AppData(), "admin", null, OGGI));
+    }
+
+    @Test
+    void costruttore_DataImportazioneNull_LanciaIllegalArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new BatchImporter(new AppData(), "admin", noop, null));
     }
 
     // ================================================================
@@ -79,7 +87,7 @@ class BatchImporterTest {
     // ================================================================
     @Test
     void importa_FileInesistente_LanciaPersistenzaException() {
-        BatchImporter imp = new BatchImporter(new AppData(), "admin", noop);
+        BatchImporter imp = new BatchImporter(new AppData(), "admin", noop, OGGI);
         PersistenzaException ex = assertThrows(PersistenzaException.class,
                 () -> imp.importa(tempDir.resolve("non_esiste.txt").toString()));
         assertEquals(PersistenzaException.TipoErrore.FILE_NON_TROVATO, ex.getTipoErrore());
@@ -87,7 +95,7 @@ class BatchImporterTest {
 
     @Test
     void importa_PercorsoNonRegolare_LanciaPersistenzaException() {
-        BatchImporter imp = new BatchImporter(new AppData(), "admin", noop);
+        BatchImporter imp = new BatchImporter(new AppData(), "admin", noop, OGGI);
         // passo una directory invece di un file
         assertThrows(PersistenzaException.class, () -> imp.importa(tempDir.toString()));
     }
@@ -98,7 +106,7 @@ class BatchImporterTest {
     @Test
     void importa_RigaCampoComune_AggiungeCampoAppData() throws Exception {
         AppData app = new AppData();
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         String file = scriviFile("batch.txt", "CAMPO_COMUNE | Sito web | no");
         imp.importa(file);
         assertTrue(app.esisteCampoComune("Sito web"));
@@ -107,7 +115,7 @@ class BatchImporterTest {
     @Test
     void importa_RigaCategoriaConCampiSpecifici_CreaCategoria() throws Exception {
         AppData app = new AppData();
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         String file = scriviFile("batch.txt",
                 "CATEGORIA | Concerti | CAMPO_SPECIFICO | Genere | no");
         imp.importa(file);
@@ -120,7 +128,7 @@ class BatchImporterTest {
         AppData app = new AppData();
         app.inizializzaCampiBase();
         app.aggiungiCategoria(new Categoria("Concerti"));
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         String file = scriviFile("batch.txt", rigaPropostaValida("Concerti"));
         BatchRisultato r = imp.importa(file);
         assertEquals(1, r.getNumSuccessi());
@@ -130,7 +138,7 @@ class BatchImporterTest {
     @Test
     void importa_RigaCommentoOVuota_Ignorata() throws Exception {
         AppData app = new AppData();
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         String file = scriviFile("batch.txt",
                 "# questo e' un commento",
                 "",
@@ -145,7 +153,7 @@ class BatchImporterTest {
         AppData app = new AppData();
         app.inizializzaCampiBase();
         app.aggiungiCategoria(new Categoria("Concerti"));
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         // manca il Titolo (e altri campi base obbligatori)
         String file = scriviFile("batch.txt",
                 "PROPOSTA | Concerti | Numero di partecipanti = 10");
@@ -157,7 +165,7 @@ class BatchImporterTest {
     @Test
     void importa_CategoriaDuplicata_ProduceWarningMaNonInterrompe() throws Exception {
         AppData app = new AppData();
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         String file = scriviFile("batch.txt",
                 "CATEGORIA | Concerti",
                 "CATEGORIA | Concerti");
@@ -170,7 +178,7 @@ class BatchImporterTest {
     void importa_SalvaCallbackInvocata_QuandoCiSonoSuccessi() throws Exception {
         AppData app = new AppData();
         AtomicInteger contatore = new AtomicInteger(0);
-        BatchImporter imp = new BatchImporter(app, "admin", contatore::incrementAndGet);
+        BatchImporter imp = new BatchImporter(app, "admin", contatore::incrementAndGet, OGGI);
         String file = scriviFile("batch.txt", "CAMPO_COMUNE | Sito web | no");
         imp.importa(file);
         assertTrue(contatore.get() > 0);
@@ -179,7 +187,7 @@ class BatchImporterTest {
     @Test
     void importaMultipli_AggregaRisultati() throws Exception {
         AppData app = new AppData();
-        BatchImporter imp = new BatchImporter(app, "admin", noop);
+        BatchImporter imp = new BatchImporter(app, "admin", noop, OGGI);
         String f1 = scriviFile("b1.txt", "CAMPO_COMUNE | Sito web | no");
         String f2 = scriviFile("b2.txt", "CAMPO_COMUNE | Telefono | si");
         BatchRisultato r = imp.importaMultipli(List.of(f1, f2));

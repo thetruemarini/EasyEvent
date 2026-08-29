@@ -499,7 +499,8 @@ public class ConfiguratoreController {
         BatchImporter importer = new BatchImporter(
                 appData,
                 configuratoreCorrente.getUsername(),
-                this::salvaInterno // lambda che delega al metodo salva() di questo controller
+                this::salvaInterno, // lambda che delega al metodo salva() di questo controller
+                LocalDate.now()
         );
 
         return importer.importa(percorsoFile);
@@ -529,7 +530,8 @@ public class ConfiguratoreController {
         BatchImporter importer = new BatchImporter(
                 appData,
                 configuratoreCorrente.getUsername(),
-                this::salvaInterno
+                this::salvaInterno,
+                LocalDate.now()
         );
 
         return importer.importaMultipli(percorsiFile);

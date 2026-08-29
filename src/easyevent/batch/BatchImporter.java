@@ -79,6 +79,7 @@ public class BatchImporter {
     private final AppData appData;
     private final String usernameCreatore;
     private final SalvaCallback salvaCallback;
+    private final LocalDate dataImportazione;
 
     // ================================================================
     // COSTRUTTORE
@@ -88,9 +89,13 @@ public class BatchImporter {
      * @param usernameCreatore username del configuratore loggato, non
      * null/blank
      * @param salvaCallback callback per il salvataggio su disco, non null
+     * @param dataImportazione data rispetto alla quale validare le proposte del
+     * file, non null. Fissata una volta per l'intera importazione: tutte le
+     * righe vengono valutate rispetto alla stessa data.
      * @throws IllegalArgumentException se qualche parametro non è valido
      */
-    public BatchImporter(AppData appData, String usernameCreatore, SalvaCallback salvaCallback) {
+    public BatchImporter(AppData appData, String usernameCreatore,
+            SalvaCallback salvaCallback, LocalDate dataImportazione) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
@@ -100,9 +105,13 @@ public class BatchImporter {
         if (salvaCallback == null) {
             throw new IllegalArgumentException("salvaCallback non puo' essere null.");
         }
+        if (dataImportazione == null) {
+            throw new IllegalArgumentException("dataImportazione non puo' essere null.");
+        }
         this.appData = appData;
         this.usernameCreatore = usernameCreatore;
         this.salvaCallback = salvaCallback;
+        this.dataImportazione = dataImportazione;
     }
 
     // ================================================================
@@ -535,8 +544,8 @@ public class BatchImporter {
         }
 
         // Ricalcola lo stato: BOZZA o VALIDA
-        LocalDate oggi = LocalDate.now();
-        List<ErroreValidazione> erroriValidazione = appData.pubblicaPropostaDiretta(proposta, oggi);
+        List<ErroreValidazione> erroriValidazione =
+                appData.pubblicaPropostaDiretta(proposta, dataImportazione);
 
         if (!erroriValidazione.isEmpty()) {
             List<String> messaggiErrori = erroriValidazione.stream()
