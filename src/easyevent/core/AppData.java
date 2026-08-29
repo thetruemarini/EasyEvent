@@ -36,17 +36,6 @@ import java.util.stream.Collectors;
  */
 public class AppData {
 
-    public static final String[] NOMI_CAMPI_BASE = {
-        "Titolo",
-        "Numero di partecipanti",
-        "Termine ultimo di iscrizione",
-        "Luogo",
-        "Data inizio",
-        "Ora",
-        "Quota individuale",
-        "Data conclusiva"
-    };
-
     private List<Configuratore> configuratori;
     private List<Campo> campiBase;
     private boolean campiBaseInizialized;
@@ -159,7 +148,7 @@ public class AppData {
         if (campiBaseInizialized) {
             throw new IllegalStateException("I campi base sono gia' stati inizializzati.");
         }
-        for (String nome : NOMI_CAMPI_BASE) {
+        for (String nome : CampoBase.NOMI) {
             campiBase.add(new CampoBase(nome));
         }
         campiBaseInizialized = true;

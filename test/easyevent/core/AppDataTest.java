@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import easyevent.categoria.CampoBase;
 import easyevent.categoria.CampoComune;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.model.Configuratore;
@@ -114,7 +115,7 @@ class AppDataTest {
     void inizializzaCampiBase_PrimaChiamata_CreaTuttiICampiBase() {
         AppData app = new AppData();
         app.inizializzaCampiBase();
-        assertEquals(AppData.NOMI_CAMPI_BASE.length, app.getCampiBase().size());
+        assertEquals(CampoBase.NOMI.size(), app.getCampiBase().size());
         assertTrue(app.isCampiBaseInitialized());
     }
 
