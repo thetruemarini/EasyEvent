@@ -6,6 +6,7 @@ import easyevent.categoria.CampoComune;
 import easyevent.categoria.CampoSpecifico;
 import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
+import easyevent.exception.PersistenzaException;
 import easyevent.model.Configuratore;
 import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
@@ -14,8 +15,10 @@ import easyevent.notifica.TipoNotifica;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import java.io.*;
-import java.nio.file.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -767,8 +770,8 @@ public class PersistenceManager {
         try {
             salva(data);
         } catch (IOException e) {
-            throw new easyevent.exception.PersistenzaException(
-                    easyevent.exception.PersistenzaException.TipoErrore.ERRORE_SCRITTURA,
+            throw new PersistenzaException(
+                    PersistenzaException.TipoErrore.ERRORE_SCRITTURA,
                     "Impossibile salvare i dati su disco.",
                     e
             );
@@ -783,8 +786,8 @@ public class PersistenceManager {
         try {
             return carica(data);
         } catch (IOException e) {
-            throw new easyevent.exception.PersistenzaException(
-                    easyevent.exception.PersistenzaException.TipoErrore.ERRORE_LETTURA,
+            throw new PersistenzaException(
+                    PersistenzaException.TipoErrore.ERRORE_LETTURA,
                     "Impossibile caricare i dati da disco.",
                     e
             );

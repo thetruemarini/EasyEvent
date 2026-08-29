@@ -13,6 +13,7 @@ import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -205,7 +206,7 @@ public class FruitoreController {
             return new ArrayList<>();
         }
         List<Notifica> lista = new ArrayList<>(fruitoreCorrente.getNotifiche());
-        java.util.Collections.reverse(lista);
+        Collections.reverse(lista);
         return lista;
     }
 

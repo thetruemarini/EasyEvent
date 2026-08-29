@@ -16,6 +16,7 @@ import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -271,7 +272,7 @@ class ConfiguratoreControllerTest {
         c.aggiungiCategoria("Concerti");
         // proposta creata fuori dalla sessione del controller
         Proposta esterna = new Proposta(new IdProposta(99), "Concerti", ADMIN,
-                new java.util.LinkedHashMap<>());
+                new LinkedHashMap<>());
         ModificaNonConsentitaException ex = assertThrows(ModificaNonConsentitaException.class,
                 () -> c.pubblicaProposta(esterna));
         assertEquals(ModificaNonConsentitaException.TipoModifica.PROPOSTA_NON_IN_SESSIONE,

@@ -6,6 +6,7 @@ import easyevent.categoria.CampoComune;
 import easyevent.categoria.Categoria;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ErroreValidazione;
+import easyevent.exception.RitiroNonConsentitoException;
 import easyevent.model.Configuratore;
 import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
@@ -401,11 +402,11 @@ public class AppData {
                     try {
                         p.verificaRitiroConsentito(oggi);
                         return true;
-                    } catch (easyevent.exception.RitiroNonConsentitoException e) {
+                    } catch (RitiroNonConsentitoException e) {
                         return false;
                     }
                 })
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -419,7 +420,7 @@ public class AppData {
         return archivio.stream()
                 .filter(p -> p.getStato() == StatoProposta.APERTA
                 && p.isAderito(username))
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -432,7 +433,7 @@ public class AppData {
                 .map(Proposta::getNomeCategoria)
                 .distinct()
                 .sorted()
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     /**

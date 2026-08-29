@@ -417,13 +417,13 @@ public class ConfiguratoreView {
     private void stampaVociResoconto(BatchRisultato risultato) {
         List<BatchRisultato.Voce> successi = risultato.getVoci().stream()
                 .filter(v -> v.getTipo() == BatchRisultato.TipoVoce.SUCCESSO)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
         List<BatchRisultato.Voce> warnings = risultato.getVoci().stream()
                 .filter(v -> v.getTipo() == BatchRisultato.TipoVoce.WARNING)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
         List<BatchRisultato.Voce> errori = risultato.getVoci().stream()
                 .filter(v -> v.getTipo() == BatchRisultato.TipoVoce.ERRORE)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
 
         if (!successi.isEmpty()) {
             System.out.println("\n  --- OPERAZIONI COMPLETATE ---");

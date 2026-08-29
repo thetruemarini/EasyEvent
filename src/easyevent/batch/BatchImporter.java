@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Motore di importazione batch per EasyEvent – Versione 5.
@@ -542,7 +543,7 @@ public class BatchImporter {
                     .map(e -> e.getNomeCampo() != null
                     ? e.getTipo().name() + " [" + e.getNomeCampo() + "]"
                     : e.getTipo().name())
-                    .collect(java.util.stream.Collectors.toList());
+                    .collect(Collectors.toList());
             risultato.aggiungiErrore(numeroRiga,
                     "Proposta non valida per la categoria '"
                     + nomeCategoria + "' (non pubblicata). Problemi: "
