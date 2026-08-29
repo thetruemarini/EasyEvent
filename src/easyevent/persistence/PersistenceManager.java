@@ -560,7 +560,7 @@ public class PersistenceManager {
     }
 
     // ================================================================
-    // UTILITIES PARSER JSON MINIMALE (identico V4)
+    // UTILITIES PARSER JSON MINIMALE
     // ================================================================
     private int findKeyPosition(String json, String key, int fromIndex) {
         String search = "\"" + key + "\"";

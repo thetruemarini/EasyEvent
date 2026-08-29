@@ -145,17 +145,6 @@ public class Proposta {
         assert repOk() : "Invariante violato dopo costruzione deserializzazione Proposta";
     }
 
-    /**
-     * Costruttore di compatibilita' V2 (senza aderenti e storico).
-     */
-    public Proposta(IdProposta id, String nomeCategoria, String usernameCreatore,
-            LinkedHashMap<String, Boolean> campiOrdinati,
-            Map<String, String> valori, StatoProposta stato,
-            LocalDate dataPubblicazione) {
-        this(id, nomeCategoria, usernameCreatore, campiOrdinati, valori, stato,
-                dataPubblicazione, new ArrayList<>(), new ArrayList<>());
-    }
-
     // ================================================================
     // GESTIONE VALORI
     // ================================================================
@@ -492,7 +481,7 @@ public class Proposta {
     }
 
     // ================================================================
-    // HELPER V4: ritiro proposta
+    // RITIRO PROPOSTA
     // ================================================================
     /**
      * Verifica che la proposta possa essere ritirata oggi: dev'essere APERTA o

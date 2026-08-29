@@ -269,7 +269,7 @@ public class FruitoreController {
     }
 
     // ================================================================
-    // METODI PRESENTAZIONALI PER LA VIEW (Refactoring Problema 6)
+    // INTERROGAZIONI SUI CAMPI
     // ================================================================
     public boolean isCampoInEvidenza(String nomeCategoria, String nomeCampo) {
         Campo c = appData.getCampo(nomeCategoria, nomeCampo);

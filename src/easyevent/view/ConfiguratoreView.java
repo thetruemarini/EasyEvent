@@ -446,7 +446,7 @@ public class ConfiguratoreView {
     }
 
     // ================================================================
-    // RITIRO PROPOSTA (V4 – invariato)
+    // RITIRO PROPOSTA
     // ================================================================
     private void menuRitiraProposta() {
         System.out.println("\n" + ViewUtils.SEP);

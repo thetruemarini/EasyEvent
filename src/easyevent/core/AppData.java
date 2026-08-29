@@ -24,9 +24,6 @@ import java.util.stream.Collectors;
 /**
  * Contenitore centrale dello stato dell'applicazione (Versione 5).
  *
- * Identico alla V4; la V5 non aggiunge nuovi stati o strutture dati. Le nuove
- * funzionalità batch operano sulle stesse strutture dati di V4.
- *
  * AppData viene creata una sola volta in MainV5 e passata esplicitamente a
  * tutti i componenti che ne hanno bisogno tramite costruttore (Dependency
  * Injection). Non si usa il pattern Singleton: le dipendenze sono dichiarate
@@ -243,7 +240,7 @@ public class AppData {
     }
 
     // ================================================================
-    // RICERCA GLOBALE CAMPI (Aggiunta per Refactoring Problema 6)
+    // RICERCA GLOBALE CAMPI
     // ================================================================
     /**
      * Cerca un campo per nome attraverso tutti i livelli, nell'ordine: campi
@@ -522,7 +519,7 @@ public class AppData {
     }
 
     // ================================================================
-    // RITIRO PROPOSTA (V4)
+    // RITIRO PROPOSTA
     // ================================================================
     /**
      * Ritira una proposta su iniziativa del configuratore: la porta in stato

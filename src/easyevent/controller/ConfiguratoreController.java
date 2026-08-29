@@ -522,7 +522,7 @@ public class ConfiguratoreController {
     }
 
     // ================================================================
-    // RITIRO PROPOSTA (V4 – invariato)
+    // RITIRO PROPOSTA
     // ================================================================
     /**
      * Ritira la proposta indicata (notificando gli aderenti) e persiste la
@@ -635,7 +635,7 @@ public class ConfiguratoreController {
     }
 
     // ================================================================
-    // METODI PRESENTAZIONALI PER LA VIEW (Refactoring Problema 6)
+    // INTERROGAZIONI SUI CAMPI
     // ================================================================
     public boolean isCampoData(String nomeCategoria, String nomeCampo) {
         Campo c = appData.getCampo(nomeCategoria, nomeCampo);

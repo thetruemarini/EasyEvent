@@ -292,7 +292,7 @@ public class FruitoreView {
     }
 
     // ================================================================
-    // DISDICI ISCRIZIONE (V4)
+    // DISDICI ISCRIZIONE
     // ================================================================
     private void disdiciIscrizione() {
         List<Proposta> iscrittoA = controller.getBacheca().stream()
