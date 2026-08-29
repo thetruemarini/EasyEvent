@@ -55,8 +55,8 @@ public class Proposta {
     // ================================================================
     public static class CambioStato {
 
-        public final StatoProposta stato;
-        public final LocalDate data;
+        private final StatoProposta stato;
+        private final LocalDate data;
 
         public CambioStato(StatoProposta stato, LocalDate data) {
             if (stato == null || data == null) {
@@ -66,9 +66,18 @@ public class Proposta {
             this.data = data;
         }
 
+        public StatoProposta getStato() {
+            return stato;
+        }
+
+        public LocalDate getData() {
+            return data;
+        }
+
+        /** Formato di debug: la resa per l'utente e' compito della View. */
         @Override
         public String toString() {
-            return stato.name() + " (" + data.format(DATE_FORMAT) + ")";
+            return "CambioStato{stato=" + stato + ", data=" + data + "}";
         }
     }
 

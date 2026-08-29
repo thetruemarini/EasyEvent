@@ -222,7 +222,7 @@ class PropostaTest {
         assertEquals(StatoProposta.APERTA, p.getStato());
         assertEquals(OGGI, p.getDataPubblicazione());
         assertEquals(1, p.getStoricoStati().size());
-        assertEquals(StatoProposta.APERTA, p.getStoricoStati().get(0).stato);
+        assertEquals(StatoProposta.APERTA, p.getStoricoStati().get(0).getStato());
     }
 
     @Test

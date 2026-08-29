@@ -258,8 +258,8 @@ public class PersistenceManager {
         for (int i = 0; i < storico.size(); i++) {
             Proposta.CambioStato cs = storico.get(i);
             sb.append(indent).append("    {");
-            sb.append("\"stato\": ").append(jsonStr(cs.stato.name())).append(", ");
-            sb.append("\"data\": ").append(jsonStr(cs.data.format(Proposta.DATE_FORMAT)));
+            sb.append("\"stato\": ").append(jsonStr(cs.getStato().name())).append(", ");
+            sb.append("\"data\": ").append(jsonStr(cs.getData().format(Proposta.DATE_FORMAT)));
             sb.append("}");
             if (i < storico.size() - 1) {
                 sb.append(",");

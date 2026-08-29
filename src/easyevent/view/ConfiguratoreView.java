@@ -1095,7 +1095,7 @@ public class ConfiguratoreView {
                 System.out.println("    Pub: " + dataPub + "  Iscritti: " + p.getNumAderenti() + "/" + (p.getNumeroMaxPartecipanti() < 0 ? "N/D" : p.getNumeroMaxPartecipanti()));
                 if (!p.getStoricoStati().isEmpty()) {
                     String storico = p.getStoricoStati().stream()
-                            .map(cs -> cs.stato.name() + " (" + cs.data.format(Proposta.DATE_FORMAT) + ")")
+                            .map(cs -> cs.getStato().name() + " (" + cs.getData().format(Proposta.DATE_FORMAT) + ")")
                             .collect(Collectors.joining(" -> "));
                     System.out.println("    Storico: " + storico);
                 }
