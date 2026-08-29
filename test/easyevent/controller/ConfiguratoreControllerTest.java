@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import easyevent.categoria.Campo;
+import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
 import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoInSessioneException;
@@ -15,10 +17,13 @@ import easyevent.exception.PersistenzaException;
 import easyevent.persistence.PersistenceManager;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
+import easyevent.proposta.StatoProposta;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -349,6 +354,49 @@ class ConfiguratoreControllerTest {
         Proposta p = c.creaProposta("Concerti");
         riempiCampiBase(c, p);
         assertTrue(c.getErroriValidazione(p).isEmpty());
+    }
+
+    // ================================================================
+    // Transizioni automatiche
+    // ================================================================
+    /**
+     * Mette in archivio una proposta APERTA il cui termine di iscrizione e' gia'
+     * scaduto, cosi' che la transizione automatica scatti alla data odierna.
+     */
+    private void archiviaApertaScaduta(AppData app) {
+        app.inizializzaCampiBase();
+        app.aggiungiCategoria(new Categoria("Concerti"));
+        LinkedHashMap<String, Boolean> snap = new LinkedHashMap<>();
+        for (Campo campo : app.getCampiBase()) {
+            snap.put(campo.getNome(), campo.isObbligatorio());
+        }
+        LocalDate ieri = LocalDate.now().minusDays(1);
+        Map<String, String> valori = new LinkedHashMap<>();
+        valori.put("Termine ultimo di iscrizione", ieri.format(Proposta.DATE_FORMAT));
+        valori.put("Numero di partecipanti", "10");
+        app.aggiungiPropostaAperta(new Proposta(new IdProposta(1), "Concerti", ADMIN,
+                snap, valori, StatoProposta.APERTA, ieri.minusDays(10),
+                new ArrayList<>(), new ArrayList<>()));
+    }
+
+    @Test
+    void aggiornaTransizioni_TermineScaduto_ApplicaLaTransizione() {
+        AppData app = new AppData();
+        archiviaApertaScaduta(app);
+        ConfiguratoreController c = loggato(app);
+        assertEquals(1, c.aggiornaTransizioni());
+        assertEquals(StatoProposta.ANNULLATA, app.getArchivio().get(0).getStato());
+    }
+
+    @Test
+    void aggiornaTransizioni_ErrorePersistenza_RilanciaConRollbackAllegato() {
+        AppData app = new AppData();
+        archiviaApertaScaduta(app);
+        ConfiguratoreController c =
+                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD);
+        PersistenzaException ex = assertThrows(PersistenzaException.class, c::aggiornaTransizioni);
+        // anche il rollback fallisce: viene allegato all'errore originale, non stampato
+        assertEquals(1, ex.getSuppressed().length);
     }
 
     // ================================================================

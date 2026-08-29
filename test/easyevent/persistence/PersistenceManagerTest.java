@@ -146,6 +146,41 @@ class PersistenceManagerTest {
     }
 
     @Test
+    void carica_FileIntegro_NessunaPropostaScartata() throws Exception {
+        AppData app = new AppData();
+        app.inizializzaCampiBase();
+        app.aggiungiCategoria(new Categoria("Concerti"));
+        propostaApertaCompleta(app, "Concerti");
+        PersistenceManager pm = new PersistenceManager(filePath());
+        pm.salvaSicuro(app);
+        AppData ricaricato = new AppData();
+        pm.caricaSicuro(ricaricato);
+        assertEquals(0, pm.getProposteScartate());
+        assertEquals(1, ricaricato.getArchivio().size());
+    }
+
+    @Test
+    void carica_PropostaConRecordNonValido_LaScartaELaConta() throws Exception {
+        AppData app = new AppData();
+        app.inizializzaCampiBase();
+        app.aggiungiCategoria(new Categoria("Concerti"));
+        propostaApertaCompleta(app, "Concerti");
+        PersistenceManager pm = new PersistenceManager(filePath());
+        pm.salvaSicuro(app);
+
+        // Rende non valido il record su disco: la categoria diventa vuota.
+        Path file = tempDir.resolve("data.json");
+        Files.writeString(file,
+                Files.readString(file).replace("\"nomeCategoria\": \"Concerti\"",
+                        "\"nomeCategoria\": \"\""));
+
+        AppData ricaricato = new AppData();
+        pm.caricaSicuro(ricaricato);
+        assertEquals(1, pm.getProposteScartate());
+        assertTrue(ricaricato.getArchivio().isEmpty());
+    }
+
+    @Test
     void carica_FileMalformato_GestitoSenzaCrash() throws Exception {
         Files.writeString(tempDir.resolve("data.json"),
                 "{ \"configuratori\": [ {\"username\": \"ad");

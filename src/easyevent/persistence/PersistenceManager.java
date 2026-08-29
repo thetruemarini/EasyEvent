@@ -43,6 +43,7 @@ public class PersistenceManager {
     private static final DateTimeFormatter DATA_JSON = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     private final String dataFilePath;
+    private int proposteScartate;
 
     public PersistenceManager(String dataFilePath) {
         if (dataFilePath == null || dataFilePath.isBlank()) {
@@ -169,6 +170,7 @@ public class PersistenceManager {
         if (data == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
+        proposteScartate = 0;
         Path path = Paths.get(dataFilePath);
         if (!Files.exists(path)) {
             return false;
@@ -560,7 +562,9 @@ public class PersistenceManager {
                 result.add(new Proposta(new IdProposta(id), nomeCategoria, usernameCreatore,
                         campiSnapshot, valori, stato, dataPub, aderenti, storico));
             } catch (IllegalArgumentException e) {
-                System.err.println("[PersistenceManager] Proposta scartata: " + e.getMessage());
+                // Record malformato: si scarta la singola proposta, non l'intero
+                // archivio. Il fatto viene contato, non stampato.
+                proposteScartate++;
             }
         }
         return result;
@@ -786,6 +790,14 @@ public class PersistenceManager {
      * Carica lo stato wrappando IOException in PersistenzaException. Il
      * Controller usa questo metodo: non conosce IOException.
      */
+    /**
+     * @return quante proposte l'ultimo caricamento ha scartato perche' il
+     * record su disco era malformato. Zero se il file era integro.
+     */
+    public int getProposteScartate() {
+        return proposteScartate;
+    }
+
     public boolean caricaSicuro(AppData data) {
         try {
             return carica(data);

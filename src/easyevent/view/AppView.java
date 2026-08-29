@@ -2,6 +2,7 @@ package easyevent.view;
 
 import easyevent.controller.ConfiguratoreController;
 import easyevent.controller.FruitoreController;
+import easyevent.exception.PersistenzaException;
 import java.util.Scanner;
 
 /**
@@ -31,6 +32,62 @@ public class AppView {
         this.confController = confController;
         this.fruitController = fruitController;
         this.scanner = scanner;
+    }
+
+    /**
+     * Mostra l'esito del caricamento iniziale dei dati.
+     *
+     * @param percorsoFile il file da cui si e' tentato di caricare
+     * @param fileEsisteva true se il file era presente
+     * @param proposteScartate quante proposte sono state scartate perche' il
+     * record era malformato
+     */
+    public void mostraEsitoCaricamento(String percorsoFile, boolean fileEsisteva,
+            int proposteScartate) {
+        if (fileEsisteva) {
+            System.out.println("[Sistema] Dati caricati da: " + percorsoFile);
+        } else {
+            System.out.println("[Sistema] Primo avvio: nessun dato precedente trovato.");
+        }
+        if (proposteScartate > 0) {
+            System.out.println("[Sistema] Attenzione: " + proposteScartate
+                    + " proposta/e scartata/e perche' il record su disco non e' valido.");
+        }
+    }
+
+    /** Mostra un errore di persistenza avvenuto durante l'avvio. */
+    public void mostraErroreAvvio(String contesto, PersistenzaException e) {
+        System.out.println("[Sistema] " + contesto + ": "
+                + messaggioPersistenza(e.getTipoErrore()) + ".");
+    }
+
+    /** Mostra quante transizioni automatiche di stato sono state applicate. */
+    public void mostraTransizioni(int quante) {
+        if (quante > 0) {
+            System.out.println("[Sistema] Transizioni automatiche applicate: "
+                    + quante + " proposta/e aggiornata/e.");
+        }
+    }
+
+    /** Mostra il riepilogo dei dati presenti all'avvio. */
+    public void mostraRiepilogoIniziale() {
+        System.out.println("[Sistema] Proposte aperte in bacheca: "
+                + confController.getBacheca().size());
+        System.out.println("[Sistema] Proposte nell'archivio:     "
+                + confController.getArchivio().size());
+    }
+
+    private String messaggioPersistenza(PersistenzaException.TipoErrore tipo) {
+        return switch (tipo) {
+            case FILE_NON_TROVATO ->
+                "file non trovato";
+            case NON_E_UN_FILE ->
+                "il percorso indicato non e' un file";
+            case ERRORE_LETTURA ->
+                "errore nella lettura del file";
+            case ERRORE_SCRITTURA ->
+                "errore nel salvataggio";
+        };
     }
 
     /**

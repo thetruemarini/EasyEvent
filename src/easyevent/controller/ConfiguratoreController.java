@@ -584,8 +584,9 @@ public class ConfiguratoreController {
         } catch (PersistenzaException e) {
             try {
                 persistenceManager.caricaSicuro(appData);
-            } catch (PersistenzaException re) {
-                System.err.println("[Sistema] Rollback fallito: " + re.getMessage());
+            } catch (PersistenzaException rollbackEx) {
+                // Il rollback fallito non sostituisce l'errore originale: lo accompagna.
+                e.addSuppressed(rollbackEx);
             }
             throw e;
         }
@@ -619,9 +620,12 @@ public class ConfiguratoreController {
     // ================================================================
     /**
      * Applica le transizioni di stato automatiche dovute al tempo trascorso e,
-     * se qualcosa è cambiato, persiste lo stato aggiornato.
+     * se qualcosa è cambiato, persiste lo stato aggiornato. Se il salvataggio
+     * fallisce ricarica lo stato da disco (rollback) e propaga l'errore: chi
+     * chiama deve sapere che le transizioni non sono state registrate.
      *
      * @return il numero di proposte che hanno cambiato stato.
+     * @throws PersistenzaException se il salvataggio non riesce.
      */
     public int aggiornaTransizioni() {
         int n = appData.aggiornaTransizioni(LocalDate.now());
@@ -629,14 +633,12 @@ public class ConfiguratoreController {
             try {
                 salvaInterno();
             } catch (PersistenzaException e) {
-                System.err.println("[Sistema] Errore salvataggio dopo transizioni: " + e.getMessage());
                 try {
                     persistenceManager.caricaSicuro(appData);
-                    System.err.println("[Sistema] Rollback transizioni completato.");
                 } catch (PersistenzaException rollbackEx) {
-                    System.err.println("[Sistema] Rollback fallito: " + rollbackEx.getMessage());
+                    e.addSuppressed(rollbackEx);
                 }
-                return 0;
+                throw e;
             }
         }
         return n;

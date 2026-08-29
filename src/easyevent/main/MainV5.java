@@ -17,9 +17,10 @@ import java.util.Scanner;
  * 2. Creare PersistenceManager 3. Caricare i dati 4. Creare i Controller
  * (iniettando le dipendenze) 5. Creare la View principale e avviarla
  *
- * Nessuna logica di business, nessuna logica di presentazione vive qui. Il main
- * dipende da tutti i layer per definizione: è il suo ruolo. Non appartiene a
- * nessuna delle caselle MVC — ha un package dedicato.
+ * Nessuna logica di business, nessuna logica di presentazione vive qui: anche i
+ * messaggi di avvio sono costruiti e stampati da AppView. Il main dipende da
+ * tutti i layer per definizione: è il suo ruolo. Non appartiene a nessuna delle
+ * caselle MVC — ha un package dedicato.
  */
 public class MainV5 {
 
@@ -31,6 +32,7 @@ public class MainV5 {
 
         // 0. Forza l'output console in UTF-8 a prescindere dalla code page del
         //    terminale, così i simboli Unicode (✓, 📋, …) si visualizzano sempre.
+        //    Configura lo stream, non ci scrive: la scrittura è della View.
         System.setOut(new PrintStream(System.out, true, StandardCharsets.UTF_8));
         System.setErr(new PrintStream(System.err, true, StandardCharsets.UTF_8));
 
@@ -40,16 +42,14 @@ public class MainV5 {
         // 2. Persistenza
         PersistenceManager persistenceManager = new PersistenceManager(DATA_FILE);
 
-        // 3. Caricamento dati
+        // 3. Caricamento dati: l'esito viene tenuto da parte e mostrato dalla
+        //    View, che a questo punto non esiste ancora.
+        boolean fileEsisteva = false;
+        PersistenzaException erroreCaricamento = null;
         try {
-            boolean fileEsisteva = persistenceManager.caricaSicuro(appData);
-            if (fileEsisteva) {
-                System.out.println("[Sistema] Dati caricati da: " + DATA_FILE);
-            } else {
-                System.out.println("[Sistema] Primo avvio: nessun dato precedente trovato.");
-            }
+            fileEsisteva = persistenceManager.caricaSicuro(appData);
         } catch (PersistenzaException e) {
-            System.err.println("[Sistema] Impossibile caricare i dati: " + e.getMessage());
+            erroreCaricamento = e;
         }
 
         // 4. Controller (Dependency Injection)
@@ -60,30 +60,31 @@ public class MainV5 {
         FruitoreController fruitController
                 = new FruitoreController(appData, persistenceManager);
 
-        // Inizializza campi base se necessario
+        // 5. View principale — da qui in poi ogni riga stampata passa da lei
+        Scanner scanner = new Scanner(System.in);
+        AppView appView = new AppView(confController, fruitController, scanner);
+
+        if (erroreCaricamento != null) {
+            appView.mostraErroreAvvio("Impossibile caricare i dati", erroreCaricamento);
+        } else {
+            appView.mostraEsitoCaricamento(DATA_FILE, fileEsisteva,
+                    persistenceManager.getProposteScartate());
+        }
+
         try {
             confController.inizializzaCampiBase();
         } catch (PersistenzaException e) {
-            System.err.println("[Sistema] Campi base creati ma errore nel salvataggio: "
-                    + e.getMessage());
+            appView.mostraErroreAvvio("Campi base creati ma non salvati", e);
         }
 
-        // Transizioni automatiche di stato
-        int nTransizioni = confController.aggiornaTransizioni();
-        if (nTransizioni > 0) {
-            System.out.println("[Sistema] Transizioni automatiche applicate: "
-                    + nTransizioni + " proposta/e aggiornata/e.");
+        try {
+            appView.mostraTransizioni(confController.aggiornaTransizioni());
+        } catch (PersistenzaException e) {
+            appView.mostraErroreAvvio("Transizioni automatiche non salvate", e);
         }
 
-        // Riepilogo avvio
-        System.out.println("[Sistema] Proposte aperte in bacheca: "
-                + appData.getBacheca().size());
-        System.out.println("[Sistema] Proposte nell'archivio:     "
-                + appData.getArchivio().size());
+        appView.mostraRiepilogoIniziale();
 
-        // 5. View principale — tutta la presentazione vive qui
-        Scanner scanner = new Scanner(System.in);
-        AppView appView = new AppView(confController, fruitController, scanner);
         appView.avvia();
         scanner.close();
     }
