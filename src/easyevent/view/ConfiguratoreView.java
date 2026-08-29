@@ -948,7 +948,7 @@ public class ConfiguratoreView {
         if (p.getStato() == StatoProposta.APERTA) {
             return;
         }
-        if (p.getStato() == StatoProposta.VALIDA) {
+        if (p.isPubblicabile()) {
             System.out.print("\n  Proposta VALIDA. Pubblicarla ora? (s/n): ");
             if (scanner.nextLine().trim().equalsIgnoreCase("s")) {
                 try {
@@ -973,8 +973,7 @@ public class ConfiguratoreView {
     }
 
     private void pubblicaPropostaInterattivo() {
-        List<Proposta> valide = controller.getProposteSessione().stream()
-                .filter(p -> p.getStato() == StatoProposta.VALIDA).collect(Collectors.toList());
+        List<Proposta> valide = controller.getProposteSessionePubblicabili();
         if (valide.isEmpty()) {
             stampaErrore("Nessuna proposta VALIDA in sessione.");
             return;

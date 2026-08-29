@@ -580,6 +580,14 @@ public class Proposta {
         return stato;
     }
 
+    /**
+     * @return true se la proposta ha superato la validazione ed e' quindi
+     * pronta per essere pubblicata in bacheca.
+     */
+    public boolean isPubblicabile() {
+        return stato == StatoProposta.VALIDA;
+    }
+
     public LocalDate getDataPubblicazione() {
         return dataPubblicazione;
     }

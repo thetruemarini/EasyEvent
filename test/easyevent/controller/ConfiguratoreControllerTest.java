@@ -294,6 +294,20 @@ class ConfiguratoreControllerTest {
     }
 
     @Test
+    void getProposteSessionePubblicabili_RestituisceSoloLeValide() {
+        AppData app = new AppData();
+        ConfiguratoreController c = loggato(app);
+        c.inizializzaCampiBase();
+        c.aggiungiCategoria("Concerti");
+        Proposta completa = c.creaProposta("Concerti");
+        riempiCampiBase(c, completa);
+        c.creaProposta("Concerti"); // resta in BOZZA: nessun campo compilato
+        List<Proposta> pubblicabili = c.getProposteSessionePubblicabili();
+        assertEquals(1, pubblicabili.size());
+        assertEquals(completa.getId(), pubblicabili.get(0).getId());
+    }
+
+    @Test
     void getErroriValidazione_PropostaNull_LanciaIllegalArgument() {
         ConfiguratoreController c = loggato(new AppData());
         assertThrows(IllegalArgumentException.class, () -> c.getErroriValidazione(null));

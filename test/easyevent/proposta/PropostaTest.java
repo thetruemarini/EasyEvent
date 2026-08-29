@@ -198,6 +198,20 @@ class PropostaTest {
     }
 
     @Test
+    void isPubblicabile_PropostaValida_RestituisceTrue() {
+        Proposta p = propostaValida(OGGI);
+        p.aggiornaStato(OGGI);
+        assertTrue(p.isPubblicabile());
+    }
+
+    @Test
+    void isPubblicabile_PropostaInBozza_RestituisceFalse() {
+        Proposta p = new Proposta(new IdProposta(1), "Concerti", "creatore", campiCompleti());
+        p.aggiornaStato(OGGI);
+        assertFalse(p.isPubblicabile());
+    }
+
+    @Test
     void aggiornaStato_PropostaIncompleta_RestaBozza() {
         Proposta p = new Proposta(new IdProposta(1), "Concerti", "creatore", campiCompleti());
         p.aggiornaStato(OGGI);

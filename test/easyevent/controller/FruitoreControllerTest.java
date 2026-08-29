@@ -20,6 +20,7 @@ import easyevent.proposta.Proposta;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -207,6 +208,42 @@ class FruitoreControllerTest {
         c.aderisci(p.getId());
         c.disdiciIscrizione(p.getId());
         assertFalse(c.isIscritto(p.getId()));
+    }
+
+    @Test
+    void getProposteIscritto_RestituisceSoloQuelleSottoscritte() {
+        AppData app = new AppData();
+        app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
+        Proposta p1 = pubblicaApertaOggi(app, 1);
+        pubblicaApertaOggi(app, 2);
+        FruitoreController c = new FruitoreController(app, okPM());
+        c.login("mario", "pwd123");
+        c.aderisci(p1.getId());
+        List<Proposta> iscritto = c.getProposteIscritto();
+        assertEquals(1, iscritto.size());
+        assertEquals(p1.getId(), iscritto.get(0).getId());
+    }
+
+    @Test
+    void getProposteDisponibili_EscludeQuelleGiaSottoscritte() {
+        AppData app = new AppData();
+        app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
+        Proposta p1 = pubblicaApertaOggi(app, 1);
+        Proposta p2 = pubblicaApertaOggi(app, 2);
+        FruitoreController c = new FruitoreController(app, okPM());
+        c.login("mario", "pwd123");
+        c.aderisci(p1.getId());
+        List<Proposta> disponibili = c.getProposteDisponibili();
+        assertEquals(1, disponibili.size());
+        assertEquals(p2.getId(), disponibili.get(0).getId());
+    }
+
+    @Test
+    void getProposteDisponibili_NonLoggato_RestituisceListaVuota() {
+        AppData app = new AppData();
+        pubblicaApertaOggi(app, 1);
+        FruitoreController c = new FruitoreController(app, okPM());
+        assertTrue(c.getProposteDisponibili().isEmpty());
     }
 
     @Test

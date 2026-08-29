@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Controller per tutte le operazioni del configuratore: gestione di campi,
@@ -460,6 +461,18 @@ public class ConfiguratoreController {
 
     public List<Proposta> getProposteSessione() {
         return Collections.unmodifiableList(proposteSessione);
+    }
+
+    /**
+     * Restituisce le proposte della sessione corrente che possono essere
+     * pubblicate. L'elenco di sessione e' del Controller, la regola su quando
+     * una proposta e' pubblicabile e' della Proposta: la View riceve la lista
+     * gia' pronta e non conosce ne' l'uno ne' l'altra.
+     */
+    public List<Proposta> getProposteSessionePubblicabili() {
+        return proposteSessione.stream()
+                .filter(Proposta::isPubblicabile)
+                .collect(Collectors.toList());
     }
 
     // ================================================================

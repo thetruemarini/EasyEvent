@@ -108,6 +108,24 @@ class AppDataTest {
         assertFalse(app.rimuoviFruitore("nessuno"));
     }
 
+    @Test
+    void getProposteNonIscrittoFruitore_EscludeQuelleGiaSottoscritte() {
+        AppData app = new AppData();
+        Proposta iscritto = pubblica(app, 1, "Concerti", "10");
+        pubblica(app, 2, "Concerti", "10");
+        iscritto.aggiungiAderente("mario", OGGI);
+        List<Proposta> disponibili = app.getProposteNonIscrittoFruitore("mario");
+        assertEquals(1, disponibili.size());
+        assertEquals(new IdProposta(2), disponibili.get(0).getId());
+    }
+
+    @Test
+    void getProposteNonIscrittoFruitore_UsernameNull_RestituisceListaVuota() {
+        AppData app = new AppData();
+        pubblica(app, 1, "Concerti", "10");
+        assertTrue(app.getProposteNonIscrittoFruitore(null).isEmpty());
+    }
+
     // ================================================================
     // Campi base e comuni
     // ================================================================

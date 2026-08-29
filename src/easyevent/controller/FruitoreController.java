@@ -191,14 +191,33 @@ public class FruitoreController {
     }
 
     /**
+     * Restituisce le proposte aperte a cui il fruitore corrente e' gia'
+     * iscritto, cioe' quelle da cui puo' disdire.
+     */
+    public List<Proposta> getProposteIscritto() {
+        if (!isLoggato()) {
+            return new ArrayList<>();
+        }
+        return appData.getProposteIscrittoFruitore(fruitoreCorrente.getUsername());
+    }
+
+    /**
+     * Restituisce le proposte aperte a cui il fruitore corrente non e' ancora
+     * iscritto, cioe' quelle a cui puo' aderire.
+     */
+    public List<Proposta> getProposteDisponibili() {
+        if (!isLoggato()) {
+            return new ArrayList<>();
+        }
+        return appData.getProposteNonIscrittoFruitore(fruitoreCorrente.getUsername());
+    }
+
+    /**
      * Restituisce il numero di proposte aperte a cui il fruitore è iscritto. La
      * logica "quali iscrizioni conta" sta nel Model, non nella View.
      */
     public int getNumeroIscrizioniAttive() {
-        if (!isLoggato()) {
-            return 0;
-        }
-        return appData.getProposteIscrittoFruitore(fruitoreCorrente.getUsername()).size();
+        return getProposteIscritto().size();
     }
 
     public List<Notifica> getNotifiche() {

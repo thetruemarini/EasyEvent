@@ -410,6 +410,20 @@ public class AppData {
     }
 
     /**
+     * Complementare del metodo precedente: le proposte aperte a cui il fruitore
+     * indicato non e' ancora iscritto, cioe' quelle a cui puo' aderire.
+     */
+    public List<Proposta> getProposteNonIscrittoFruitore(String username) {
+        if (username == null) {
+            return new ArrayList<>();
+        }
+        return archivio.stream()
+                .filter(p -> p.getStato() == StatoProposta.APERTA
+                && !p.isAderito(username))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Restituisce i nomi delle categorie che hanno almeno una proposta aperta,
      * ordinati alfabeticamente.
      */

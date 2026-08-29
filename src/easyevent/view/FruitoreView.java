@@ -12,7 +12,6 @@ import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 /**
  * Interfaccia testuale (CLI) per il fruitore: è l'unico layer che costruisce i
@@ -239,9 +238,7 @@ public class FruitoreView {
     // ISCRIZIONE
     // ================================================================
     private void aderisciAProposta() {
-        List<Proposta> disponibili = controller.getBacheca().stream()
-                .filter(p -> !controller.isIscritto(p.getId()))
-                .collect(Collectors.toList());
+        List<Proposta> disponibili = controller.getProposteDisponibili();
 
         if (disponibili.isEmpty()) {
             System.out.println("\n  Sei gia' iscritto a tutte le proposte disponibili.");
@@ -294,9 +291,7 @@ public class FruitoreView {
     // DISDICI ISCRIZIONE
     // ================================================================
     private void disdiciIscrizione() {
-        List<Proposta> iscrittoA = controller.getBacheca().stream()
-                .filter(p -> controller.isIscritto(p.getId()))
-                .collect(Collectors.toList());
+        List<Proposta> iscrittoA = controller.getProposteIscritto();
 
         if (iscrittoA.isEmpty()) {
             System.out.println("\n  Non sei iscritto ad alcuna proposta aperta.");
