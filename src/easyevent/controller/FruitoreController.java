@@ -2,6 +2,7 @@ package easyevent.controller;
 
 import easyevent.categoria.Campo;
 import easyevent.core.AppData;
+import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
@@ -70,14 +71,17 @@ public class FruitoreController {
      * Registra un nuovo fruitore, lo persiste e lo imposta come corrente. Se il
      * salvataggio fallisce, annulla l'aggiunta (rollback) e propaga l'errore.
      *
+     * @throws CredenzialiNonValideException se username o password sono vuoti.
      * @throws PersistenzaException se il salvataggio non riesce.
      */
     public void registra(String username, String password) {
         if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Lo username non può essere vuoto.");
+            throw new CredenzialiNonValideException(
+                    CredenzialiNonValideException.Motivo.USERNAME_VUOTO);
         }
         if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("La password non può essere vuota.");
+            throw new CredenzialiNonValideException(
+                    CredenzialiNonValideException.Motivo.PASSWORD_VUOTA);
         }
         Fruitore f = new Fruitore(username.trim(), password);
         appData.aggiungiFruitore(f);

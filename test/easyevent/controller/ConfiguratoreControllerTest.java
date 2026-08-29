@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import easyevent.core.AppData;
+import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ModificaNonConsentitaException;
@@ -124,6 +125,22 @@ class ConfiguratoreControllerTest {
         c.impostaCredenzialiPersonali("nuovoAdmin", "nuovaPwd");
         assertFalse(c.richiedeCambioCredenziali());
         assertEquals("nuovoAdmin", c.getConfiguratoreCorrente().getUsername());
+    }
+
+    @Test
+    void impostaCredenzialiPersonali_UsernameBlank_LanciaCredenzialiNonValide() {
+        ConfiguratoreController c = loggato(new AppData());
+        CredenzialiNonValideException ex = assertThrows(CredenzialiNonValideException.class,
+                () -> c.impostaCredenzialiPersonali("  ", "pwd"));
+        assertEquals(CredenzialiNonValideException.Motivo.USERNAME_VUOTO, ex.getMotivo());
+    }
+
+    @Test
+    void impostaCredenzialiPersonali_PasswordBlank_LanciaCredenzialiNonValide() {
+        ConfiguratoreController c = loggato(new AppData());
+        CredenzialiNonValideException ex = assertThrows(CredenzialiNonValideException.class,
+                () -> c.impostaCredenzialiPersonali("nuovo", "  "));
+        assertEquals(CredenzialiNonValideException.Motivo.PASSWORD_VUOTA, ex.getMotivo());
     }
 
     @Test

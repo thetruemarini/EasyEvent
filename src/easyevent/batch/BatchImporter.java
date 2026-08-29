@@ -132,25 +132,18 @@ public class BatchImporter {
         Path path = Paths.get(percorsoFile);
         if (!Files.exists(path)) {
             throw new PersistenzaException(
-                    PersistenzaException.TipoErrore.FILE_NON_TROVATO,
-                    "File non trovato: " + percorsoFile
-            );
+                    PersistenzaException.TipoErrore.FILE_NON_TROVATO, percorsoFile);
         }
         if (!Files.isRegularFile(path)) {
             throw new PersistenzaException(
-                    PersistenzaException.TipoErrore.ERRORE_LETTURA,
-                    "Il percorso non indica un file regolare: " + percorsoFile
-            );
+                    PersistenzaException.TipoErrore.NON_E_UN_FILE, percorsoFile);
         }
         try {
             List<String> righe = Files.readAllLines(path, StandardCharsets.UTF_8);
             return elaboraRighe(righe);
         } catch (IOException e) {
             throw new PersistenzaException(
-                    PersistenzaException.TipoErrore.ERRORE_LETTURA,
-                    "Errore nella lettura del file: " + percorsoFile,
-                    e
-            );
+                    PersistenzaException.TipoErrore.ERRORE_LETTURA, percorsoFile, e);
         }
     }
 

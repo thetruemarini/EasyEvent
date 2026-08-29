@@ -1,6 +1,7 @@
 package easyevent.view;
 
 import easyevent.controller.FruitoreController;
+import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.IscrizioneException;
@@ -126,8 +127,8 @@ public class FruitoreView {
             stampaErrore("Username '" + ex.getNomeElemento()
                     + "' già in uso. Scegliere uno username diverso.");
             return false;
-        } catch (IllegalArgumentException ex) {
-            stampaErrore(ex.getMessage());
+        } catch (CredenzialiNonValideException ex) {
+            stampaErrore(messaggioCredenziali(ex));
             return false;
         } catch (RuntimeException ex) {
             stampaErrore("Errore di sistema.");
@@ -518,6 +519,15 @@ public class FruitoreView {
                 "Il numero di partecipanti della proposta non è valido.";
         };
 
+    }
+
+    private String messaggioCredenziali(CredenzialiNonValideException e) {
+        return switch (e.getMotivo()) {
+            case USERNAME_VUOTO ->
+                "Lo username non puo' essere vuoto.";
+            case PASSWORD_VUOTA ->
+                "La password non puo' essere vuota.";
+        };
     }
 
     private String messaggioModificaNonConsentita(ModificaNonConsentitaException e) {

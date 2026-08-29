@@ -7,6 +7,7 @@ import easyevent.categoria.CampoComune;
 import easyevent.categoria.CampoSpecifico;
 import easyevent.categoria.Categoria;
 import easyevent.core.AppData;
+import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
@@ -137,10 +138,12 @@ public class ConfiguratoreController {
                     null);
         }
         if (nuovoUsername == null || nuovoUsername.isBlank()) {
-            throw new IllegalArgumentException("nuovoUsername non può essere vuoto");
+            throw new CredenzialiNonValideException(
+                    CredenzialiNonValideException.Motivo.USERNAME_VUOTO);
         }
         if (nuovaPassword == null || nuovaPassword.isBlank()) {
-            throw new IllegalArgumentException("nuovaPassword non può essere vuota");
+            throw new CredenzialiNonValideException(
+                    CredenzialiNonValideException.Motivo.PASSWORD_VUOTA);
         }
 
         String vecchioUsername = configuratoreCorrente.getUsername();

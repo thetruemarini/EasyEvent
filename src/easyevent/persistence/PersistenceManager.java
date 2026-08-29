@@ -778,10 +778,7 @@ public class PersistenceManager {
             salva(data);
         } catch (IOException e) {
             throw new PersistenzaException(
-                    PersistenzaException.TipoErrore.ERRORE_SCRITTURA,
-                    "Impossibile salvare i dati su disco.",
-                    e
-            );
+                    PersistenzaException.TipoErrore.ERRORE_SCRITTURA, dataFilePath, e);
         }
     }
 
@@ -794,10 +791,7 @@ public class PersistenceManager {
             return carica(data);
         } catch (IOException e) {
             throw new PersistenzaException(
-                    PersistenzaException.TipoErrore.ERRORE_LETTURA,
-                    "Impossibile caricare i dati da disco.",
-                    e
-            );
+                    PersistenzaException.TipoErrore.ERRORE_LETTURA, dataFilePath, e);
         }
     }
 }

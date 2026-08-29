@@ -4,6 +4,7 @@ import easyevent.batch.BatchRisultato;
 import easyevent.categoria.Campo;
 import easyevent.categoria.Categoria;
 import easyevent.controller.ConfiguratoreController;
+import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoGiaEsistenteException;
 import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
@@ -139,8 +140,8 @@ public class ConfiguratoreView {
         } catch (ModificaNonConsentitaException e) {
             stampaErrore(messaggioModificaNonConsentita(e));
             return false;
-        } catch (IllegalArgumentException e) {
-            stampaErrore(e.getMessage());
+        } catch (CredenzialiNonValideException e) {
+            stampaErrore(messaggioCredenziali(e));
             return false;
         } catch (RuntimeException e) {
             stampaErrore("Errore di sistema.");
@@ -478,7 +479,7 @@ public class ConfiguratoreView {
             stampaErrore("ID non valido.");
             return;
         } catch (IllegalArgumentException e) {
-            stampaErrore("ID non valido: " + e.getMessage());
+            stampaErrore("ID non valido.");
             return;
         }
         Proposta scelta = ritirabili.stream().filter(p -> p.getId().equals(id)).findFirst().orElse(null);
@@ -1132,13 +1133,16 @@ public class ConfiguratoreView {
     }
 
     private String messaggioPersistenza(PersistenzaException e) {
+        String dove = e.getPercorso() == null ? "" : " (" + e.getPercorso() + ")";
         return switch (e.getTipoErrore()) {
             case FILE_NON_TROVATO ->
-                "File non trovato.";
+                "File non trovato" + dove + ".";
+            case NON_E_UN_FILE ->
+                "Il percorso indicato non e' un file" + dove + ".";
             case ERRORE_LETTURA ->
-                "Errore nella lettura del file: " + e.getMessage();
+                "Errore nella lettura del file" + dove + ".";
             case ERRORE_SCRITTURA ->
-                "Errore nel salvataggio: " + e.getMessage();
+                "Errore nel salvataggio" + dove + ".";
         };
     }
 
@@ -1200,6 +1204,15 @@ public class ConfiguratoreView {
         };
         String obbLabel = c.isObbligatorio() ? "obbligatorio" : "facoltativo";
         return "[" + tipoLabel + "] " + c.getNome() + " (" + obbLabel + ")";
+    }
+
+    private String messaggioCredenziali(CredenzialiNonValideException e) {
+        return switch (e.getMotivo()) {
+            case USERNAME_VUOTO ->
+                "Lo username non puo' essere vuoto.";
+            case PASSWORD_VUOTA ->
+                "La password non puo' essere vuota.";
+        };
     }
 
     private String messaggioModificaNonConsentita(ModificaNonConsentitaException e) {

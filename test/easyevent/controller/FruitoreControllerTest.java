@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import easyevent.categoria.Campo;
 import easyevent.core.AppData;
+import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
@@ -130,9 +131,19 @@ class FruitoreControllerTest {
     }
 
     @Test
-    void registra_UsernameBlank_LanciaIllegalArgument() {
+    void registra_UsernameBlank_LanciaCredenzialiNonValide() {
         FruitoreController c = new FruitoreController(new AppData(), okPM());
-        assertThrows(IllegalArgumentException.class, () -> c.registra("  ", "pwd"));
+        CredenzialiNonValideException ex = assertThrows(CredenzialiNonValideException.class,
+                () -> c.registra("  ", "pwd"));
+        assertEquals(CredenzialiNonValideException.Motivo.USERNAME_VUOTO, ex.getMotivo());
+    }
+
+    @Test
+    void registra_PasswordBlank_LanciaCredenzialiNonValide() {
+        FruitoreController c = new FruitoreController(new AppData(), okPM());
+        CredenzialiNonValideException ex = assertThrows(CredenzialiNonValideException.class,
+                () -> c.registra("mario", "  "));
+        assertEquals(CredenzialiNonValideException.Motivo.PASSWORD_VUOTA, ex.getMotivo());
     }
 
     @Test
