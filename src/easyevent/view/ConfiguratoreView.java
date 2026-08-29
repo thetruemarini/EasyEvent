@@ -14,7 +14,6 @@ import easyevent.exception.RitiroNonConsentitoException;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -939,7 +938,7 @@ public class ConfiguratoreView {
         }
         if (p.getStato() == StatoProposta.BOZZA) {
             System.out.println("\n  Problemi:");
-            p.validazioneErrori(LocalDate.now())
+            controller.getErroriValidazione(p)
                     .forEach(e -> System.out.println("    * " + messaggioErroreValidazione(e)));
         }
         System.out.println(ViewUtils.SEP2);

@@ -293,6 +293,33 @@ class ConfiguratoreControllerTest {
         assertFalse(c.getProposteSessione().contains(p));
     }
 
+    @Test
+    void getErroriValidazione_PropostaNull_LanciaIllegalArgument() {
+        ConfiguratoreController c = loggato(new AppData());
+        assertThrows(IllegalArgumentException.class, () -> c.getErroriValidazione(null));
+    }
+
+    @Test
+    void getErroriValidazione_PropostaSenzaCampiCompilati_RestituisceErrori() {
+        AppData app = new AppData();
+        ConfiguratoreController c = loggato(app);
+        c.inizializzaCampiBase();
+        c.aggiungiCategoria("Concerti");
+        Proposta p = c.creaProposta("Concerti");
+        assertFalse(c.getErroriValidazione(p).isEmpty());
+    }
+
+    @Test
+    void getErroriValidazione_PropostaCompleta_RestituisceListaVuota() {
+        AppData app = new AppData();
+        ConfiguratoreController c = loggato(app);
+        c.inizializzaCampiBase();
+        c.aggiungiCategoria("Concerti");
+        Proposta p = c.creaProposta("Concerti");
+        riempiCampiBase(c, p);
+        assertTrue(c.getErroriValidazione(p).isEmpty());
+    }
+
     // ================================================================
     // Ritiro
     // ================================================================

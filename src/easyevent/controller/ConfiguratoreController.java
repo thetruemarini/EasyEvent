@@ -407,6 +407,20 @@ public class ConfiguratoreController {
     }
 
     /**
+     * Restituisce gli errori di validazione della proposta rispetto a oggi. La
+     * regola sta nel Model: il Controller fornisce soltanto la data corrente,
+     * cosi' la View non deve procurarsi l'orologio per sapere cosa mostrare.
+     *
+     * @return lista vuota se la proposta e' valida.
+     */
+    public List<ErroreValidazione> getErroriValidazione(Proposta proposta) {
+        if (proposta == null) {
+            throw new IllegalArgumentException("proposta non può essere null");
+        }
+        return proposta.validazioneErrori(LocalDate.now());
+    }
+
+    /**
      * Pubblica una proposta della sessione corrente in bacheca e persiste la
      * modifica. Se la persistenza fallisce, annulla la pubblicazione e riporta
      * la proposta in sessione (rollback). Restituisce dati strutturati anziché
