@@ -664,10 +664,6 @@ public class ConfiguratoreController {
         return configuratoreCorrente;
     }
 
-    public AppData getAppData() {
-        return appData;
-    }
-
     // ================================================================
     // INTERROGAZIONI SUI CAMPI
     // ================================================================

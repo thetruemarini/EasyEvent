@@ -766,10 +766,6 @@ public class PersistenceManager {
         }
     }
 
-    public String getDataFilePath() {
-        return dataFilePath;
-    }
-
     // ================================================================
     // METODI CON ECCEZIONE DI DOMINIO (usati dal Controller)
     // ================================================================

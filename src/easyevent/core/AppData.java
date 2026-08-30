@@ -136,11 +136,6 @@ public class AppData {
                 || fruitori.stream().anyMatch(f -> f.getUsername().equalsIgnoreCase(username));
     }
 
-    @Deprecated
-    public boolean esisteUsername(String username) {
-        return esisteUsernameGlobale(username);
-    }
-
     // ================================================================
     // CAMPI BASE
     // ================================================================
@@ -591,10 +586,6 @@ public class AppData {
                 .mapToInt(p -> p.getId().getValore()) // <-- estrai il valore primitivo
                 .max().orElse(0);
         this.prossimoIdProposta = Math.max(this.prossimoIdProposta, maxId + 1);
-    }
-
-    public void setBacheca(List<Proposta> bacheca) {
-        setArchivio(bacheca);
     }
 
     public void setProssimoIdProposta(int id) {
