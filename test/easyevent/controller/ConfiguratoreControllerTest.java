@@ -34,6 +34,13 @@ import org.junit.jupiter.api.io.TempDir;
  */
 class ConfiguratoreControllerTest {
 
+    /**
+     * Giorno di riferimento iniettato nel controller al posto dell'orologio di
+     * sistema: tutte le date dei casi sono costruite rispetto a questa, cosi'
+     * l'esito non dipende da quando la suite viene eseguita.
+     */
+    private static final LocalDate OGGI = LocalDate.of(2026, 3, 15);
+
     private static final String ADMIN = "admin";
     private static final String ADMIN_PWD = "admin";
 
@@ -51,21 +58,20 @@ class ConfiguratoreControllerTest {
     /** Controller con admin loggato (bootstrap primo accesso) e PM funzionante. */
     private ConfiguratoreController loggato(AppData app) {
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         return c;
     }
 
     private void riempiCampiBase(ConfiguratoreController c, Proposta p) {
-        LocalDate now = LocalDate.now();
         c.setValoreCampo(p, "Titolo", "Concerto");
         c.setValoreCampo(p, "Numero di partecipanti", "10");
-        c.setValoreCampo(p, "Termine ultimo di iscrizione", now.plusDays(30).format(Proposta.DATE_FORMAT));
+        c.setValoreCampo(p, "Termine ultimo di iscrizione", OGGI.plusDays(30).format(Proposta.DATE_FORMAT));
         c.setValoreCampo(p, "Luogo", "Arena");
-        c.setValoreCampo(p, "Data inizio", now.plusDays(40).format(Proposta.DATE_FORMAT));
+        c.setValoreCampo(p, "Data inizio", OGGI.plusDays(40).format(Proposta.DATE_FORMAT));
         c.setValoreCampo(p, "Ora", "21:00");
         c.setValoreCampo(p, "Quota individuale", "20");
-        c.setValoreCampo(p, "Data conclusiva", now.plusDays(41).format(Proposta.DATE_FORMAT));
+        c.setValoreCampo(p, "Data conclusiva", OGGI.plusDays(41).format(Proposta.DATE_FORMAT));
     }
 
     // ================================================================
@@ -74,13 +80,19 @@ class ConfiguratoreControllerTest {
     @Test
     void costruttore_AppDataNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ConfiguratoreController(null, okPM(), ADMIN, ADMIN_PWD));
+                () -> new ConfiguratoreController(null, okPM(), ADMIN, ADMIN_PWD, () -> OGGI));
     }
 
     @Test
     void costruttore_PersistenceManagerNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ConfiguratoreController(new AppData(), null, ADMIN, ADMIN_PWD));
+                () -> new ConfiguratoreController(new AppData(), null, ADMIN, ADMIN_PWD, () -> OGGI));
+    }
+
+    @Test
+    void costruttore_OrologioNull_LanciaIllegalArgument() {
+        assertThrows(IllegalArgumentException.class,
+                () -> new ConfiguratoreController(new AppData(), okPM(), ADMIN, ADMIN_PWD, null));
     }
 
     // ================================================================
@@ -90,7 +102,7 @@ class ConfiguratoreControllerTest {
     void login_PrimoAccessoAdminDefault_CreaEAccede() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertTrue(c.login(ADMIN, ADMIN_PWD));
         assertTrue(c.isLoggato());
         assertEquals(1, app.getConfiguratori().size());
@@ -100,7 +112,7 @@ class ConfiguratoreControllerTest {
     void login_AdminDefaultSbagliato_QuandoVuoto_RestituisceFalse() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertFalse(c.login(ADMIN, "sbagliata"));
     }
 
@@ -116,7 +128,7 @@ class ConfiguratoreControllerTest {
     void impostaCredenzialiPersonali_NonLoggato_Lancia() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         ModificaNonConsentitaException ex = assertThrows(ModificaNonConsentitaException.class,
                 () -> c.impostaCredenzialiPersonali("nuovo", "pwd"));
         assertEquals(ModificaNonConsentitaException.TipoModifica.NESSUN_CONFIGURATORE_LOGGATO,
@@ -164,7 +176,7 @@ class ConfiguratoreControllerTest {
         AppData app = new AppData();
         // login bootstrap (ignora errori di persistenza), poi PM fallisce sul cambio
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         assertThrows(PersistenzaException.class,
                 () -> c.impostaCredenzialiPersonali("nuovoAdmin", "nuovaPwd"));
@@ -180,7 +192,7 @@ class ConfiguratoreControllerTest {
     void aggiungiCampoComune_NonLoggato_LanciaAccessoNegato() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         ModificaNonConsentitaException ex = assertThrows(ModificaNonConsentitaException.class,
                 () -> c.aggiungiCampoComune("Sito web", false));
         assertEquals(ModificaNonConsentitaException.TipoModifica.ACCESSO_NEGATO,
@@ -199,7 +211,7 @@ class ConfiguratoreControllerTest {
     void aggiungiCampoComune_ErrorePersistenza_RollbackERilancia() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         assertThrows(PersistenzaException.class, () -> c.aggiungiCampoComune("Sito web", false));
         assertFalse(app.esisteCampoComune("Sito web")); // rollback
@@ -241,7 +253,7 @@ class ConfiguratoreControllerTest {
     void aggiungiCategoria_ErrorePersistenza_RollbackERilancia() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         assertThrows(PersistenzaException.class, () -> c.aggiungiCategoria("Concerti"));
         assertFalse(app.esisteCategoria("Concerti")); // rollback
@@ -282,7 +294,7 @@ class ConfiguratoreControllerTest {
     void creaProposta_NonLoggato_RestituisceNull() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertNull(c.creaProposta("Concerti"));
     }
 
@@ -370,7 +382,7 @@ class ConfiguratoreControllerTest {
         for (Campo campo : app.getCampiBase()) {
             snap.put(campo.getNome(), campo.isObbligatorio());
         }
-        LocalDate ieri = LocalDate.now().minusDays(1);
+        LocalDate ieri = OGGI.minusDays(1);
         Map<String, String> valori = new LinkedHashMap<>();
         valori.put("Termine ultimo di iscrizione", ieri.format(Proposta.DATE_FORMAT));
         valori.put("Numero di partecipanti", "10");
@@ -389,11 +401,23 @@ class ConfiguratoreControllerTest {
     }
 
     @Test
+    void aggiornaTransizioni_OrologioPrimaDelTermine_NonApplicaLaTransizione() {
+        AppData app = new AppData();
+        archiviaApertaScaduta(app);
+        ConfiguratoreController c =
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD,
+                        () -> OGGI.minusDays(10));
+        c.login(ADMIN, ADMIN_PWD);
+        assertEquals(0, c.aggiornaTransizioni());
+        assertEquals(StatoProposta.APERTA, app.getArchivio().get(0).getStato());
+    }
+
+    @Test
     void aggiornaTransizioni_ErrorePersistenza_RilanciaConRollbackAllegato() {
         AppData app = new AppData();
         archiviaApertaScaduta(app);
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         PersistenzaException ex = assertThrows(PersistenzaException.class, c::aggiornaTransizioni);
         // anche il rollback fallisce: viene allegato all'errore originale, non stampato
         assertEquals(1, ex.getSuppressed().length);
@@ -406,7 +430,7 @@ class ConfiguratoreControllerTest {
     void ritirareProposta_NonLoggato_LanciaAccessoNegato() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD);
+                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertThrows(ModificaNonConsentitaException.class,
                 () -> c.ritirareProposta(new IdProposta(1)));
     }

@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Controller per tutte le operazioni del fruitore: login, registrazione,
@@ -29,23 +30,31 @@ public class FruitoreController {
 
     private final AppData appData;
     private final PersistenceManager persistenceManager;
+    private final Supplier<LocalDate> orologio;
     private Fruitore fruitoreCorrente;
 
     /**
      * Le dipendenze sono iniettate tramite costruttore (Dependency Injection).
      * AppData e PersistenceManager sono condivisi con ConfiguratoreController:
      * entrambi operano sullo stesso stato centrale, passato esplicitamente
-     * anziché recuperato tramite un registro globale o Singleton.
+     * anziché recuperato tramite un registro globale o Singleton. Lo stesso
+     * vale per l'orologio: il giorno corrente arriva da fuori, non da
+     * {@code LocalDate.now()}.
      */
-    public FruitoreController(AppData appData, PersistenceManager persistenceManager) {
+    public FruitoreController(AppData appData, PersistenceManager persistenceManager,
+            Supplier<LocalDate> orologio) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
         if (persistenceManager == null) {
             throw new IllegalArgumentException("PersistenceManager non puo' essere null.");
         }
+        if (orologio == null) {
+            throw new IllegalArgumentException("Orologio non puo' essere null.");
+        }
         this.appData = appData;
         this.persistenceManager = persistenceManager;
+        this.orologio = orologio;
         this.fruitoreCorrente = null;
     }
 
@@ -146,7 +155,7 @@ public class FruitoreController {
             );
         }
         String username = fruitoreCorrente.getUsername();
-        LocalDate oggi = LocalDate.now();
+        LocalDate oggi = orologio.get();
         p.aggiungiAderente(username, oggi);
         try {
             salva();
@@ -176,7 +185,7 @@ public class FruitoreController {
             );
         }
         String username = fruitoreCorrente.getUsername();
-        LocalDate oggi = LocalDate.now();
+        LocalDate oggi = orologio.get();
         p.rimuoviAderente(username, oggi);
         try {
             salva();

@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -44,21 +45,30 @@ public class ConfiguratoreController {
     private List<Proposta> proposteSessione;
     private final String defaultAdminUsername;
     private final String defaultAdminPassword;
+    private final Supplier<LocalDate> orologio;
 
     /**
-     * Le dipendenze (AppData, PersistenceManager) sono ricevute tramite
-     * costruttore (Dependency Injection). Non si usa getInstance() né variabili
-     * globali: chi istanzia questo controller dichiara esplicitamente da cosa
-     * dipende, rendendo la dipendenza visibile a compile-time e sostituibile
-     * nei test.
+     * Le dipendenze (AppData, PersistenceManager, orologio) sono ricevute
+     * tramite costruttore (Dependency Injection). Non si usa getInstance() né
+     * variabili globali: chi istanzia questo controller dichiara esplicitamente
+     * da cosa dipende, rendendo la dipendenza visibile a compile-time e
+     * sostituibile nei test.
+     *
+     * Anche il tempo è una dipendenza: il controller non chiede il giorno
+     * corrente al sistema, lo riceve. In produzione MainV5 passa
+     * {@code LocalDate::now}; un test passa una data fissa.
      */
     public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager,
-            String defaultAdminUsername, String defaultAdminPassword) {
+            String defaultAdminUsername, String defaultAdminPassword,
+            Supplier<LocalDate> orologio) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
         if (persistenceManager == null) {
             throw new IllegalArgumentException("PersistenceManager non puo' essere null.");
+        }
+        if (orologio == null) {
+            throw new IllegalArgumentException("Orologio non puo' essere null.");
         }
         this.appData = appData;
         this.persistenceManager = persistenceManager;
@@ -66,6 +76,7 @@ public class ConfiguratoreController {
         this.proposteSessione = new ArrayList<>();
         this.defaultAdminUsername = defaultAdminUsername;
         this.defaultAdminPassword = defaultAdminPassword;
+        this.orologio = orologio;
     }
 
     // ================================================================
@@ -407,7 +418,7 @@ public class ConfiguratoreController {
             throw new IllegalArgumentException("proposta non può essere null");
         }
         proposta.setValore(nomeCampo, valore);
-        proposta.aggiornaStato(LocalDate.now());
+        proposta.aggiornaStato(orologio.get());
     }
 
     /**
@@ -421,7 +432,7 @@ public class ConfiguratoreController {
         if (proposta == null) {
             throw new IllegalArgumentException("proposta non può essere null");
         }
-        return proposta.validazioneErrori(LocalDate.now());
+        return proposta.validazioneErrori(orologio.get());
     }
 
     /**
@@ -442,7 +453,7 @@ public class ConfiguratoreController {
                     ModificaNonConsentitaException.TipoModifica.PROPOSTA_NON_IN_SESSIONE,
                     proposta.getId().toString());
         }
-        List<ErroreValidazione> errori = appData.pubblicaPropostaDiretta(proposta, LocalDate.now());
+        List<ErroreValidazione> errori = appData.pubblicaPropostaDiretta(proposta, orologio.get());
         if (!errori.isEmpty()) {
             return errori;
         }
@@ -516,7 +527,7 @@ public class ConfiguratoreController {
                 appData,
                 configuratoreCorrente.getUsername(),
                 this::salvaInterno, // lambda che delega al metodo salva() di questo controller
-                LocalDate.now()
+                orologio.get()
         );
 
         return importer.importa(percorsoFile);
@@ -547,7 +558,7 @@ public class ConfiguratoreController {
                 appData,
                 configuratoreCorrente.getUsername(),
                 this::salvaInterno,
-                LocalDate.now()
+                orologio.get()
         );
 
         return importer.importaMultipli(percorsiFile);
@@ -576,7 +587,7 @@ public class ConfiguratoreController {
                     idProposta.toString()
             );
         }
-        LocalDate oggi = LocalDate.now();
+        LocalDate oggi = orologio.get();
         p.verificaRitiroConsentito(oggi);
         appData.ritirareProposta(p, oggi);
         try {
@@ -597,7 +608,7 @@ public class ConfiguratoreController {
      * "quali proposte sono ritirabili" è nel Model.
      */
     public List<Proposta> getProposteRitirabili() {
-        return appData.getProposteRitirabili(LocalDate.now());
+        return appData.getProposteRitirabili(orologio.get());
     }
 
     // ================================================================
@@ -628,7 +639,7 @@ public class ConfiguratoreController {
      * @throws PersistenzaException se il salvataggio non riesce.
      */
     public int aggiornaTransizioni() {
-        int n = appData.aggiornaTransizioni(LocalDate.now());
+        int n = appData.aggiornaTransizioni(orologio.get());
         if (n > 0) {
             try {
                 salvaInterno();

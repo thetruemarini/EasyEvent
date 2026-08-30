@@ -8,6 +8,7 @@ import easyevent.persistence.PersistenceManager;
 import easyevent.view.AppView;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
 import java.util.Scanner;
 
 /**
@@ -55,10 +56,10 @@ public class MainV5 {
         // 4. Controller (Dependency Injection)
         ConfiguratoreController confController
                 = new ConfiguratoreController(appData, persistenceManager,
-                        DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASS);
+                        DEFAULT_ADMIN_USER, DEFAULT_ADMIN_PASS, LocalDate::now);
 
         FruitoreController fruitController
-                = new FruitoreController(appData, persistenceManager);
+                = new FruitoreController(appData, persistenceManager, LocalDate::now);
 
         // 5. View principale — da qui in poi ogni riga stampata passa da lei
         Scanner scanner = new Scanner(System.in);
