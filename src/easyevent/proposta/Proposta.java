@@ -170,9 +170,7 @@ public class Proposta {
                     nomeCampo
             );
         }
-        if (stato == StatoProposta.APERTA || stato == StatoProposta.CONFERMATA
-                || stato == StatoProposta.ANNULLATA || stato == StatoProposta.CONCLUSA
-                || stato == StatoProposta.RITIRATA) {
+        if (isGiaPubblicata()) {
             throw new ModificaNonConsentitaException(
                     ModificaNonConsentitaException.TipoModifica.PROPOSTA_GIA_PUBBLICATA,
                     stato.name()
@@ -222,9 +220,7 @@ public class Proposta {
      * già pubblicate o in stato finale non vengono toccate.
      */
     public void aggiornaStato(LocalDate dataOggi) {
-        if (stato == StatoProposta.APERTA || stato == StatoProposta.CONFERMATA
-                || stato == StatoProposta.ANNULLATA || stato == StatoProposta.CONCLUSA
-                || stato == StatoProposta.RITIRATA) {
+        if (isGiaPubblicata()) {
             return;
         }
         stato = validazioneErrori(dataOggi).isEmpty()
@@ -588,6 +584,17 @@ public class Proposta {
         return stato == StatoProposta.VALIDA;
     }
 
+    /**
+     * Vero quando la proposta ha gia' lasciato la fase di redazione: da quel
+     * momento in poi i valori dei campi non si toccano piu' e lo stato cambia
+     * solo per transizioni di ciclo di vita.
+     */
+    private boolean isGiaPubblicata() {
+        return stato == StatoProposta.APERTA || stato == StatoProposta.CONFERMATA
+                || stato == StatoProposta.ANNULLATA || stato == StatoProposta.CONCLUSA
+                || stato == StatoProposta.RITIRATA;
+    }
+
     public LocalDate getDataPubblicazione() {
         return dataPubblicazione;
     }
@@ -631,11 +638,7 @@ public class Proposta {
         if (aderenti == null || storicoStati == null) {
             return false;
         }
-        boolean pubblicata = (stato == StatoProposta.APERTA
-                || stato == StatoProposta.CONFERMATA
-                || stato == StatoProposta.ANNULLATA
-                || stato == StatoProposta.CONCLUSA
-                || stato == StatoProposta.RITIRATA);
+        boolean pubblicata = isGiaPubblicata();
         if (pubblicata && dataPubblicazione == null) {
             return false;
         }
