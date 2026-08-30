@@ -557,43 +557,65 @@ public class AppData {
     }
 
     // ================================================================
-    // SETTERS PER DESERIALIZZAZIONE
+    // RICOSTRUZIONE DELLO STATO (deserializzazione)
     // ================================================================
-    public void setCampiBase(List<Campo> campiBase) {
+    /**
+     * Ricostruisce l'intero stato a partire da dati appena deserializzati.
+     *
+     * E' l'unico punto di ingresso in scrittura massiva: la persistenza
+     * consegna tutto insieme e AppData decide come metterlo insieme, invece di
+     * ricevere nove comandi separati da eseguire nell'ordine giusto. In
+     * particolare i due contatori di ID vengono qui riportati sopra il massimo
+     * gia' presente nei dati caricati: e' una regola sull'invariante di questa
+     * classe, e non ha motivo di essere calcolata da chi legge il file.
+     *
+     * I contatori passati vengono ignorati se non positivi, e l'archivio se
+     * vuoto: sono i casi di un file parziale o di una versione precedente del
+     * formato, che non devono azzerare quanto gia' costruito.
+     *
+     * @throws IllegalArgumentException se una delle liste e' null.
+     */
+    public void ripristinaStato(List<Configuratore> configuratori, List<Fruitore> fruitori,
+            List<Campo> campiBase, List<Campo> campiComuni, List<Categoria> categorie,
+            List<Proposta> archivio, int prossimoIdProposta, int prossimoIdNotifica) {
+        if (configuratori == null || fruitori == null || campiBase == null
+                || campiComuni == null || categorie == null || archivio == null) {
+            throw new IllegalArgumentException(
+                    "Le liste di ripristinaStato non possono essere null.");
+        }
+
+        if (prossimoIdProposta > 0) {
+            this.prossimoIdProposta = prossimoIdProposta;
+        }
+        if (prossimoIdNotifica > 0) {
+            this.prossimoIdNotifica = prossimoIdNotifica;
+        }
+
+        this.configuratori = new ArrayList<>(configuratori);
+        this.fruitori = new ArrayList<>(fruitori);
+
+        int maxIdNotifica = this.fruitori.stream()
+                .flatMap(f -> f.getNotifiche().stream())
+                .mapToInt(n -> n.getId().getValore())
+                .max().orElse(0);
+        if (maxIdNotifica >= this.prossimoIdNotifica) {
+            this.prossimoIdNotifica = maxIdNotifica + 1;
+        }
+
         this.campiBase = new ArrayList<>(campiBase);
         this.campiBaseInizialized = !campiBase.isEmpty();
-    }
-
-    public void setCampiComuni(List<Campo> campiComuni) {
         this.campiComuni = new ArrayList<>(campiComuni);
-    }
-
-    public void setCategorie(List<Categoria> categorie) {
         this.categorie = new ArrayList<>(categorie);
-    }
 
-    public void setConfiguratori(List<Configuratore> list) {
-        this.configuratori = new ArrayList<>(list);
-    }
+        if (!archivio.isEmpty()) {
+            this.archivio = new ArrayList<>(archivio);
+            int maxIdProposta = archivio.stream()
+                    .mapToInt(prop -> prop.getId().getValore())
+                    .max().orElse(0);
+            this.prossimoIdProposta = Math.max(this.prossimoIdProposta, maxIdProposta + 1);
+        }
 
-    public void setFruitori(List<Fruitore> list) {
-        this.fruitori = new ArrayList<>(list);
-    }
-
-    public void setArchivio(List<Proposta> archivio) {
-        this.archivio = new ArrayList<>(archivio);
-        int maxId = archivio.stream()
-                .mapToInt(p -> p.getId().getValore()) // <-- estrai il valore primitivo
-                .max().orElse(0);
-        this.prossimoIdProposta = Math.max(this.prossimoIdProposta, maxId + 1);
-    }
-
-    public void setProssimoIdProposta(int id) {
-        this.prossimoIdProposta = id;
-    }
-
-    public void setProssimoIdNotifica(int id) {
-        this.prossimoIdNotifica = id;
+        assert repOk() : "Invariante violato dopo ripristinaStato";
     }
 
     // ================================================================

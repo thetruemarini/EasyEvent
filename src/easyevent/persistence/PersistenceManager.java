@@ -177,37 +177,22 @@ public class PersistenceManager {
         }
         String json = Files.readString(path);
 
-        int prossimoId = extractIntValue(json, "prossimoIdProposta");
-        if (prossimoId > 0) {
-            data.setProssimoIdProposta(prossimoId);
-        }
-        int prossimoIdNotifica = extractIntValue(json, "prossimoIdNotifica");
-        if (prossimoIdNotifica > 0) {
-            data.setProssimoIdNotifica(prossimoIdNotifica);
-        }
-
-        data.setConfiguratori(parseConfiguratori(json));
-        data.setFruitori(parseFruitori(json));
-
-        int maxIdNotifica = data.getFruitori().stream()
-                .flatMap(f -> f.getNotifiche().stream())
-                .mapToInt(n -> n.getId().getValore()) // <-- estrai il valore primitivo
-                .max().orElse(0);
-        if (maxIdNotifica >= data.getProssimoIdNotifica()) {
-            data.setProssimoIdNotifica(maxIdNotifica + 1);
-        }
-
-        data.setCampiBase(parseCampi(json, "campiBase"));
-        data.setCampiComuni(parseCampi(json, "campiComuni"));
-        data.setCategorie(parseCategorie(json));
-
+        // La chiave "bacheca" e' il nome che l'archivio aveva nel formato V4:
+        // si prova solo se "archivio" non ha prodotto nulla.
         List<Proposta> archivio = parseArchivio(json, "archivio");
         if (archivio.isEmpty()) {
             archivio = parseArchivio(json, "bacheca");
         }
-        if (!archivio.isEmpty()) {
-            data.setArchivio(archivio);
-        }
+
+        data.ripristinaStato(
+                parseConfiguratori(json),
+                parseFruitori(json),
+                parseCampi(json, "campiBase"),
+                parseCampi(json, "campiComuni"),
+                parseCategorie(json),
+                archivio,
+                extractIntValue(json, "prossimoIdProposta"),
+                extractIntValue(json, "prossimoIdNotifica"));
         return true;
     }
 
