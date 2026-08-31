@@ -14,18 +14,17 @@ import easyevent.exception.ElementoInSessioneException;
 import easyevent.exception.ElementoNonTrovatoException;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
-import easyevent.persistence.PersistenceManager;
+import easyevent.persistence.Persistenza;
+import easyevent.persistence.PersistenzaFinta;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Test unit di {@link ConfiguratoreController}: orchestrazione pura (nessuna
@@ -44,21 +43,20 @@ class ConfiguratoreControllerTest {
     private static final String ADMIN = "admin";
     private static final String ADMIN_PWD = "admin";
 
-    @TempDir
-    Path tempDir;
-
-    private PersistenceManager okPM() {
-        return new PersistenceManager(tempDir.resolve("data.json").toString());
+    /** Persistenza che riesce sempre: qui il salvataggio non e' il soggetto del test. */
+    private Persistenza persistenzaOk() {
+        return new PersistenzaFinta();
     }
 
-    private PersistenceManager failingPM() {
-        return new PersistenceManager(tempDir.toString());
+    /** Persistenza che fallisce sempre: serve a mettere alla prova i rollback. */
+    private Persistenza persistenzaGuasta() {
+        return PersistenzaFinta.guasta();
     }
 
-    /** Controller con admin loggato (bootstrap primo accesso) e PM funzionante. */
+    /** Controller con admin loggato (bootstrap primo accesso) e persistenza funzionante. */
     private ConfiguratoreController loggato(AppData app) {
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         return c;
     }
@@ -80,11 +78,11 @@ class ConfiguratoreControllerTest {
     @Test
     void costruttore_AppDataNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ConfiguratoreController(null, okPM(), ADMIN, ADMIN_PWD, () -> OGGI));
+                () -> new ConfiguratoreController(null, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI));
     }
 
     @Test
-    void costruttore_PersistenceManagerNull_LanciaIllegalArgument() {
+    void costruttore_PersistenzaNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
                 () -> new ConfiguratoreController(new AppData(), null, ADMIN, ADMIN_PWD, () -> OGGI));
     }
@@ -92,7 +90,7 @@ class ConfiguratoreControllerTest {
     @Test
     void costruttore_OrologioNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new ConfiguratoreController(new AppData(), okPM(), ADMIN, ADMIN_PWD, null));
+                () -> new ConfiguratoreController(new AppData(), persistenzaOk(), ADMIN, ADMIN_PWD, null));
     }
 
     // ================================================================
@@ -102,7 +100,7 @@ class ConfiguratoreControllerTest {
     void login_PrimoAccessoAdminDefault_CreaEAccede() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertTrue(c.login(ADMIN, ADMIN_PWD));
         assertTrue(c.isLoggato());
         assertEquals(1, app.getConfiguratori().size());
@@ -112,7 +110,7 @@ class ConfiguratoreControllerTest {
     void login_AdminDefaultSbagliato_QuandoVuoto_RestituisceFalse() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertFalse(c.login(ADMIN, "sbagliata"));
     }
 
@@ -128,7 +126,7 @@ class ConfiguratoreControllerTest {
     void impostaCredenzialiPersonali_NonLoggato_Lancia() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         ModificaNonConsentitaException ex = assertThrows(ModificaNonConsentitaException.class,
                 () -> c.impostaCredenzialiPersonali("nuovo", "pwd"));
         assertEquals(ModificaNonConsentitaException.TipoModifica.NESSUN_CONFIGURATORE_LOGGATO,
@@ -176,7 +174,7 @@ class ConfiguratoreControllerTest {
         AppData app = new AppData();
         // login bootstrap (ignora errori di persistenza), poi PM fallisce sul cambio
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaGuasta(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         assertThrows(PersistenzaException.class,
                 () -> c.impostaCredenzialiPersonali("nuovoAdmin", "nuovaPwd"));
@@ -192,7 +190,7 @@ class ConfiguratoreControllerTest {
     void aggiungiCampoComune_NonLoggato_LanciaAccessoNegato() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         ModificaNonConsentitaException ex = assertThrows(ModificaNonConsentitaException.class,
                 () -> c.aggiungiCampoComune("Sito web", false));
         assertEquals(ModificaNonConsentitaException.TipoModifica.ACCESSO_NEGATO,
@@ -211,7 +209,7 @@ class ConfiguratoreControllerTest {
     void aggiungiCampoComune_ErrorePersistenza_RollbackERilancia() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaGuasta(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         assertThrows(PersistenzaException.class, () -> c.aggiungiCampoComune("Sito web", false));
         assertFalse(app.esisteCampoComune("Sito web")); // rollback
@@ -253,7 +251,7 @@ class ConfiguratoreControllerTest {
     void aggiungiCategoria_ErrorePersistenza_RollbackERilancia() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaGuasta(), ADMIN, ADMIN_PWD, () -> OGGI);
         c.login(ADMIN, ADMIN_PWD);
         assertThrows(PersistenzaException.class, () -> c.aggiungiCategoria("Concerti"));
         assertFalse(app.esisteCategoria("Concerti")); // rollback
@@ -294,7 +292,7 @@ class ConfiguratoreControllerTest {
     void creaProposta_NonLoggato_RestituisceNull() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertNull(c.creaProposta("Concerti"));
     }
 
@@ -405,7 +403,7 @@ class ConfiguratoreControllerTest {
         AppData app = new AppData();
         archiviaApertaScaduta(app);
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD,
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD,
                         () -> OGGI.minusDays(10));
         c.login(ADMIN, ADMIN_PWD);
         assertEquals(0, c.aggiornaTransizioni());
@@ -417,7 +415,7 @@ class ConfiguratoreControllerTest {
         AppData app = new AppData();
         archiviaApertaScaduta(app);
         ConfiguratoreController c =
-                new ConfiguratoreController(app, failingPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaGuasta(), ADMIN, ADMIN_PWD, () -> OGGI);
         PersistenzaException ex = assertThrows(PersistenzaException.class, c::aggiornaTransizioni);
         // anche il rollback fallisce: viene allegato all'errore originale, non stampato
         assertEquals(1, ex.getSuppressed().length);
@@ -430,7 +428,7 @@ class ConfiguratoreControllerTest {
     void ritirareProposta_NonLoggato_LanciaAccessoNegato() {
         AppData app = new AppData();
         ConfiguratoreController c =
-                new ConfiguratoreController(app, okPM(), ADMIN, ADMIN_PWD, () -> OGGI);
+                new ConfiguratoreController(app, persistenzaOk(), ADMIN, ADMIN_PWD, () -> OGGI);
         assertThrows(ModificaNonConsentitaException.class,
                 () -> c.ritirareProposta(new IdProposta(1)));
     }

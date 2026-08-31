@@ -9,7 +9,7 @@ import easyevent.exception.PersistenzaException;
 import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
-import easyevent.persistence.PersistenceManager;
+import easyevent.persistence.Persistenza;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.time.LocalDate;
@@ -23,37 +23,40 @@ import java.util.function.Supplier;
  * adesione/ritiro alle proposte e gestione delle notifiche. Orchestra il Model e
  * la persistenza senza contenere logica di presentazione.
  *
- * Invariante di classe: - appData != null - persistenceManager != null -
+ * Invariante di classe: - appData != null - persistenza != null -
  * fruitoreCorrente puo' essere null
  */
 public class FruitoreController {
 
     private final AppData appData;
-    private final PersistenceManager persistenceManager;
+    private final Persistenza persistenza;
     private final Supplier<LocalDate> orologio;
     private Fruitore fruitoreCorrente;
 
     /**
      * Le dipendenze sono iniettate tramite costruttore (Dependency Injection).
-     * AppData e PersistenceManager sono condivisi con ConfiguratoreController:
+     * AppData e la persistenza sono condivisi con ConfiguratoreController:
      * entrambi operano sullo stesso stato centrale, passato esplicitamente
      * anziché recuperato tramite un registro globale o Singleton. Lo stesso
      * vale per l'orologio: il giorno corrente arriva da fuori, non da
      * {@code LocalDate.now()}.
+     *
+     * La persistenza è dichiarata come {@link Persistenza}: il controller sa
+     * che lo stato va salvato, non su che cosa.
      */
-    public FruitoreController(AppData appData, PersistenceManager persistenceManager,
+    public FruitoreController(AppData appData, Persistenza persistenza,
             Supplier<LocalDate> orologio) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
-        if (persistenceManager == null) {
-            throw new IllegalArgumentException("PersistenceManager non puo' essere null.");
+        if (persistenza == null) {
+            throw new IllegalArgumentException("Persistenza non puo' essere null.");
         }
         if (orologio == null) {
             throw new IllegalArgumentException("Orologio non puo' essere null.");
         }
         this.appData = appData;
-        this.persistenceManager = persistenceManager;
+        this.persistenza = persistenza;
         this.orologio = orologio;
         this.fruitoreCorrente = null;
     }
@@ -291,7 +294,7 @@ public class FruitoreController {
     }
 
     private void salva() {
-        persistenceManager.salvaSicuro(appData);
+        persistenza.salvaSicuro(appData);
     }
 
     private ModificaNonConsentitaException nessunFruitoreLoggato() {

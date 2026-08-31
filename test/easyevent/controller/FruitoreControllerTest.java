@@ -15,15 +15,14 @@ import easyevent.model.Fruitore;
 import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.notifica.TipoNotifica;
-import easyevent.persistence.PersistenceManager;
+import easyevent.persistence.Persistenza;
+import easyevent.persistence.PersistenzaFinta;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.List;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Test unit di {@link FruitoreController}: orchestrazione pura (nessuna UI).
@@ -39,17 +38,14 @@ class FruitoreControllerTest {
      */
     private static final LocalDate OGGI = LocalDate.of(2026, 3, 15);
 
-    @TempDir
-    Path tempDir;
-
-    /** PersistenceManager funzionante (scrive su file regolare). */
-    private PersistenceManager okPM() {
-        return new PersistenceManager(tempDir.resolve("data.json").toString());
+    /** Persistenza che riesce sempre: qui il salvataggio non e' il soggetto del test. */
+    private Persistenza persistenzaOk() {
+        return new PersistenzaFinta();
     }
 
-    /** PersistenceManager che fallisce sempre il salvataggio (path = directory). */
-    private PersistenceManager failingPM() {
-        return new PersistenceManager(tempDir.toString());
+    /** Persistenza che fallisce sempre: serve a mettere alla prova i rollback. */
+    private Persistenza persistenzaGuasta() {
+        return PersistenzaFinta.guasta();
     }
 
     /** Pubblica una proposta APERTA con iscrizioni aperte rispetto a oggi reale. */
@@ -85,11 +81,11 @@ class FruitoreControllerTest {
     @Test
     void costruttore_AppDataNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new FruitoreController(null, okPM(), () -> OGGI));
+                () -> new FruitoreController(null, persistenzaOk(), () -> OGGI));
     }
 
     @Test
-    void costruttore_PersistenceManagerNull_LanciaIllegalArgument() {
+    void costruttore_PersistenzaNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
                 () -> new FruitoreController(new AppData(), null, () -> OGGI));
     }
@@ -97,7 +93,7 @@ class FruitoreControllerTest {
     @Test
     void costruttore_OrologioNull_LanciaIllegalArgument() {
         assertThrows(IllegalArgumentException.class,
-                () -> new FruitoreController(new AppData(), okPM(), null));
+                () -> new FruitoreController(new AppData(), persistenzaOk(), null));
     }
 
     // ================================================================
@@ -107,7 +103,7 @@ class FruitoreControllerTest {
     void login_CredenzialiCorrette_RestituisceTrueEImpostaLoggato() {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         assertTrue(c.login("mario", "pwd123"));
         assertTrue(c.isLoggato());
     }
@@ -116,27 +112,27 @@ class FruitoreControllerTest {
     void login_PasswordSbagliata_RestituisceFalse() {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         assertFalse(c.login("mario", "sbagliata"));
         assertFalse(c.isLoggato());
     }
 
     @Test
     void login_UtenteInesistente_RestituisceFalse() {
-        FruitoreController c = new FruitoreController(new AppData(), okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(new AppData(), persistenzaOk(), () -> OGGI);
         assertFalse(c.login("nessuno", "pwd"));
     }
 
     @Test
     void login_ArgomentiNull_RestituisceFalse() {
-        FruitoreController c = new FruitoreController(new AppData(), okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(new AppData(), persistenzaOk(), () -> OGGI);
         assertFalse(c.login(null, null));
     }
 
     @Test
     void registra_NuovoUtente_LoCreaELogga() {
         AppData app = new AppData();
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.registra("mario", "pwd123");
         assertTrue(c.esisteFruitore("mario"));
         assertTrue(c.isLoggato());
@@ -144,7 +140,7 @@ class FruitoreControllerTest {
 
     @Test
     void registra_UsernameBlank_LanciaCredenzialiNonValide() {
-        FruitoreController c = new FruitoreController(new AppData(), okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(new AppData(), persistenzaOk(), () -> OGGI);
         CredenzialiNonValideException ex = assertThrows(CredenzialiNonValideException.class,
                 () -> c.registra("  ", "pwd"));
         assertEquals(CredenzialiNonValideException.Motivo.USERNAME_VUOTO, ex.getMotivo());
@@ -152,7 +148,7 @@ class FruitoreControllerTest {
 
     @Test
     void registra_PasswordBlank_LanciaCredenzialiNonValide() {
-        FruitoreController c = new FruitoreController(new AppData(), okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(new AppData(), persistenzaOk(), () -> OGGI);
         CredenzialiNonValideException ex = assertThrows(CredenzialiNonValideException.class,
                 () -> c.registra("mario", "  "));
         assertEquals(CredenzialiNonValideException.Motivo.PASSWORD_VUOTA, ex.getMotivo());
@@ -161,7 +157,7 @@ class FruitoreControllerTest {
     @Test
     void registra_ErrorePersistenza_RollbackERilancia() {
         AppData app = new AppData();
-        FruitoreController c = new FruitoreController(app, failingPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaGuasta(), () -> OGGI);
         assertThrows(PersistenzaException.class, () -> c.registra("mario", "pwd123"));
         assertFalse(c.esisteFruitore("mario")); // rollback: utente rimosso
         assertFalse(c.isLoggato());
@@ -171,7 +167,7 @@ class FruitoreControllerTest {
     void logout_AzzeraStato() {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.logout();
         assertFalse(c.isLoggato());
@@ -183,7 +179,7 @@ class FruitoreControllerTest {
     @Test
     void aderisci_NonLoggato_LanciaModificaNonConsentita() {
         AppData app = new AppData();
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         ModificaNonConsentitaException ex = assertThrows(ModificaNonConsentitaException.class,
                 () -> c.aderisci(new IdProposta(1)));
         assertEquals(ModificaNonConsentitaException.TipoModifica.NESSUN_FRUITORE_LOGGATO,
@@ -194,7 +190,7 @@ class FruitoreControllerTest {
     void aderisci_PropostaInesistente_LanciaElementoNonTrovato() {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         assertThrows(ElementoNonTrovatoException.class, () -> c.aderisci(new IdProposta(999)));
     }
@@ -204,7 +200,7 @@ class FruitoreControllerTest {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         Proposta p = pubblicaApertaOggi(app, 1);
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.aderisci(p.getId());
         assertTrue(c.isIscritto(p.getId()));
@@ -215,7 +211,7 @@ class FruitoreControllerTest {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         Proposta p = pubblicaApertaOggi(app, 1);
-        FruitoreController c = new FruitoreController(app, failingPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaGuasta(), () -> OGGI);
         c.login("mario", "pwd123");
         assertThrows(RuntimeException.class, () -> c.aderisci(p.getId()));
         assertFalse(p.isAderito("mario")); // rollback
@@ -226,7 +222,7 @@ class FruitoreControllerTest {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         Proposta p = pubblicaApertaOggi(app, 1);
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.aderisci(p.getId());
         c.disdiciIscrizione(p.getId());
@@ -239,7 +235,7 @@ class FruitoreControllerTest {
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         Proposta p1 = pubblicaApertaOggi(app, 1);
         pubblicaApertaOggi(app, 2);
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.aderisci(p1.getId());
         List<Proposta> iscritto = c.getProposteIscritto();
@@ -253,7 +249,7 @@ class FruitoreControllerTest {
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         Proposta p1 = pubblicaApertaOggi(app, 1);
         Proposta p2 = pubblicaApertaOggi(app, 2);
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.aderisci(p1.getId());
         List<Proposta> disponibili = c.getProposteDisponibili();
@@ -265,7 +261,7 @@ class FruitoreControllerTest {
     void getProposteDisponibili_NonLoggato_RestituisceListaVuota() {
         AppData app = new AppData();
         pubblicaApertaOggi(app, 1);
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         assertTrue(c.getProposteDisponibili().isEmpty());
     }
 
@@ -274,7 +270,7 @@ class FruitoreControllerTest {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         Proposta p = pubblicaApertaOggi(app, 1);
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.aderisci(p.getId());
         assertEquals(1, c.getNumeroIscrizioniAttive());
@@ -285,7 +281,7 @@ class FruitoreControllerTest {
     // ================================================================
     @Test
     void cancellaNotifica_NonLoggato_Lancia() {
-        FruitoreController c = new FruitoreController(new AppData(), okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(new AppData(), persistenzaOk(), () -> OGGI);
         assertThrows(ModificaNonConsentitaException.class,
                 () -> c.cancellaNotifica(new IdNotifica(1)));
     }
@@ -294,7 +290,7 @@ class FruitoreControllerTest {
     void cancellaNotifica_NotificaInesistente_LanciaElementoNonTrovato() {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         assertThrows(ElementoNonTrovatoException.class,
                 () -> c.cancellaNotifica(new IdNotifica(99)));
@@ -305,7 +301,7 @@ class FruitoreControllerTest {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         app.getFruitore("mario").aggiungiNotifica(notifica(1));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.cancellaNotifica(new IdNotifica(1));
         assertTrue(app.getFruitore("mario").getNotifiche().isEmpty());
@@ -316,7 +312,7 @@ class FruitoreControllerTest {
         AppData app = new AppData();
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         app.getFruitore("mario").aggiungiNotifica(notifica(1));
-        FruitoreController c = new FruitoreController(app, failingPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaGuasta(), () -> OGGI);
         c.login("mario", "pwd123");
         assertThrows(PersistenzaException.class, () -> c.cancellaNotifica(new IdNotifica(1)));
         assertEquals(1, app.getFruitore("mario").getNotifiche().size()); // rollback
@@ -328,7 +324,7 @@ class FruitoreControllerTest {
         app.aggiungiFruitore(new Fruitore("mario", "pwd123"));
         app.getFruitore("mario").aggiungiNotifica(notifica(1));
         app.getFruitore("mario").aggiungiNotifica(notifica(2));
-        FruitoreController c = new FruitoreController(app, okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(app, persistenzaOk(), () -> OGGI);
         c.login("mario", "pwd123");
         c.cancellaAllNotifiche();
         assertTrue(app.getFruitore("mario").getNotifiche().isEmpty());
@@ -336,7 +332,7 @@ class FruitoreControllerTest {
 
     @Test
     void getNotifiche_NonLoggato_ListaVuota() {
-        FruitoreController c = new FruitoreController(new AppData(), okPM(), () -> OGGI);
+        FruitoreController c = new FruitoreController(new AppData(), persistenzaOk(), () -> OGGI);
         assertTrue(c.getNotifiche().isEmpty());
     }
 }

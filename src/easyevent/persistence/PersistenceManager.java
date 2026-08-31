@@ -27,13 +27,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Gestore della persistenza su file JSON. È l'unico componente che conosce i
- * dettagli tecnologici dello storage (formato JSON, IOException): verso gli altri
- * layer espone solo operazioni di dominio e PersistenzaException.
+ * Gestore della persistenza su file JSON: l'implementazione di {@link Persistenza}
+ * usata in produzione. È l'unico componente che conosce i dettagli tecnologici
+ * dello storage (formato JSON, IOException): verso gli altri layer espone solo
+ * operazioni di dominio e PersistenzaException.
  *
  * Invariante: dataFilePath != null && !dataFilePath.isBlank()
  */
-public class PersistenceManager {
+public class PersistenceManager implements Persistenza {
 
     /**
      * Formato con cui le date sono scritte nel file JSON. Coincide oggi con il
@@ -758,6 +759,7 @@ public class PersistenceManager {
      * Salva lo stato wrappando IOException in PersistenzaException. Il
      * Controller usa questo metodo: non conosce IOException.
      */
+    @Override
     public void salvaSicuro(AppData data) {
         try {
             salva(data);
@@ -768,10 +770,6 @@ public class PersistenceManager {
     }
 
     /**
-     * Carica lo stato wrappando IOException in PersistenzaException. Il
-     * Controller usa questo metodo: non conosce IOException.
-     */
-    /**
      * @return quante proposte l'ultimo caricamento ha scartato perche' il
      * record su disco era malformato. Zero se il file era integro.
      */
@@ -779,6 +777,11 @@ public class PersistenceManager {
         return proposteScartate;
     }
 
+    /**
+     * Carica lo stato wrappando IOException in PersistenzaException. Il
+     * Controller usa questo metodo: non conosce IOException.
+     */
+    @Override
     public boolean caricaSicuro(AppData data) {
         try {
             return carica(data);

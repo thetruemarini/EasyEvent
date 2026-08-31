@@ -15,7 +15,7 @@ import easyevent.exception.ErroreValidazione;
 import easyevent.exception.ModificaNonConsentitaException;
 import easyevent.exception.PersistenzaException;
 import easyevent.model.Configuratore;
-import easyevent.persistence.PersistenceManager;
+import easyevent.persistence.Persistenza;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import java.time.LocalDate;
@@ -34,13 +34,13 @@ import java.util.stream.Collectors;
  * comandi CAMPO_COMUNE, CATEGORIA e PROPOSTA, eseguiti in sequenza; l'esito è
  * restituito come BatchRisultato e visualizzato dalla View.
  *
- * Invariante di classe: - appData != null - persistenceManager != null -
+ * Invariante di classe: - appData != null - persistenza != null -
  * proposteSessione != null
  */
 public class ConfiguratoreController {
 
     private final AppData appData;
-    private final PersistenceManager persistenceManager;
+    private final Persistenza persistenza;
     private Configuratore configuratoreCorrente;
     private List<Proposta> proposteSessione;
     private final String defaultAdminUsername;
@@ -48,7 +48,7 @@ public class ConfiguratoreController {
     private final Supplier<LocalDate> orologio;
 
     /**
-     * Le dipendenze (AppData, PersistenceManager, orologio) sono ricevute
+     * Le dipendenze (AppData, Persistenza, orologio) sono ricevute
      * tramite costruttore (Dependency Injection). Non si usa getInstance() né
      * variabili globali: chi istanzia questo controller dichiara esplicitamente
      * da cosa dipende, rendendo la dipendenza visibile a compile-time e
@@ -57,21 +57,26 @@ public class ConfiguratoreController {
      * Anche il tempo è una dipendenza: il controller non chiede il giorno
      * corrente al sistema, lo riceve. In produzione MainV5 passa
      * {@code LocalDate::now}; un test passa una data fissa.
+     *
+     * La persistenza è dichiarata come {@link Persistenza}, non come la classe
+     * che scrive su file: il controller sa che lo stato va salvato, non su che
+     * cosa. In produzione MainV5 passa PersistenceManager; un test passa un
+     * doppio in memoria.
      */
-    public ConfiguratoreController(AppData appData, PersistenceManager persistenceManager,
+    public ConfiguratoreController(AppData appData, Persistenza persistenza,
             String defaultAdminUsername, String defaultAdminPassword,
             Supplier<LocalDate> orologio) {
         if (appData == null) {
             throw new IllegalArgumentException("AppData non puo' essere null.");
         }
-        if (persistenceManager == null) {
-            throw new IllegalArgumentException("PersistenceManager non puo' essere null.");
+        if (persistenza == null) {
+            throw new IllegalArgumentException("Persistenza non puo' essere null.");
         }
         if (orologio == null) {
             throw new IllegalArgumentException("Orologio non puo' essere null.");
         }
         this.appData = appData;
-        this.persistenceManager = persistenceManager;
+        this.persistenza = persistenza;
         this.configuratoreCorrente = null;
         this.proposteSessione = new ArrayList<>();
         this.defaultAdminUsername = defaultAdminUsername;
@@ -181,7 +186,7 @@ public class ConfiguratoreController {
             return;
         }
         appData.inizializzaCampiBase();
-        persistenceManager.salvaSicuro(appData);
+        persistenza.salvaSicuro(appData);
     }
 
     public List<Campo> getCampiBase() {
@@ -594,7 +599,7 @@ public class ConfiguratoreController {
             salvaInterno();
         } catch (PersistenzaException e) {
             try {
-                persistenceManager.caricaSicuro(appData);
+                persistenza.caricaSicuro(appData);
             } catch (PersistenzaException rollbackEx) {
                 // Il rollback fallito non sostituisce l'errore originale: lo accompagna.
                 e.addSuppressed(rollbackEx);
@@ -645,7 +650,7 @@ public class ConfiguratoreController {
                 salvaInterno();
             } catch (PersistenzaException e) {
                 try {
-                    persistenceManager.caricaSicuro(appData);
+                    persistenza.caricaSicuro(appData);
                 } catch (PersistenzaException rollbackEx) {
                     e.addSuppressed(rollbackEx);
                 }
@@ -662,7 +667,7 @@ public class ConfiguratoreController {
      * Uso interno al controller: wrappa in PersistenzaException
      */
     private void salvaInterno() {
-        persistenceManager.salvaSicuro(appData);
+        persistenza.salvaSicuro(appData);
     }
 
     private ModificaNonConsentitaException accessoNegato() {
