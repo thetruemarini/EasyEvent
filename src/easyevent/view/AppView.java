@@ -1,9 +1,10 @@
 package easyevent.view;
 
+import java.util.Scanner;
+
 import easyevent.controller.ConfiguratoreController;
 import easyevent.controller.FruitoreController;
 import easyevent.exception.PersistenzaException;
-import java.util.Scanner;
 
 /**
  * View principale dell'applicazione: gestisce la selezione del ruolo
@@ -96,7 +97,7 @@ public class AppView {
     public void avvia() {
         while (true) {
             System.out.println("\n" + ViewUtils.SEP);
-            System.out.println("  EasyEvent  -  Versione 5");
+            System.out.println("  EasyEvent  ");
             System.out.println(ViewUtils.SEP);
             System.out.println("  Con quale ruolo vuoi accedere?");
             System.out.println("  1. Configuratore  (back-end + importazione batch)");

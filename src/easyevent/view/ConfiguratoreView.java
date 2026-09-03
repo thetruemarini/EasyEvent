@@ -1,5 +1,10 @@
 package easyevent.view;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.stream.Collectors;
+
 import easyevent.batch.BatchRisultato;
 import easyevent.categoria.Campo;
 import easyevent.categoria.Categoria;
@@ -15,10 +20,6 @@ import easyevent.exception.RitiroNonConsentitoException;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
 import easyevent.proposta.StatoProposta;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 
 /**
  * Interfaccia testuale (CLI) per il configuratore. Offre sia l'inserimento
@@ -217,7 +218,7 @@ public class ConfiguratoreView {
      */
     private void menuImportaBatch() {
         System.out.println("\n" + ViewUtils.SEP);
-        System.out.println("  IMPORTAZIONE BATCH  [NUOVO V5]");
+        System.out.println("  IMPORTAZIONE BATCH  ");
         System.out.println(ViewUtils.SEP);
         System.out.println("  Importa categorie, campi e proposte da file di testo.");
         System.out.println("  Formato: CAMPO_COMUNE | <nome> | <si/no>");
@@ -1125,7 +1126,7 @@ public class ConfiguratoreView {
 
     private void stampaBanner() {
         System.out.println("\n" + ViewUtils.SEP);
-        System.out.println("  EasyEvent  -  Back-end Configuratore  (Versione 5)");
+        System.out.println("  EasyEvent  -  Back-end Configuratore  ");
         System.out.println(ViewUtils.SEP);
         System.out.println("  Sistema di gestione iniziative ricreative");
         System.out.println("  Ingegneria del Software  -  A.A. 2025-2026");

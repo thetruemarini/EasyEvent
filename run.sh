@@ -10,7 +10,7 @@ SRC_DIR="$SCRIPT_DIR/src"
 OUT_DIR="$SCRIPT_DIR/out"
 DATA_DIR="$SCRIPT_DIR/data"
 
-echo "=== EasyEvent V5 - Build & Run ==="
+echo "=== EasyEvent - Build & Run ==="
 
 mkdir -p "$OUT_DIR"
 mkdir -p "$DATA_DIR"

@@ -1,5 +1,8 @@
 package easyevent.view;
 
+import java.util.List;
+import java.util.Scanner;
+
 import easyevent.controller.FruitoreController;
 import easyevent.exception.CredenzialiNonValideException;
 import easyevent.exception.ElementoGiaEsistenteException;
@@ -11,8 +14,6 @@ import easyevent.notifica.IdNotifica;
 import easyevent.notifica.Notifica;
 import easyevent.proposta.IdProposta;
 import easyevent.proposta.Proposta;
-import java.util.List;
-import java.util.Scanner;
 
 /**
  * Interfaccia testuale (CLI) per il fruitore: è l'unico layer che costruisce i
@@ -496,7 +497,7 @@ public class FruitoreView {
 
     private void stampaBanner() {
         System.out.println("\n" + ViewUtils.SEP);
-        System.out.println("  EasyEvent  -  Front-end Fruitore  (Versione 5)");
+        System.out.println("  EasyEvent  -  Front-end Fruitore  ");
         System.out.println(ViewUtils.SEP);
         System.out.println("  Sistema di gestione iniziative ricreative");
         System.out.println("  Ingegneria del Software  -  A.A. 2025-2026");

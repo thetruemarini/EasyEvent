@@ -8,7 +8,7 @@ chcp 65001 > nul
 set SRC_DIR=src
 set OUT_DIR=out
 
-echo === EasyEvent V5 - Build e Run ===
+echo === EasyEvent - Build e Run ===
 
 if not exist "%OUT_DIR%" mkdir "%OUT_DIR%"
 if not exist "data" mkdir "data"
