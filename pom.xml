@@ -44,6 +44,19 @@
                     <argLine>-ea</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <!-- Rende il jar avviabile: nessuna dipendenza a runtime, JUnit e' solo di test -->
+                            <mainClass>easyevent.main.MainV5</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
